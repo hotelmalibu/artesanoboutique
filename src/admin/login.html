@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arte'Sano — Panel</title>
+<style>
+  :root {
+    --tinta: #4A3F35; --verde: #7C8B5D; --verde-osc: #5F6D45; --beige: #C9A876; --crema: #F5EDE0; --blush: #E8C9C0;
+    --blanco: #ffffff; --linea: #E6DCC8; --gris: #8A7F72; --alerta: #B8553F;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: radial-gradient(1000px 500px at 50% -10%, #fff 0%, var(--crema) 60%), var(--crema); color: var(--tinta); display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .tarjeta { width: 100%; max-width: 400px; background: var(--blanco); border: 1px solid var(--linea); border-radius: 18px; box-shadow: 0 24px 60px rgba(74,63,53,.10); padding: 34px 32px 30px; text-align: center; }
+  .logo { width: 96px; height: 96px; margin: 0 auto 8px; }
+  .titulo { font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--verde); font-weight: 700; }
+  .sub { font-size: 13px; color: var(--gris); margin: 6px 0 22px; }
+  form { text-align: left; }
+  label { display: block; font-size: 12.5px; font-weight: 600; margin: 14px 0 6px; }
+  input { width: 100%; padding: 12px 13px; border: 1px solid var(--linea); border-radius: 10px; font-size: 15px; color: var(--tinta); background: #fcfaf5; }
+  input:focus { outline: 2px solid var(--verde); border-color: transparent; background: #fff; }
+  .btn { width: 100%; margin-top: 22px; padding: 13px; border: none; border-radius: 11px; background: linear-gradient(135deg, #93A272, var(--verde) 55%, var(--verde-osc)); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .error { margin-top: 16px; min-height: 18px; color: var(--alerta); font-size: 13px; font-weight: 600; text-align: center; }
+  .pie { margin-top: 20px; font-size: 11px; color: var(--gris); letter-spacing: .04em; }
+</style>
+</head>
+<body>
+  <div class="tarjeta">
+    <svg class="logo" viewBox="0 0 100 100" aria-label="Arte'Sano">
+      <circle cx="50" cy="50" r="48" fill="#F5EDE0"/>
+      <path d="M22 62 c6-10 14-16 24-18 c-4 8-12 14-24 18z M24 58 c8-3 14-8 18-12" fill="none" stroke="#7C8B5D" stroke-width="2.2" stroke-linecap="round"/>
+      <text x="46" y="60" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="40" fill="#7C8B5D">A</text>
+      <text x="56" y="70" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="34" fill="#C9A876">S</text>
+    </svg>
+    <div class="titulo">Panel Arte'Sano</div>
+    <div class="sub">Ingresa para administrar la tienda</div>
+    <form id="form">
+      <label for="usuario">Usuario</label>
+      <input id="usuario" name="usuario" type="text" autocomplete="username" placeholder="admin" required />
+      <label for="clave">Contraseña</label>
+      <input id="clave" name="clave" type="password" autocomplete="current-password" placeholder="••••••••" required />
+      <div id="paso2" style="display:none;">
+        <label for="codigo">Código de verificación (app de autenticación)</label>
+        <input id="codigo" name="codigo" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="123456" />
+      </div>
+      <button class="btn" id="btn" type="submit">Ingresar</button>
+      <div class="error" id="error"></div>
+    </form>
+    <div class="pie">artesanoboutique.com</div>
+  </div>
+<script>
+  const form = document.getElementById('form'), err = document.getElementById('error'), btn = document.getElementById('btn');
+  const paso2 = document.getElementById('paso2'), codigo = document.getElementById('codigo');
+  fetch('/admin/login/estado').then((r) => r.json()).then((d) => { if (d.requiereCodigo) paso2.style.display = 'block'; }).catch(() => {});
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); err.textContent = ''; btn.disabled = true;
+    try {
+      const r = await fetch('/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario: document.getElementById('usuario').value.trim(), clave: document.getElementById('clave').value, codigo: codigo.value.trim() }) });
+      const data = await r.json().catch(() => ({}));
+      if (data.ok) window.location.href = '/admin';
+      else { if (data.requiereCodigo) { paso2.style.display = 'block'; codigo.focus(); } err.textContent = data.error || 'Usuario o contraseña incorrectos.'; }
+    } catch (_) { err.textContent = 'Error de red. Intenta de nuevo.'; }
+    finally { btn.disabled = false; }
+  });
+</script>
+</body>
+</html>

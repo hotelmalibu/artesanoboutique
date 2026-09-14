@@ -1,0 +1,21 @@
+{
+  "name": "artesanoboutique",
+  "version": "0.1.0",
+  "description": "Arte'Sano — Tienda en línea de cosmética artesanal de origen ancestral Zenú (artesanoboutique.com). Fase 0: fundaciones (tienda, panel admin, catálogo con IVA, Rapyd, Resend, WhatsApp).",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "semilla": "node src/almacen/semilla.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.13.1"
+  }
+}

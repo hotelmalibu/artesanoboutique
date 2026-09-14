@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "artesano-local",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "process.env.PORT='3006';process.env.ADMIN_USUARIO='admin';process.env.ADMIN_PASSWORD='prueba-local';process.env.PUBLIC_URL='http://localhost:3006';import('./src/index.js')"
+      ],
+      "port": 3006
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Secretos y credenciales (NUNCA subir a GitHub)
+.env
+.env.*
+!.env.example
+credenciales/
+*.pem
+*.key
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Artefactos
+*.zip

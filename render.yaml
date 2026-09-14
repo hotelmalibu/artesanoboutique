@@ -1,0 +1,77 @@
+# ============================================================
+#  render.yaml — Blueprint de Render para Arte'Sano.
+#  New -> Blueprint -> apuntar al repo de GitHub.
+#  Crea el servicio web y la base de datos PostgreSQL.
+# ============================================================
+databases:
+  - name: artesano-db
+    plan: free # Produccion: 'basic-256mb' o superior (el free expira a los 90 dias)
+    databaseName: artesano
+    user: artesano
+
+services:
+  - type: web
+    name: artesanoboutique
+    runtime: node
+    # Para PROBAR usa 'free'. Para PRODUCCION cambia a 'starter'
+    # (always-on: el free se duerme a los 15 min y pierde webhooks de pago/WhatsApp).
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: artesano-db
+          property: connectionString
+      - key: PUBLIC_URL
+        value: https://artesanoboutique.com
+      - key: TIENDA_NOMBRE
+        value: Arte'Sano
+      - key: TIENDA_WHATSAPP
+        sync: false
+      - key: IVA_POR_DEFECTO
+        value: iva_19
+      - key: COP_POR_USD
+        value: "4200"
+      - key: ENVIO_GRATIS_DESDE
+        value: "150000"
+      - key: ADMIN_USUARIO
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_SESSION_SECRET
+        generateValue: true
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: RAPYD_ACCESS_KEY
+        sync: false
+      - key: RAPYD_SECRET_KEY
+        sync: false
+      - key: RAPYD_BASE_URL
+        value: https://sandboxapi.rapyd.net
+      - key: RAPYD_PAIS
+        value: CO
+      - key: RESEND_API_KEY
+        sync: false
+      - key: CORREO_REMITENTE
+        value: Arte'Sano <pedidos@artesanoboutique.com>
+      - key: CORREO_TIENDA
+        value: pedidos@artesanoboutique.com
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: WHATSAPP_APP_SECRET
+        sync: false
+      - key: GRAPH_API_VERSION
+        value: v21.0
+      - key: ANTHROPIC_API_KEY
+        sync: false
