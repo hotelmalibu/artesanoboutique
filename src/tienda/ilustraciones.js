@@ -36,7 +36,6 @@ export const ICONOS_LINEA = {
   'lineas-especializadas': `<svg viewBox="0 0 40 40" aria-hidden="true"><g ${T}><path d="M13 18 17 7"/><path d="M27 18 23 7"/><path d="M11 18c0 7 4 13 9 13s9-6 9-13Z"/><circle cx="20" cy="24" r="1.6" fill="currentColor" stroke="none"/></g></svg>`,
   aseo: `<svg viewBox="0 0 40 40" aria-hidden="true"><g ${T}><rect x="14" y="15" width="10" height="17" rx="3"/><path d="M17 15v-3h4v3"/><path d="M24 12h4l2 3-2 2"/><path d="M19 21v7M16 24.5h6"/></g></svg>`,
   hogar: `<svg viewBox="0 0 40 40" aria-hidden="true"><g ${T}><path d="M9 19 20 9l11 10"/><path d="M12 17v13h16V17"/><path d="M17 30v-7h6v7"/></g></svg>`,
-  colonias: `<svg viewBox="0 0 40 40" aria-hidden="true"><g ${T}><rect x="15" y="13" width="10" height="4" rx="1.4"/><circle cx="20" cy="8.5" r="1.6" fill="currentColor" stroke="none"/><path d="M11 17h18l3 4v9c0 1.4-1 2-2 2H10c-1 0-2-.6-2-2v-9Z"/><path d="M9 23h22"/></g></svg>`,
   otros: `<svg viewBox="0 0 40 40" aria-hidden="true"><g ${T}><rect x="9" y="17" width="22" height="14" rx="2"/><path d="M9 22h22"/><path d="M20 17v14"/><path d="M15 17c-2-3-1-7 2-7 2 0 3 3 3 7"/><path d="M25 17c2-3 1-7-2-7-2 0-3 3-3 7"/></g></svg>`,
 };
 

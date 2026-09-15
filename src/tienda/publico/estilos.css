@@ -84,6 +84,10 @@ p { margin: 0 0 1em; }
 .hero-visual { aspect-ratio: 1 / 1; border-radius: 30px; overflow: hidden; background: var(--crema-osc); display: flex; align-items: center; justify-content: center; }
 .hero-visual img { width: 100%; height: 100%; object-fit: cover; }
 .hero-visual svg { width: 60%; }
+.hero-rotativo { position: relative; width: 100%; height: 100%; }
+.hero-rotativo figure { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 1.1s ease; }
+.hero-rotativo figure.activo { opacity: 1; }
+.hero-rotativo figcaption { position: absolute; left: 18px; bottom: 18px; background: rgba(74,63,53,.62); color: #fff; font-family: var(--serif); font-style: italic; font-size: 15px; padding: 6px 14px; border-radius: 999px; }
 .hero-marca { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 12%; background: radial-gradient(120% 120% at 25% 15%, #fff 0%, var(--blush) 55%, var(--crema-osc) 100%); }
 .hero-marca .wordmark { width: 100%; max-width: 340px; }
 @media (max-width: 860px) { .hero-int { grid-template-columns: 1fr; padding-block: 36px; } .hero-visual { max-width: 420px; margin-inline: auto; } }

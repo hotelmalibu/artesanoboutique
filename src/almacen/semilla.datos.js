@@ -24,8 +24,7 @@ export const CATEGORIAS = [
   { slug: 'lineas-especializadas', nombre: 'Líneas Especializadas', descripcion: 'Capilar, medicinales y de alivio terapéutico.', orden: 4 },
   { slug: 'aseo', nombre: 'Aseo', descripcion: 'Higiene personal de uso diario.', orden: 5 },
   { slug: 'hogar', nombre: 'Hogar', descripcion: 'Para el cuidado del hogar.', orden: 6 },
-  { slug: 'colonias', nombre: 'Colonias', descripcion: 'Fragancias artesanales inspiradas en referencias reconocidas de perfumería.', orden: 7 },
-  { slug: 'otros', nombre: 'Otros', descripcion: 'Kits, alimentos tradicionales y ediciones especiales.', orden: 8 },
+  { slug: 'otros', nombre: 'Otros', descripcion: 'Kits, alimentos tradicionales y ediciones especiales.', orden: 7 },
 ];
 
 const INGREDIENTES_BASE = [
@@ -302,26 +301,5 @@ export function productos(ids) {
       imagenes: foto('colada-de-chopo.jpg'),
       variantes: [{ sku: 'AS-CHOPO-250', nombre: '250 g', precioCop: 17000, precioUsd: 6, stock: 15, porDefecto: true }],
     },
-
-    // ---------- Colonias ----------
-    ...[
-      ['aqva-bvlgari', "AQVA D'Bvlgari", 60000],
-      ['good-girl', 'Good Girl', 65000],
-      ['amber-rouge', 'Amber Rouge Orientica', 60000],
-      ['omnia-crystal', 'Omnia Crystal', 62000],
-      ['invictus', 'Invictus', 60000],
-      ['olympea', 'Olympea', 65000],
-      ['la-vie-est-belle', 'La Vie Est Belle', 65000],
-      ['bharara-king', 'Bharara King', 58000],
-    ].map(([slug, nombre, precio]) => ({
-      ...comunes, nombre, slug: `colonia-${slug}`,
-      categoriaId: cat('colonias'), ingredienteIds: [], ingredienteProtagonistaId: null,
-      descripcionCorta: `Fragancia artesanal Arte'Sano inspirada en ${nombre}.`,
-      descripcion: `<p>Interpretación artesanal de Arte'Sano inspirada en la icónica referencia <b>${nombre}</b>. Producto de perfumería artesanal, sin afiliación ni asociación con la marca original.</p>`,
-      beneficios: '', modoUso: '<p>Aplicar sobre puntos de pulso: cuello, muñecas y detrás de las orejas.</p>',
-      tipoPiel: [], pesoGramos: 60, precioCop: precio, precioUsd: Math.round(precio / 4200 * 10) / 10,
-      imagenes: etiqueta(slug),
-      variantes: [{ sku: `AS-COL-${slug.toUpperCase()}`, nombre: '60 ml', precioCop: precio, precioUsd: Math.round(precio / 4200 * 10) / 10, stock: 10, porDefecto: true }],
-    })),
   ];
 }

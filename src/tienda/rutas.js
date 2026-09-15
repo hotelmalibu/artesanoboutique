@@ -37,6 +37,7 @@ tiendaRouter.get('/', (_req, res) => {
   const inicio = ajuste('inicio');
   const destacados = productosPublicados({ destacado: true }).slice(0, 4);
   const nuevos = productosPublicados({ orden: 'nuevos' }).slice(0, 8);
+  const jabones = productosPublicados({}).filter((p) => /^jabón/i.test(p.nombre) && p.imagenPrincipal).slice(0, 7);
   const lineas = listar('categorias').filter((c) => c.activo !== false);
   const ingredientes = listar('ingredientes').filter((i) => i.activo !== false).slice(0, 6);
   const contenido = `
@@ -50,7 +51,7 @@ tiendaRouter.get('/', (_req, res) => {
         <div class="hero-botones"><a class="btn primario grande" href="/tienda">Comprar ahora</a><a class="btn secundario grande" href="${urlWhatsapp('Hola Arte\'Sano, quiero hacer un pedido')}" target="_blank" rel="noopener">Pedir por WhatsApp</a></div>
         <ul class="hero-sellos"><li>Hecho a mano en pequeños lotes</li><li>Envíos a Colombia y al mundo</li><li>Pago seguro · Pedidos programados</li></ul>
       </div>
-      <div class="hero-visual">${destacados[0]?.imagenPrincipal ? imagenProducto(destacados[0], 900) : `<div class="hero-marca">${WORDMARK_SVG}</div>`}</div>
+      <div class="hero-visual">${jabones.length ? `<div class="hero-rotativo" data-rotativo>${jabones.map((p, i) => `<figure class="${i === 0 ? 'activo' : ''}"><img src="${escapar(optimizar(p.imagenPrincipal, 900))}" alt="${escapar(p.nombre)}" loading="${i === 0 ? 'eager' : 'lazy'}" /><figcaption>${escapar(p.nombre)}</figcaption></figure>`).join('')}</div>` : `<div class="hero-marca">${WORDMARK_SVG}</div>`}</div>
     </div>
   </section>
   <section class="contenedor seccion">

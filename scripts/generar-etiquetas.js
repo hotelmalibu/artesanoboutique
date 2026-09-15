@@ -24,14 +24,6 @@ const PRODUCTOS = [
   { slug: 'gel-cannabis-coca-arnica', nombre: 'Cannabis, Coca y Árnica', ingrediente: 'Gel para golpes e inflamación', leyenda: 'Producto artesanal', tipo: 'frasco' },
   { slug: 'proteccion-mineral', nombre: 'Protección Mineral', ingrediente: 'Desodorante natural en spray', leyenda: 'Producto artesanal', tipo: 'frasco' },
   { slug: 'colada-de-chopo', nombre: 'Colada de Chopo', ingrediente: 'Alimento tradicional Zenú', leyenda: 'Suplemento sin gluten', tipo: 'frasco' },
-  { slug: 'aqva-bvlgari', nombre: "AQVA D'Bvlgari", leyenda: 'Fragancia artesanal', tipo: 'perfume' },
-  { slug: 'good-girl', nombre: 'Good Girl', leyenda: 'Fragancia artesanal', tipo: 'perfume' },
-  { slug: 'amber-rouge', nombre: 'Amber Rouge Orientica', leyenda: 'Fragancia artesanal', tipo: 'perfume' },
-  { slug: 'omnia-crystal', nombre: 'Omnia Crystal', leyenda: 'Fragancia artesanal', tipo: 'perfume' },
-  { slug: 'invictus', nombre: 'Invictus', leyenda: 'Fragancia artesanal', tipo: 'perfume' },
-  { slug: 'olympea', nombre: 'Olympea', leyenda: 'Fragancia artesanal', tipo: 'perfume' },
-  { slug: 'la-vie-est-belle', nombre: 'La Vie Est Belle', leyenda: 'Fragancia artesanal', tipo: 'perfume' },
-  { slug: 'bharara-king', nombre: 'Bharara King', leyenda: 'Fragancia artesanal', tipo: 'perfume' },
 ];
 
 for (const p of PRODUCTOS) {

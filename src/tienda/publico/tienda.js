@@ -141,5 +141,19 @@
     });
   }
 
+  // ---------- Hero: carrusel rotativo de jabones ----------
+  const rotativo = $('[data-rotativo]');
+  if (rotativo && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const figuras = $$('figure', rotativo);
+    if (figuras.length > 1) {
+      let i = 0;
+      setInterval(() => {
+        figuras[i].classList.remove('activo');
+        i = (i + 1) % figuras.length;
+        figuras[i].classList.add('activo');
+      }, 4000);
+    }
+  }
+
   pintarContador();
 })();
