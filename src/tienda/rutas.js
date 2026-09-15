@@ -22,7 +22,7 @@ import { precioEn, monedaPorPais, formatear, formatearCOP } from '../util/moneda
 import { crearCheckout, rapydActivo } from '../pagos/rapyd.js';
 import { escapar } from '../util/texto.js';
 import { optimizar } from '../imagenes/cloudinary.js';
-import { layout, tarjetaProducto, imagenProducto, migas, seccionTitulo, urlWhatsapp, LOGO_SVG } from './plantillas.js';
+import { layout, tarjetaProducto, imagenProducto, migas, seccionTitulo, urlWhatsapp, LOGO_SVG, WORDMARK_SVG, decoracionHero } from './plantillas.js';
 
 export const tiendaRouter = Router();
 
@@ -38,6 +38,7 @@ tiendaRouter.get('/', (_req, res) => {
   const ingredientes = listar('ingredientes').filter((i) => i.activo !== false).slice(0, 6);
   const contenido = `
   <section class="hero">
+    ${decoracionHero()}
     <div class="contenedor hero-int">
       <div class="hero-texto">
         <span class="sobre">Cosmética artesanal · Cultura Zenú</span>
@@ -46,7 +47,7 @@ tiendaRouter.get('/', (_req, res) => {
         <div class="hero-botones"><a class="btn primario grande" href="/tienda">Comprar ahora</a><a class="btn secundario grande" href="${urlWhatsapp('Hola Arte\'Sano, quiero hacer un pedido')}" target="_blank" rel="noopener">Pedir por WhatsApp</a></div>
         <ul class="hero-sellos"><li>Hecho a mano en pequeños lotes</li><li>Envíos a Colombia y al mundo</li><li>Pago seguro · Pedidos programados</li></ul>
       </div>
-      <div class="hero-visual">${destacados[0] ? imagenProducto(destacados[0], 900) : LOGO_SVG}</div>
+      <div class="hero-visual">${destacados[0]?.imagenPrincipal ? imagenProducto(destacados[0], 900) : `<div class="hero-marca">${WORDMARK_SVG}</div>`}</div>
     </div>
   </section>
   <section class="contenedor seccion">

@@ -8,7 +8,102 @@ import { escapar } from '../util/texto.js';
 import { formatearCOP } from '../util/moneda.js';
 import { optimizar } from '../imagenes/cloudinary.js';
 
-export const LOGO_SVG = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#F5EDE0"/><path d="M22 62c6-10 14-16 24-18c-4 8-12 14-24 18z" fill="none" stroke="#7C8B5D" stroke-width="2.2" stroke-linecap="round"/><text x="44" y="62" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="42" fill="#7C8B5D">A</text><text x="56" y="72" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="34" fill="#C9A876">S</text></svg>`;
+// Fuente serif italica de marca (mismo look del logo real: "Playfair Display").
+const F_MARCA = `'Playfair Display',Georgia,'Times New Roman',serif`;
+
+// Insignia oficial: ramita de hojas + monograma "A"+"S" en olivo, sobre fondo
+// crema — replica el ícono de marca (ver logo compartido por el negocio).
+export const LOGO_SVG = `<svg viewBox="0 0 100 100" aria-hidden="true">
+  <circle cx="50" cy="50" r="48" fill="#F5EDE0"/>
+  <path d="M22 68c1-11 6-20 17-26" fill="none" stroke="#5F6D45" stroke-width="2" stroke-linecap="round"/>
+  <g fill="#5F6D45">
+    <ellipse cx="25" cy="63" rx="4.6" ry="2.1" transform="rotate(-42 25 63)"/>
+    <ellipse cx="29.5" cy="56.5" rx="5.1" ry="2.3" transform="rotate(-34 29.5 56.5)"/>
+    <ellipse cx="34" cy="50.5" rx="5.6" ry="2.5" transform="rotate(-26 34 50.5)"/>
+    <ellipse cx="38.5" cy="45" rx="6" ry="2.6" transform="rotate(-16 38.5 45)"/>
+  </g>
+  <text x="33" y="67" font-family="${F_MARCA}" font-style="italic" font-weight="600" font-size="44" fill="#5F6D45">A</text>
+  <text x="49" y="73" font-family="${F_MARCA}" font-style="italic" font-weight="600" font-size="33" fill="#5F6D45">S</text>
+</svg>`;
+
+// ---------- Generador de helechos/hojas decorativas (para las esquinas del hero) ----------
+
+function trazoHoja(largo, ancho) {
+  return `M0,0 Q${(largo * 0.28).toFixed(1)},${(-ancho).toFixed(1)} ${largo.toFixed(1)},0 Q${(largo * 0.28).toFixed(1)},${ancho.toFixed(1)} 0,0 Z`;
+}
+
+/** Rama de helecho (espina central curva + folíolos alternos), estilo fishbone. */
+function generarHelecho({ ancho = 240, alto = 280, nHojas = 11, color, curva = 0.45, grosor = 0.32, grosorTallo = 2.4 }) {
+  const x0 = 10, y0 = alto - 10, x1 = ancho - 10, y1 = 10;
+  const cx = x0 + (x1 - x0) * curva, cy = y1 + (y0 - y1) * curva;
+  const N = 60;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const t = i / N, mt = 1 - t;
+    pts.push([mt * mt * x0 + 2 * mt * t * cx + t * t * x1, mt * mt * y0 + 2 * mt * t * cy + t * t * y1]);
+  }
+  let out = `<path d="M${pts.map((p) => p.map((n) => n.toFixed(1)).join(',')).join(' L')}" stroke="${color}" stroke-width="${grosorTallo}" fill="none" stroke-linecap="round"/>`;
+  const paso = Math.max(2, Math.floor(N / nHojas));
+  for (let i = paso; i < N - 2; i += paso) {
+    const [x, y] = pts[i];
+    const [xn, yn] = pts[Math.min(i + 2, N)];
+    const angDeg = (Math.atan2(yn - y, xn - x) * 180) / Math.PI;
+    const escala = 0.42 + 0.6 * (1 - i / N);
+    const largo = 48 * escala, anchoH = largo * grosor;
+    for (const lado of [1, -1]) {
+      const rot = angDeg + lado * 58;
+      out += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${rot.toFixed(1)})"><path d="${trazoHoja(largo, anchoH)}" fill="${color}"/></g>`;
+    }
+  }
+  return `<svg viewBox="0 0 ${ancho} ${alto}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${out}</svg>`;
+}
+
+/** Racimo de hojas anchas (tipo banano) con vena central — esquina inferior izquierda del hero. */
+function generarHojasAnchas(color) {
+  const hojas = [
+    { largo: 210, ancho: 92, x: 6, y: 236, rot: -14 },
+    { largo: 182, ancho: 78, x: 2, y: 176, rot: 10 },
+    { largo: 152, ancho: 64, x: 16, y: 112, rot: 34 },
+  ];
+  const grupos = hojas
+    .map((h) => `<g transform="translate(${h.x},${h.y}) rotate(${h.rot})"><path d="${trazoHoja(h.largo, h.ancho)}" fill="${color}"/><path d="M6,0 L${h.largo - 6},0" stroke="rgba(0,0,0,.16)" stroke-width="1.3"/></g>`)
+    .join('');
+  return `<svg viewBox="0 0 240 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${grupos}</svg>`;
+}
+
+const HELECHO_FANTASMA = generarHelecho({ ancho: 260, alto: 220, nHojas: 9, color: '#E4DCC8', curva: 0.4, grosorTallo: 2 });
+const HELECHO_OLIVA = generarHelecho({ ancho: 230, alto: 280, nHojas: 11, color: '#7C8B5D', curva: 0.42 });
+const HELECHO_TERRACOTA = generarHelecho({ ancho: 210, alto: 250, nHojas: 10, color: '#BE8B66', curva: 0.46 });
+const HOJAS_BANANO = generarHojasAnchas('#41502E');
+
+/** Ilustración de las cuatro esquinas del hero, a juego con el banner de marca. */
+export function decoracionHero() {
+  return `<div class="hero-hojas" aria-hidden="true">
+    <span class="hoja hoja-fantasma">${HELECHO_FANTASMA}</span>
+    <span class="hoja hoja-banano">${HOJAS_BANANO}</span>
+    <span class="hoja hoja-oliva">${HELECHO_OLIVA}</span>
+    <span class="hoja hoja-terracota">${HELECHO_TERRACOTA}</span>
+  </div>`;
+}
+
+/** Ramita pequeña usada como separador entre "Arte" y "Sano" en el logotipo. */
+function miniHoja() {
+  return `<g stroke="#7C8B5D" stroke-width="2.4" stroke-linecap="round" fill="#7C8B5D">
+    <path d="M19 88C19 58 19 28 21 4" fill="none"/>
+    <ellipse cx="17" cy="66" rx="10" ry="4" transform="rotate(-55 17 66)"/>
+    <ellipse cx="23" cy="46" rx="10" ry="4" transform="rotate(55 23 46)"/>
+    <ellipse cx="17" cy="27" rx="9" ry="3.6" transform="rotate(-50 17 27)"/>
+    <ellipse cx="22" cy="11" rx="8" ry="3.2" transform="rotate(48 22 11)"/>
+  </g>`;
+}
+
+/** Logotipo horizontal completo "Arte 🌿 Sano · BOUTIQUE" para el hero y el pie. */
+export const WORDMARK_SVG = `<svg viewBox="0 0 520 175" class="wordmark" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Arte Sano Boutique">
+  <text x="0" y="108" font-family="${F_MARCA}" font-style="italic" font-weight="600" font-size="92" fill="#5F6D45">Arte</text>
+  <g transform="translate(230,18) scale(0.62)">${miniHoja()}</g>
+  <text x="272" y="108" font-family="${F_MARCA}" font-style="italic" font-weight="600" font-size="92" fill="#5F6D45">Sano</text>
+  <text x="260" y="155" font-family="-apple-system,'Segoe UI',Roboto,sans-serif" font-size="18" letter-spacing="9" fill="#7C8B5D" text-anchor="middle">BOUTIQUE</text>
+</svg>`;
 
 export function urlWhatsapp(texto = '') {
   const n = config.tienda.whatsapp;
@@ -44,13 +139,16 @@ export function layout({ titulo, descripcion = '', contenido, ruta = '/', imagen
 <meta property="og:site_name" content="${escapar(config.tienda.nombre)}" />
 ${imagen ? `<meta property="og:image" content="${escapar(imagen)}" />` : ''}
 <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(LOGO_SVG)}" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600;1,700&display=swap" />
 <link rel="stylesheet" href="/publico/estilos.css" />
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
 </head>
 <body class="${cuerpoClase}">
 <header class="cabecera">
   <div class="contenedor cabecera-int">
-    <a class="marca" href="/">${LOGO_SVG}<span>Arte<em>'</em>Sano</span></a>
+    <a class="marca" href="/">${LOGO_SVG}<span class="marca-texto"><span class="marca-nombre">Arte<em>'</em>Sano</span><span class="marca-sub">Boutique</span></span></a>
     <nav class="nav" id="nav">${nav.map(([h, n]) => `<a href="${h}" ${ruta.startsWith(h) ? 'class="activo"' : ''}>${n}</a>`).join('')}</nav>
     <div class="acciones">
       <a class="btn-icono" href="${urlWhatsapp('Hola Arte\'Sano, quiero información sobre sus productos')}" target="_blank" rel="noopener" aria-label="WhatsApp">${ICONO_WA}</a>
@@ -63,7 +161,7 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
 <footer class="pie" id="contacto">
   <div class="contenedor pie-int">
     <div>
-      <div class="marca-pie">${LOGO_SVG}<b>${escapar(config.tienda.nombre)}</b></div>
+      <div class="marca-pie">${LOGO_SVG}<span class="marca-texto"><span class="marca-nombre">${escapar(config.tienda.nombre)}</span><span class="marca-sub">Boutique</span></span></div>
       <p>Cosmética artesanal con plantas medicinales y saberes ancestrales del pueblo Zenú. Hecha a mano en Córdoba y Sucre, Colombia, para el mundo.</p>
       <p><a href="https://www.instagram.com/artesanoboutique_" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.facebook.com/artesanoboutique1" target="_blank" rel="noopener">Facebook</a> · <a href="${urlWhatsapp()}" target="_blank" rel="noopener">WhatsApp</a></p>
     </div>
