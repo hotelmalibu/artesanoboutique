@@ -145,7 +145,9 @@ export function layout({ titulo, descripcion = '', contenido, ruta = '/', imagen
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="${escapar(config.tienda.nombre)}" />
 ${imagen ? `<meta property="og:image" content="${escapar(imagen)}" />` : ''}
-<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(LOGO_SVG)}" />
+<link rel="icon" href="/publico/favicon.svg" type="image/svg+xml" />
+<link rel="alternate icon" href="/publico/favicon.svg" />
+<link rel="apple-touch-icon" href="/publico/favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600;1,700&display=swap" />
