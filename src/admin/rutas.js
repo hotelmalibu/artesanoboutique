@@ -8,6 +8,7 @@
 //   GET  /admin/api/catalogo             -> categorias, ingredientes, artesanos
 //   GET  /admin/api/productos[/:id]      -> productos
 //   POST /admin/api/productos            -> crea/actualiza producto
+//   DELETE /admin/api/productos/:id      -> elimina producto
 //   POST /admin/api/productos/:id/estado -> borrador|publicado|archivado
 //   POST /admin/api/:tabla  DELETE /admin/api/:tabla/:id  (categorias|ingredientes|artesanos)
 //   GET  /admin/api/subidas/firma        -> firma para subir imagen a Cloudinary
@@ -177,6 +178,10 @@ adminRouter.post('/api/productos', (req, res) => {
   } catch (err) {
     res.status(400).json({ ok: false, error: err.message });
   }
+});
+
+adminRouter.delete('/api/productos/:id', (req, res) => {
+  res.json({ ok: eliminar('productos', req.params.id) });
 });
 
 adminRouter.post('/api/productos/:id/estado', (req, res) => {
