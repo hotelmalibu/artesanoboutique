@@ -1,0 +1,27 @@
+<svg viewBox="0 0 480 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coco">
+  <rect width="480" height="600" fill="#F7F1E6"/>
+  <rect x="14" y="14" width="452" height="572" fill="none" stroke="#D8C9A8" stroke-width="2"/>
+  <rect x="20" y="20" width="440" height="560" fill="none" stroke="#D8C9A8" stroke-width="1"/>
+
+  <g transform="translate(240,64)">
+    <path d="M-30,-6 C-16,-20 16,-20 30,-6" fill="none" stroke="#B08552" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="-30" cy="-6" r="4" fill="#B08552"/>
+    <circle cx="30" cy="-6" r="4" fill="#B08552"/>
+  </g>
+
+  <text x="240" y="128" text-anchor="middle" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-style="italic" font-weight="600" font-size="34" fill="#7C8B5D">Arte<tspan fill="#B08552">'</tspan>Sano</text>
+  <text x="240" y="150" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="11" letter-spacing="6" fill="#5F6D45">BOUTIQUE</text>
+
+  <line x1="170" y1="172" x2="310" y2="172" stroke="#D8C9A8" stroke-width="1.5"/>
+
+  <g transform="translate(240,240) rotate(0) scale(1.15)">
+    <path d="M0,68 C-2,30 2,-10 0,-48" fill="none" stroke="#5F6D45" stroke-width="2.4" stroke-linecap="round"/>
+    <g transform="translate(0,70) rotate(-36)"><path d="M0,0 Q3.9,-4.16 13,0 Q3.9,4.16 0,0 Z" fill="#5F6D45"/></g><g transform="translate(5,48) rotate(36)"><path d="M0,0 Q3.9,-4.16 13,0 Q3.9,4.16 0,0 Z" fill="#5F6D45"/></g><g transform="translate(-4,26) rotate(-32)"><path d="M0,0 Q3.5999999999999996,-3.84 12,0 Q3.5999999999999996,3.84 0,0 Z" fill="#5F6D45"/></g><g transform="translate(6,4) rotate(33)"><path d="M0,0 Q3.5999999999999996,-3.84 12,0 Q3.5999999999999996,3.84 0,0 Z" fill="#5F6D45"/></g><g transform="translate(-5,-18) rotate(-30)"><path d="M0,0 Q3,-3.2 10,0 Q3,3.2 0,0 Z" fill="#5F6D45"/></g><g transform="translate(5,-40) rotate(31)"><path d="M0,0 Q3,-3.2 10,0 Q3,3.2 0,0 Z" fill="#5F6D45"/></g><g transform="translate(-4,-60) rotate(-26)"><path d="M0,0 Q2.4,-2.56 8,0 Q2.4,2.56 0,0 Z" fill="#5F6D45"/></g><g transform="translate(3,-78) rotate(25)"><path d="M0,0 Q2.1,-2.24 7,0 Q2.1,2.24 0,0 Z" fill="#5F6D45"/></g>
+  </g>
+
+  <text x="240" y="372" text-anchor="middle" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-weight="700" font-size="42" letter-spacing="2" fill="#5F6D45">COCO</text>
+  <text x="240" y="426" text-anchor="middle" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-style="italic" font-size="17" fill="#B08552">Cocos nucifera</text>
+
+  <line x1="150" y1="534" x2="330" y2="534" stroke="#D8C9A8" stroke-width="1"/>
+  <text x="240" y="560" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="12" letter-spacing="2" fill="#5F6D45">JABÓN 100% NATURAL</text>
+</svg>

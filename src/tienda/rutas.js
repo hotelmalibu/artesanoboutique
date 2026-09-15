@@ -199,7 +199,7 @@ tiendaRouter.get('/nosotros', (_req, res) => {
     <p><b>${escapar(config.tienda.nombre)}</b> es una startup de cuidado de la belleza con productos de origen ancestral. Nacimos en la sabana de Córdoba y Sucre, territorio del pueblo Zenú, donde las plantas medicinales y los saberes heredados siguen vivos en cada patio y cada cocina.</p>
     <p>Elaboramos jabones de tocador, cremas, shampoo y lociones a mano, en pequeños lotes, con ingredientes como el <a href="/ingredientes/guasimo">guásimo</a>, el <a href="/ingredientes/arroz">arroz</a>, el <a href="/ingredientes/mataraton">mataratón</a>, el <a href="/ingredientes/coco">coco</a> y el <a href="/ingredientes/chopo">chopo</a>. Cada producto cuenta la historia de las familias artesanas que lo hacen posible.</p>
     <h2>Aliados</h2>
-    <p>Crecemos de la mano de programas de fortalecimiento empresarial como <b>Zaca</b> y del <b>Ministerio de Industria, Comercio y Turismo</b>, entre otros aliados que creen en el talento artesanal colombiano.</p>
+    <p>Crecemos de la mano de programas de fortalecimiento empresarial como <b>ZASCA</b> y del <b>Ministerio de Industria, Comercio y Turismo</b>, entre otros aliados que creen en el talento artesanal colombiano.</p>
     <h2>Nuestro compromiso</h2>
     <ul><li>Fórmulas naturales, sin parabenos ni sulfatos.</li><li>Comercio justo con las comunidades artesanas.</li><li>Empaques de cartón y fibras naturales.</li><li>Envíos a Colombia y a cualquier lugar del mundo.</li></ul>
     <p><a class="btn primario grande" href="/tienda">Conoce la tienda</a></p></section>`;

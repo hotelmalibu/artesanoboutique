@@ -187,7 +187,7 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
     </div>
     <div>
       <h4>Aliados</h4>
-      <p class="aliados">Programa Zaca · Ministerio de Industria, Comercio y Turismo · Artesanías de Colombia</p>
+      <p class="aliados">Programa ZASCA · Ministerio de Industria, Comercio y Turismo · Artesanías de Colombia</p>
       <p class="mini">${escapar(config.tienda.nombre)}${config.tienda.nit ? ' · NIT ' + escapar(config.tienda.nit) : ''} · ${escapar(config.tienda.direccion)}<br/>Pagos seguros con RAPYD · Precios en Colombia incluyen IVA.</p>
     </div>
   </div>

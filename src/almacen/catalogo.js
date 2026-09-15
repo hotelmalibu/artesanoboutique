@@ -148,7 +148,7 @@ export function normalizarProducto(p, previo) {
   const imagenes = (Array.isArray(p.imagenes) ? p.imagenes : [])
     .map((im) => (typeof im === 'string' ? { url: im, alt: '' } : im))
     .map((im) => ({ url: limpiar(im.url, 500), alt: limpiar(im.alt, 160) }))
-    .filter((im) => /^https?:\/\//i.test(im.url));
+    .filter((im) => /^https?:\/\//i.test(im.url) || im.url.startsWith('/publico/'));
 
   return {
     ...p,
