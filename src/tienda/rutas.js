@@ -221,7 +221,7 @@ tiendaRouter.get('/politicas', (_req, res) => {
     <h2 id="pagos">Pagos e impuestos</h2>
     <p>Los pagos se procesan de forma segura a través de RAPYD (tarjetas, PSE, Nequi y otros medios según el país). Los precios en Colombia incluyen IVA; las ventas internacionales se facturan como exportación (IVA 0 %) en dólares.</p>
     <h2 id="terminos">Términos y condiciones</h2>
-    <p>Al comprar en ${escapar(config.tienda.nombre)} aceptas estas políticas y nuestra <a href="/privacidad">política de tratamiento de datos personales</a> (Ley 1581 de 2012). Para cualquier consulta escríbenos a ${escapar(config.correo.tienda)} o por WhatsApp.</p></section>`;
+    <p>Al comprar en ${escapar(config.tienda.nombre)} aceptas estas políticas y nuestra <a href="/privacidad">política de tratamiento de datos personales</a> (Ley 1581 de 2012). Para cualquier consulta escríbenos a ${escapar(config.correo.contacto)} o por WhatsApp.</p></section>`;
   res.type('html').send(layout({ titulo: 'Políticas', descripcion: 'Envíos, devoluciones, pedidos programados, pagos y términos de Arte\'Sano.', contenido, ruta: '/politicas' }));
 });
 

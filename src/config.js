@@ -51,6 +51,8 @@ export const config = {
     remitente: process.env.CORREO_REMITENTE || "Arte'Sano <pedidos@artesanoboutique.com>",
     tienda: process.env.CORREO_TIENDA || 'pedidos@artesanoboutique.com',
     responder: process.env.CORREO_RESPONDER || 'pedidos@artesanoboutique.com',
+    // Correo de contacto general (mostrado al público: pie de página, políticas, privacidad).
+    contacto: process.env.CORREO_CONTACTO || 'contacto@artesanoboutique.com',
   },
 
   whatsapp: {

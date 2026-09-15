@@ -63,6 +63,8 @@ services:
         value: Arte'Sano <pedidos@artesanoboutique.com>
       - key: CORREO_TIENDA
         value: pedidos@artesanoboutique.com
+      - key: CORREO_CONTACTO
+        value: contacto@artesanoboutique.com
       - key: WHATSAPP_TOKEN
         sync: false
       - key: WHATSAPP_PHONE_NUMBER_ID

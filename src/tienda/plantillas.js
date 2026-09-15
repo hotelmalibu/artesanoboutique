@@ -111,6 +111,13 @@ export function urlWhatsapp(texto = '') {
   return texto && n ? `${base}?text=${encodeURIComponent(texto)}` : base;
 }
 
+/** Formatea un número de WhatsApp colombiano (573001234567) como "+57 300 123 4567". */
+function formatearTelefono(numero) {
+  const d = String(numero || '').replace(/\D/g, '');
+  if (d.startsWith('57') && d.length === 12) return `+57 ${d.slice(2, 5)} ${d.slice(5, 8)} ${d.slice(8)}`;
+  return d ? '+' + d : '';
+}
+
 /**
  * Layout general.
  * @param {object} p { titulo, descripcion, contenido, ruta, imagen, jsonLd, canonical }
@@ -165,6 +172,10 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
       <div class="marca-pie">${LOGO_SVG}<span class="marca-texto"><span class="marca-nombre">${escapar(config.tienda.nombre)}</span><span class="marca-sub">Boutique</span></span></div>
       <p>Cosmética artesanal con plantas medicinales y saberes ancestrales del pueblo Zenú. Hecha a mano en Córdoba y Sucre, Colombia, para el mundo.</p>
       <p><a href="https://www.instagram.com/artesanoboutique_" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.facebook.com/artesanoboutique1" target="_blank" rel="noopener">Facebook</a> · <a href="${urlWhatsapp()}" target="_blank" rel="noopener">WhatsApp</a></p>
+      <p class="contacto-info">
+        ${config.tienda.whatsapp ? `WhatsApp: <a href="${urlWhatsapp()}" target="_blank" rel="noopener">${formatearTelefono(config.tienda.whatsapp)}</a><br/>` : ''}
+        Correo: <a href="mailto:${escapar(config.correo.contacto)}">${escapar(config.correo.contacto)}</a>
+      </p>
     </div>
     <div>
       <h4>Tienda</h4>

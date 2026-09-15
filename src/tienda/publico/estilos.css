@@ -218,6 +218,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--verde); bor
 .pie a { color: #E9E1D3; display: block; margin-bottom: 8px; font-size: 14px; }
 .pie a:hover { color: var(--beige); }
 .pie p { font-size: 14px; color: #C9BFAF; }
+.contacto-info { margin-top: 6px; }
+.contacto-info a { display: inline; color: #E9E1D3; }
 .pie h4 { margin: 0 0 12px; font-family: var(--serif); font-weight: 500; color: var(--beige); font-size: 17px; }
 .pie-int { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 30px; }
 .marca-pie { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
