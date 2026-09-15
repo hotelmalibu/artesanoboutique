@@ -111,7 +111,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Nutre, aclara y humecta</li><li>Disminuye manchas</li><li>Técnica oriental</li><li>100% natural</li></ul>',
       modoUso: '<p>Humedece la piel, frota el jabón hasta formar espuma, masajea suavemente y enjuaga.</p>',
       tipoPiel: ['todo tipo'], pesoGramos: 100, precioCop: 18000, precioUsd: 6.5,
-      imagenes: foto('arroz.jpg'),
+      imagenes: [...foto('arroz.jpg'), ...foto('arroz-2.jpg')],
       variantes: [{ sku: 'AS-ARROZ-100', nombre: '100 g', precioCop: 18000, precioUsd: 6.5, stock: 30, porDefecto: true }],
     },
     {
@@ -181,7 +181,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Aclara la piel y conserva su tono natural</li><li>Nutre y humecta</li><li>Limpia y purifica</li></ul>',
       modoUso: '<p>Aplicar sobre la piel limpia con masajes circulares.</p>',
       tipoPiel: ['todo tipo'], pesoGramos: 120, precioCop: 28000, precioUsd: 10,
-      imagenes: etiqueta('piel-de-porcelana'),
+      imagenes: foto('piel-de-porcelana.jpg'),
       variantes: [{ sku: 'AS-PORCELANA-120', nombre: '120 ml', precioCop: 28000, precioUsd: 10, stock: 15, porDefecto: true }],
     },
 
@@ -291,7 +291,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Sin gluten</li><li>Alimento tradicional Zenú</li></ul>',
       modoUso: '<p>Preparar como colada siguiendo las instrucciones del empaque.</p>',
       tipoPiel: [], pesoGramos: 250, precioCop: 17000, precioUsd: 6,
-      imagenes: etiqueta('colada-de-chopo'),
+      imagenes: foto('colada-de-chopo.jpg'),
       variantes: [{ sku: 'AS-CHOPO-250', nombre: '250 g', precioCop: 17000, precioUsd: 6, stock: 15, porDefecto: true }],
     },
 
