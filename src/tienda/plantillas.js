@@ -151,6 +151,7 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
     <a class="marca" href="/">${LOGO_SVG}<span class="marca-texto"><span class="marca-nombre">Arte<em>'</em>Sano</span><span class="marca-sub">Boutique</span></span></a>
     <nav class="nav" id="nav">${nav.map(([h, n]) => `<a href="${h}" ${ruta.startsWith(h) ? 'class="activo"' : ''}>${n}</a>`).join('')}</nav>
     <div class="acciones">
+      <a class="btn-admin" href="/admin" aria-label="Acceder al panel administrativo" title="Acceso administrador">${ICONO_CANDADO}<span>Admin</span></a>
       <a class="btn-icono" href="${urlWhatsapp('Hola Arte\'Sano, quiero información sobre sus productos')}" target="_blank" rel="noopener" aria-label="WhatsApp">${ICONO_WA}</a>
       <a class="btn-icono carrito-btn" href="/carrito" aria-label="Carrito">${ICONO_CARRITO}<span class="contador" id="carrito-contador">0</span></a>
       <button class="hamburguesa" id="hamburguesa" aria-label="Menú">☰</button>
@@ -189,6 +190,7 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
 
 const ICONO_WA = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.9 11.9 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.5 4.1 1.6 5.9L0 24l6.3-1.7a11.9 11.9 0 0 0 5.7 1.5c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.2-3.4-8.4zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4A9.8 9.8 0 0 1 2.1 12C2.1 6.5 6.5 2 12 2c2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.5-4.5 9.9-9.9 9.9zm5.4-7.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1l-.9 1.2c-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5.3-.5c.1-.2 0-.4 0-.5L9 6.9c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4z"/></svg>`;
 const ICONO_CARRITO = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h15l-1.5 8h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>`;
+const ICONO_CANDADO = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
 
 // ---------- Componentes ----------
 

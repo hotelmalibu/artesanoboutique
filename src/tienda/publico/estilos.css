@@ -50,6 +50,9 @@ p { margin: 0 0 1em; }
 .nav a { color: var(--tinta); font-weight: 600; font-size: 14px; padding: 6px 0; border-bottom: 2px solid transparent; }
 .nav a.activo, .nav a:hover { border-color: var(--verde); color: var(--verde-osc); }
 .acciones { display: flex; align-items: center; gap: 6px; }
+.btn-admin { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1px solid var(--linea); border-radius: 999px; color: var(--verde-osc); font-size: 12.5px; font-weight: 700; letter-spacing: .02em; margin-right: 4px; }
+.btn-admin:hover { background: var(--verde-suave); border-color: var(--verde); color: var(--verde-osc); }
+@media (max-width: 560px) { .btn-admin span { display: none; } .btn-admin { padding: 9px; } }
 .btn-icono { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--tinta); }
 .btn-icono:hover { background: var(--crema-osc); }
 .contador { position: absolute; top: 4px; right: 2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--verde); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }

@@ -27,7 +27,7 @@ const POR_DEFECTO = {
     ivaEnvio: 'iva_19',
   },
   inicio: {
-    titulo: 'Belleza ancestral, hecha a mano',
+    titulo: 'El cuidado de la belleza, con productos de origen artesanal',
     subtitulo: 'Jabones, cremas y lociones artesanales con plantas medicinales de la cultura Zenú. Del corazón de Córdoba y Sucre para el mundo.',
   },
   pedidosProgramados: { minDias: 2, maxDias: 90 },
