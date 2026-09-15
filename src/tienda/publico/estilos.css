@@ -93,15 +93,22 @@ p { margin: 0 0 1em; }
 .seccion-titulo p { color: var(--gris); max-width: 620px; margin: 0; }
 .seccion-titulo .enlace { white-space: nowrap; font-weight: 700; }
 .lineas { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
-.linea { background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--radio); padding: 18px; display: flex; flex-direction: column; gap: 4px; color: var(--tinta); transition: .15s; }
+.linea { background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--radio); padding: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--tinta); transition: .15s; }
 .linea:hover { border-color: var(--verde); transform: translateY(-2px); }
+.linea:hover .linea-icono { color: var(--verde); }
 .linea b { font-family: var(--serif); font-size: 18px; }
-.linea span { font-size: 12px; color: var(--gris); }
+.linea-desc { font-size: 12px; color: var(--gris); }
+.linea-icono { color: var(--verde-osc); display: inline-flex; width: 30px; height: 30px; margin-bottom: 2px; transition: color .15s; }
+.linea-icono svg { width: 100%; height: 100%; }
+.linea-icono.mini { width: 15px; height: 15px; vertical-align: -3px; margin-right: 5px; margin-bottom: 0; color: currentColor; }
+.linea-icono.grande { width: 40px; height: 40px; vertical-align: -9px; margin-right: 10px; color: var(--verde-osc); }
+.chips a { display: inline-flex; align-items: center; }
 .franja { background: var(--verde-suave); border-block: 1px solid var(--linea); padding-block: 48px; }
 .franja-int { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
 .ingredientes-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.ingredientes-mini a { background: var(--blanco); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; color: var(--tinta); border: 1px solid var(--linea); }
-.ingredientes-mini b { font-family: var(--serif); }
+.ingredientes-mini a { background: var(--blanco); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; color: var(--tinta); border: 1px solid var(--linea); }
+.ingredientes-mini img { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; background: var(--crema); }
+.ingredientes-mini b { font-family: var(--serif); display: block; }
 .ingredientes-mini span { font-size: 12px; color: var(--gris); }
 @media (max-width: 860px) { .franja-int { grid-template-columns: 1fr; } }
 .confianza { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }

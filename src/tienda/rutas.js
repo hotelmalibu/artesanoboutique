@@ -23,6 +23,9 @@ import { crearCheckout, rapydActivo } from '../pagos/rapyd.js';
 import { escapar } from '../util/texto.js';
 import { optimizar } from '../imagenes/cloudinary.js';
 import { layout, tarjetaProducto, imagenProducto, migas, seccionTitulo, urlWhatsapp, LOGO_SVG, WORDMARK_SVG, decoracionHero } from './plantillas.js';
+import { ICONOS_LINEA } from './ilustraciones.js';
+
+const iconoLinea = (slug) => ICONOS_LINEA[slug] || '';
 
 export const tiendaRouter = Router();
 
@@ -52,13 +55,13 @@ tiendaRouter.get('/', (_req, res) => {
   </section>
   <section class="contenedor seccion">
     ${seccionTitulo('Líneas', 'Encuentra lo que tu piel necesita')}
-    <div class="lineas">${lineas.map((c) => `<a class="linea" href="/tienda/${escapar(c.slug)}"><b>${escapar(c.nombre)}</b><span>${escapar(c.descripcion || '')}</span></a>`).join('')}</div>
+    <div class="lineas">${lineas.map((c) => `<a class="linea" href="/tienda/${escapar(c.slug)}"><span class="linea-icono">${iconoLinea(c.slug)}</span><b>${escapar(c.nombre)}</b><span class="linea-desc">${escapar(c.descripcion || '')}</span></a>`).join('')}</div>
   </section>
   ${destacados.length ? `<section class="contenedor seccion">${seccionTitulo('Favoritos', 'Los más queridos', '', ['/tienda', 'Ver toda la tienda'])}<div class="rejilla">${destacados.map(tarjetaProducto).join('')}</div></section>` : ''}
   <section class="franja">
     <div class="contenedor franja-int">
       <div>${seccionTitulo('Origen', 'De la tierra Zenú a tu piel', 'Cada producto nace de plantas medicinales de Córdoba y Sucre y del saber de familias artesanas que lo elaboran a mano.', ['/ingredientes', 'Conoce los ingredientes'])}</div>
-      <div class="ingredientes-mini">${ingredientes.map((i) => `<a href="/ingredientes/${escapar(i.slug)}"><b>${escapar(i.nombre)}</b><span>${escapar((i.beneficios || '').slice(0, 70))}</span></a>`).join('')}</div>
+      <div class="ingredientes-mini">${ingredientes.map((i) => `<a href="/ingredientes/${escapar(i.slug)}">${i.imagenUrl ? `<img src="${escapar(optimizar(i.imagenUrl, 160))}" alt="" loading="lazy" />` : ''}<div><b>${escapar(i.nombre)}</b><span>${escapar((i.beneficios || '').slice(0, 70))}</span></div></a>`).join('')}</div>
     </div>
   </section>
   ${nuevos.length ? `<section class="contenedor seccion">${seccionTitulo('Catálogo', 'Recién hechos', '', ['/tienda', 'Ver todo'])}<div class="rejilla">${nuevos.map(tarjetaProducto).join('')}</div></section>` : ''}
@@ -82,9 +85,9 @@ function paginaTienda(req, res, categoria) {
   const contenido = `
   <section class="contenedor seccion">
     ${migas(categoria ? [['/tienda', 'Tienda'], [null, categoria.nombre]] : [[null, 'Tienda']])}
-    <div class="seccion-titulo"><div><span class="sobre">Catálogo</span><h1>${escapar(titulo)}</h1>${categoria?.descripcion ? `<p>${escapar(categoria.descripcion)}</p>` : ''}</div></div>
+    <div class="seccion-titulo"><div><span class="sobre">Catálogo</span><h1>${categoria ? `<span class="linea-icono grande">${iconoLinea(categoria.slug)}</span>` : ''}${escapar(titulo)}</h1>${categoria?.descripcion ? `<p>${escapar(categoria.descripcion)}</p>` : ''}</div></div>
     <div class="filtros">
-      <div class="chips"><a href="/tienda" class="${!categoria ? 'activo' : ''}">Todo</a>${lineas.map((c) => `<a href="/tienda/${escapar(c.slug)}" class="${categoria?.id === c.id ? 'activo' : ''}">${escapar(c.nombre)}</a>`).join('')}</div>
+      <div class="chips"><a href="/tienda" class="${!categoria ? 'activo' : ''}">Todo</a>${lineas.map((c) => `<a href="/tienda/${escapar(c.slug)}" class="${categoria?.id === c.id ? 'activo' : ''}"><span class="linea-icono mini">${iconoLinea(c.slug)}</span>${escapar(c.nombre)}</a>`).join('')}</div>
       <form class="filtros-form" method="get">
         <input type="search" name="q" value="${escapar(q)}" placeholder="Buscar…" />
         <select name="ingrediente"><option value="">Ingrediente</option>${ings.map((i) => `<option value="${escapar(i.slug)}" ${ingrediente === i.slug ? 'selected' : ''}>${escapar(i.nombre)}</option>`).join('')}</select>

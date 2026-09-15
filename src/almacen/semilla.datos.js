@@ -28,7 +28,7 @@ export const CATEGORIAS = [
   { slug: 'otros', nombre: 'Otros', descripcion: 'Kits, alimentos tradicionales y ediciones especiales.', orden: 8 },
 ];
 
-export const INGREDIENTES = [
+const INGREDIENTES_BASE = [
   {
     slug: 'arroz', nombre: 'Arroz', nombreCientifico: 'Oryza sativa', region: 'Sabanas de Córdoba y Sucre',
     usoAncestral: 'El agua y el almidón de arroz se usan tradicionalmente en la región Caribe para aclarar y suavizar la piel. Arte\'Sano lo trabaja con técnica oriental.',
@@ -85,6 +85,14 @@ export const INGREDIENTES = [
     beneficios: 'Belleza natural para un cabello fuerte, brillante y lleno de vida.',
   },
 ];
+
+// Insignia botánica ilustrada por Arte'Sano (ver src/tienda/ilustraciones.js)
+// para cada ingrediente ancestral — reemplaza el placeholder genérico en
+// /ingredientes y en la ficha de cada planta.
+export const INGREDIENTES = INGREDIENTES_BASE.map((i) => ({
+  ...i,
+  imagenUrl: `/publico/imagenes/ingredientes/${i.slug}.svg`,
+}));
 
 export const ARTESANOS = [
   {
