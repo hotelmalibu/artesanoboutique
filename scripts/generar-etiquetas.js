@@ -26,7 +26,7 @@ const PRODUCTOS = [
   { slug: 'colada-de-chopo', nombre: 'Colada de Chopo', ingrediente: 'Alimento tradicional Zenú', leyenda: 'Suplemento sin gluten', tipo: 'frasco' },
   { slug: 'jabon-liquido', nombre: 'Jabón Líquido', ingrediente: 'Manos y cuerpo', leyenda: 'Presentación 300 ml', tipo: 'frasco' },
   { slug: 'limpiador-multiusos', nombre: 'Limpiador Multiusos', ingrediente: 'Línea Hogar', leyenda: 'Producto artesanal', tipo: 'frasco' },
-  { slug: 'detergente-polvo', nombre: 'Detergente en Polvo', ingrediente: 'Línea Hogar', leyenda: 'Producto artesanal', tipo: 'frasco' },
+  { slug: 'detergente-liquido-pisos', nombre: 'Detergente Líquido', ingrediente: 'Para limpieza de pisos', leyenda: 'Producto artesanal', tipo: 'frasco' },
 ];
 
 for (const p of PRODUCTOS) {

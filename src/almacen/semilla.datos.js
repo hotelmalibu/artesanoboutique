@@ -306,15 +306,15 @@ export function productos(ids) {
       variantes: [{ sku: 'AS-LIMP-MULTI-500', nombre: '500 ml', precioCop: 24000, precioUsd: 8.7, stock: 15, porDefecto: true }],
     },
     {
-      ...comunes, nombre: 'Detergente en Polvo Artesanal', slug: 'detergente-en-polvo-artesanal',
+      ...comunes, nombre: 'Detergente Líquido para Pisos', slug: 'detergente-liquido-para-pisos',
       categoriaId: cat('hogar'), ingredienteIds: [], ingredienteProtagonistaId: null,
-      descripcionCorta: 'Detergente en polvo para ropa, elaborado en pequeños lotes.',
-      descripcion: '<p>Detergente en polvo artesanal para el lavado de ropa, elaborado en pequeños lotes.</p>',
-      beneficios: '<ul><li>Para el lavado diario de ropa</li><li>Elaborado en pequeños lotes</li></ul>',
-      modoUso: '<p>Usar una medida por carga de lavado, según la cantidad de ropa.</p>',
+      descripcionCorta: 'Detergente líquido artesanal para la limpieza de pisos.',
+      descripcion: '<p>Detergente líquido artesanal para la limpieza de pisos, elaborado en pequeños lotes.</p>',
+      beneficios: '<ul><li>Para la limpieza diaria de pisos</li><li>Elaborado en pequeños lotes</li></ul>',
+      modoUso: '<p>Diluir en agua según la superficie a limpiar y trapear normalmente.</p>',
       tipoPiel: [], pesoGramos: 1000, precioCop: 32000, precioUsd: 11.5,
-      imagenes: etiqueta('detergente-polvo'),
-      variantes: [{ sku: 'AS-DETER-POLVO-1K', nombre: '1 kg', precioCop: 32000, precioUsd: 11.5, stock: 15, porDefecto: true }],
+      imagenes: etiqueta('detergente-liquido-pisos'),
+      variantes: [{ sku: 'AS-DETER-LIQ-1L', nombre: '1 L', precioCop: 32000, precioUsd: 11.5, stock: 15, porDefecto: true }],
     },
 
     // ---------- Otros ----------
