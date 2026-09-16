@@ -221,10 +221,10 @@ async function financiero() {
   main.innerHTML = `
     <h1>Modelo financiero</h1><div class="sub">Meta de ventas, costo estimado y margen por producto. Solo lo ves tú: no aparece en la tienda pública.</div>
     <div class="tarjetas">
-      <div class="tarjeta"><div class="k">Meta mensual</div><div class="v">${cop(m.metaMensualCop)}</div><div class="d">Costo ${100 - m.margenObjetivoPct}% del precio · margen objetivo ${m.margenObjetivoPct}%</div></div>
+      <div class="tarjeta"><div class="k">Meta de ventas mensual</div><div class="v">${cop(m.metaMensualCop)}</div><div class="d">Se mide contra ingresos, no contra utilidad · costo ${100 - m.margenObjetivoPct}% del precio</div></div>
       <div class="tarjeta"><div class="k">Ventas este mes</div><div class="v">${cop(d.ventasMesCop)}</div><div class="d">${d.pedidosMes} pedidos</div></div>
-      <div class="tarjeta"><div class="k">Progreso hacia la meta</div><div class="v">${d.progresoPct}%</div><div class="d">${d.faltanteCop > 0 ? 'Faltan ' + cop(d.faltanteCop) : '¡Meta alcanzada!'}</div></div>
-      <div class="tarjeta"><div class="k">Margen bruto del mes</div><div class="v">${cop(d.margenMesCop)}</div><div class="d">Estimado sobre pedidos facturados en COP</div></div>
+      <div class="tarjeta"><div class="k">Progreso hacia la meta de ventas</div><div class="v">${d.progresoPct}%</div><div class="d">${d.faltanteCop > 0 ? 'Faltan ' + cop(d.faltanteCop) + ' en ventas' : '¡Meta de ventas alcanzada!'}</div></div>
+      <div class="tarjeta"><div class="k">Utilidad (margen bruto) del mes</div><div class="v">${cop(d.margenMesCop)}</div><div class="d">Al ${m.margenObjetivoPct}% de margen, la meta de ventas equivale a ${cop(Math.round(m.metaMensualCop * m.margenObjetivoPct / 100))} de utilidad</div></div>
     </div>
     <div class="panel"><div class="barra-progreso"><div class="barra-progreso-r" style="width:${barraPct}%"></div></div></div>
     <div class="panel"><h2>Meta y costo por defecto</h2><div class="grid2">
