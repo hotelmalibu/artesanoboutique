@@ -42,7 +42,7 @@ app.use(express.json({ limit: '2mb', verify: (req, _res, buf) => { req.rawBody =
 
 // ---------- Salud ----------
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, servicio: 'artesanoboutique', persistencia: dbActivo() ? 'postgresql' : 'memoria', rapyd: rapydActivo(), whatsapp: whatsappActivo() });
+  res.json({ ok: true, servicio: 'artesanoboutique', persistencia: dbActivo() ? 'postgresql' : 'memoria', rapyd: rapydActivo(), whatsapp: whatsappActivo(), ia: !!config.ia.apiKey });
 });
 
 // ---------- Estaticos y legal ----------
