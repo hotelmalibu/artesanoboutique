@@ -34,6 +34,8 @@ const POR_DEFECTO = {
   // Modelo financiero interno (no visible al cliente): meta de ventas del
   // mes y % de costo por defecto sobre el precio (70% costo = 30% margen).
   financiero: { metaMensualCop: 50000000, margenObjetivoPct: 30 },
+  // Contadores de uso de Arte-SanoBot (tokens de Claude), ver almacen/ia/metricas.js.
+  metricasIa: { totales: { llamadas: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, porDia: {} },
 };
 
 export function hidratarAjustes(filas) {

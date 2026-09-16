@@ -124,7 +124,7 @@
       <button data-v="pedidos">Pedidos</button>
       <button data-v="programados">Pedidos programados</button>
       <button data-v="catalogo">Líneas · Ingredientes · Artesanos</button>
-      <button data-v="whatsapp">WhatsApp</button>
+      <button data-v="whatsapp">WhatsApp · Arte-SanoBot</button>
       <button data-v="ajustes">Ajustes</button>
       <button data-v="diagnostico">Diagnóstico</button>
     </nav>
@@ -523,8 +523,14 @@ async function borrarAux(tabla, id) {
 // ============================================================
 let WA = null;
 async function whatsapp() {
-  const d = await api('/conversaciones');
-  main.innerHTML = `<h1>WhatsApp</h1><div class="sub">Conversaciones del chatbot. Toma el control para responder tú.</div>
+  const [d, m] = await Promise.all([api('/conversaciones'), api('/ia/metricas')]);
+  main.innerHTML = `<h1>WhatsApp</h1><div class="sub">Conversaciones de Arte-SanoBot. Toma el control para responder tú.</div>
+    <div class="tarjetas">
+      <div class="tarjeta"><div class="k">Arte-SanoBot · llamadas a Claude</div><div class="v">${m.llamadas || 0}</div><div class="d">Modelo: ${esc(m.modelo || '—')}</div></div>
+      <div class="tarjeta"><div class="k">Costo estimado (total)</div><div class="v">${cop(m.costoCOP || 0)}</div><div class="d">US$ ${(m.costoUSD || 0).toFixed(2)}</div></div>
+      <div class="tarjeta"><div class="k">Pedidos cerrados por el bot</div><div class="v">${m.pedidosBot || 0}</div><div class="d">${m.costoPorPedidoCOP ? 'Costo IA por pedido: ' + cop(m.costoPorPedidoCOP) : 'Sin pedidos del bot todavía'}</div></div>
+    </div>
+    ${!m.activa ? '<div class="panel"><b>Arte-SanoBot no está activo todavía.</b><div class="sub" style="margin:4px 0 0">Falta configurar ANTHROPIC_API_KEY en Render. Mientras tanto, las conversaciones las atiende el bot de menú.</div></div>' : ''}
     <div class="panel chat"><div class="chat-lista" id="wa-lista">${d.conversaciones.map((c) => `<div class="chat-item" onclick="abrirChat('${c.waId}')"><b>${esc(c.nombre || c.waId)}</b> ${c.modo === 'humano' ? '<span class="chip pendiente_pago">humano</span>' : ''} ${c.sinLeer ? `<span class="chip">${c.sinLeer}</span>` : ''}<br><small>${esc(c.ultimo).slice(0, 60)}</small></div>`).join('') || '<div class="sub" style="padding:10px">Aún no hay conversaciones.</div>'}</div>
     <div id="wa-chat"><div class="sub">Selecciona una conversación.</div></div></div>`;
 }

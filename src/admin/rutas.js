@@ -19,6 +19,7 @@
 //   GET/POST /admin/api/ajustes
 //   GET  /admin/api/financiero · POST /admin/api/financiero/meta
 //   GET  /admin/api/conversaciones[/:waId] · POST .../responder · POST .../modo
+//   GET  /admin/api/ia/metricas          -> costo y uso de Arte-SanoBot
 //   GET  /admin/api/diagnostico · POST /admin/api/diagnostico/correo
 //   GET  /admin/api/seguridad · GET /admin/api/seguridad/totp/nuevo
 // ============================================================
@@ -31,6 +32,7 @@ import { listar, obtener, guardar, eliminar, enriquecer, bajoStock, resumenCatal
 import { listarPedidos, obtenerPedido, actualizarEstado, reprogramar, resumenVentas, programadosProximos, ESTADOS, NOMBRES_ESTADO } from '../almacen/pedidos.js';
 import { todosLosAjustes, fijarAjuste } from '../almacen/ajustes.js';
 import { resumenFinanciero, fijarMetaFinanciera } from '../almacen/financiero.js';
+import { resumenMetricas } from '../ia/metricas.js';
 import { store } from '../almacen/conversaciones.js';
 import { dbActivo, dbDiagnostico } from '../almacen/db.js';
 import { confirmarPago } from '../pagos/confirmar.js';
@@ -293,6 +295,11 @@ adminRouter.post('/api/financiero/meta', (req, res) => {
 // ---------- WhatsApp ----------
 
 adminRouter.get('/api/conversaciones', (_req, res) => res.json({ ok: true, conversaciones: store.listar() }));
+
+adminRouter.get('/api/ia/metricas', (_req, res) => {
+  const pedidosBot = listarPedidos().filter((p) => p.canal === 'whatsapp').length;
+  res.json({ ok: true, activa: !!config.ia.apiKey, ...resumenMetricas(pedidosBot) });
+});
 
 adminRouter.get('/api/conversaciones/:waId', (req, res) => {
   const c = store.obtener(req.params.waId);

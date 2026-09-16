@@ -24,6 +24,7 @@ import { verificarFirma } from './whatsapp/firma.js';
 import { parsearMensajes } from './whatsapp/recibir.js';
 import { enviarTexto, marcarLeido, whatsappActivo } from './whatsapp/enviar.js';
 import { responderBot } from './whatsapp/bot.js';
+import { responderIA } from './ia/agente.js';
 import { verificarWebhook as verificarWebhookRapyd, consultarCheckout, rapydActivo } from './pagos/rapyd.js';
 import { confirmarPago, rechazarPago } from './pagos/confirmar.js';
 import { requiereSesion, cabecerasSeguridad } from './admin/sesion.js';
@@ -74,8 +75,16 @@ app.post('/webhook/whatsapp', async (req, res) => {
       store.registrarEntrante({ waId: m.from, nombre: m.nombre, tipo: m.tipo, texto: m.texto || m.opcion });
       marcarLeido(m.id).catch(() => {});
       if (store.obtenerModo(m.from) === 'humano') continue;
-      const enviado = await responderBot(m);
-      if (enviado) store.registrarSaliente({ waId: m.from, autor: 'bot', texto: enviado });
+      // Arte-SanoBot (Claude, tool-use) responde primero; si no hay API key
+      // configurada o falla, cae al bot de menú (whatsapp/bot.js) como respaldo.
+      const respuestaIA = await responderIA(m.from);
+      if (respuestaIA) {
+        await enviarTexto(m.from, respuestaIA);
+        store.registrarSaliente({ waId: m.from, autor: 'bot', texto: respuestaIA });
+      } else {
+        const enviado = await responderBot(m);
+        if (enviado) store.registrarSaliente({ waId: m.from, autor: 'bot', texto: enviado });
+      }
     }
   } catch (err) {
     console.error('[webhook] Error procesando el mensaje:', err);
