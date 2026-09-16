@@ -36,6 +36,8 @@ const POR_DEFECTO = {
   financiero: { metaMensualCop: 50000000, margenObjetivoPct: 30 },
   // Contadores de uso de Arte-SanoBot (tokens de Claude), ver almacen/ia/metricas.js.
   metricasIa: { totales: { llamadas: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, porDia: {} },
+  // Meta semanal de pedidos para el Monitor de conversaciones (almacen/metaSemanal.js).
+  metaSemanalPedidos: 10,
 };
 
 export function hidratarAjustes(filas) {

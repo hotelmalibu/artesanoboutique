@@ -20,6 +20,10 @@
 //   GET  /admin/api/financiero · POST /admin/api/financiero/meta
 //   GET  /admin/api/conversaciones[/:waId] · POST .../responder · POST .../modo
 //   GET  /admin/api/ia/metricas          -> costo y uso de Arte-SanoBot
+//   GET  /admin/api/monitor              -> conversaciones por canal
+//   GET  /admin/api/embudo               -> embudo de conversión
+//   GET  /admin/api/calientes            -> conversaciones sin cerrar con interés
+//   GET/POST /admin/api/meta-semanal     -> meta semanal de pedidos
 //   GET  /admin/api/diagnostico · POST /admin/api/diagnostico/correo
 //   GET  /admin/api/seguridad · GET /admin/api/seguridad/totp/nuevo
 // ============================================================
@@ -34,6 +38,7 @@ import { todosLosAjustes, fijarAjuste } from '../almacen/ajustes.js';
 import { resumenFinanciero, fijarMetaFinanciera } from '../almacen/financiero.js';
 import { resumenMetricas } from '../ia/metricas.js';
 import { store } from '../almacen/conversaciones.js';
+import { resumenMetaSemanal, fijarMetaSemanalPedidos, waIdsConCompra } from '../almacen/metaSemanal.js';
 import { dbActivo, dbDiagnostico } from '../almacen/db.js';
 import { confirmarPago } from '../pagos/confirmar.js';
 import { rapydActivo, probarAuth, metodosPais } from '../pagos/rapyd.js';
@@ -299,6 +304,32 @@ adminRouter.get('/api/conversaciones', (_req, res) => res.json({ ok: true, conve
 adminRouter.get('/api/ia/metricas', (_req, res) => {
   const pedidosBot = listarPedidos().filter((p) => p.canal === 'whatsapp').length;
   res.json({ ok: true, activa: !!config.ia.apiKey, ...resumenMetricas(pedidosBot) });
+});
+
+// ---------- Monitor de conversaciones ----------
+
+adminRouter.get('/api/monitor', (req, res) => {
+  const desde = (req.query.desde || '').trim() || null;
+  const hasta = (req.query.hasta || '').trim() || null;
+  res.json({ ok: true, rango: { desde, hasta }, conversaciones: store.estadisticas(desde, hasta), canales: store.canalesResumen(desde, hasta) });
+});
+
+adminRouter.get('/api/embudo', (req, res) => {
+  const desde = (req.query.desde || '').trim() || null;
+  const hasta = (req.query.hasta || '').trim() || null;
+  res.json({ ok: true, rango: { desde, hasta }, ...store.embudo({ desde, hasta, compradores: waIdsConCompra() }) });
+});
+
+adminRouter.get('/api/calientes', (_req, res) => {
+  res.json({ ok: true, calientes: store.calientes({ compradores: waIdsConCompra() }) });
+});
+
+adminRouter.get('/api/meta-semanal', (_req, res) => res.json(resumenMetaSemanal()));
+
+adminRouter.post('/api/meta-semanal', (req, res) => {
+  const n = fijarMetaSemanalPedidos(req.body?.meta);
+  if (!n) return res.status(400).json({ ok: false, error: 'La meta debe ser un número entre 1 y 1000.' });
+  res.json({ ok: true, meta: n });
 });
 
 adminRouter.get('/api/conversaciones/:waId', (req, res) => {

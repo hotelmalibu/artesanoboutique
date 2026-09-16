@@ -72,10 +72,12 @@ export async function iniciarDB() {
         wa_id            TEXT PRIMARY KEY,
         nombre           TEXT,
         modo             TEXT DEFAULT 'bot',
+        canal            TEXT DEFAULT '',
         datos            TEXT,
         creado           BIGINT,
         ultima_actividad BIGINT
       );
+      ALTER TABLE conversaciones ADD COLUMN IF NOT EXISTS canal TEXT DEFAULT '';
       CREATE TABLE IF NOT EXISTS mensajes (
         id        BIGSERIAL PRIMARY KEY,
         wa_id     TEXT,
@@ -168,12 +170,12 @@ export async function dbCargarAjustes() {
 export async function dbGuardarConversacion(c) {
   if (!pool) return;
   await pool.query(
-    `INSERT INTO conversaciones (wa_id, nombre, modo, datos, creado, ultima_actividad)
-     VALUES ($1,$2,$3,$4,$5,$6)
+    `INSERT INTO conversaciones (wa_id, nombre, modo, canal, datos, creado, ultima_actividad)
+     VALUES ($1,$2,$3,$4,$5,$6,$7)
      ON CONFLICT (wa_id) DO UPDATE SET
-       nombre = EXCLUDED.nombre, modo = EXCLUDED.modo, datos = EXCLUDED.datos,
+       nombre = EXCLUDED.nombre, modo = EXCLUDED.modo, canal = EXCLUDED.canal, datos = EXCLUDED.datos,
        ultima_actividad = EXCLUDED.ultima_actividad`,
-    [c.waId, c.nombre || '', c.modo || 'bot', JSON.stringify(c.estado || {}), c.creado, c.ultimaActividad]
+    [c.waId, c.nombre || '', c.modo || 'bot', c.canal || '', JSON.stringify(c.estado || {}), c.creado, c.ultimaActividad]
   );
 }
 

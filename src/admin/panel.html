@@ -40,6 +40,15 @@
   .panel { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 18px; margin-bottom: 18px; }
   .barra-progreso { background: var(--crema); border-radius: 999px; height: 14px; overflow: hidden; }
   .barra-progreso-r { background: var(--verde); height: 100%; border-radius: 999px; transition: width .3s; }
+  .canal-fila { display: grid; grid-template-columns: 140px 1fr 50px; align-items: center; gap: 10px; padding: 6px 0; }
+  .canal-fila .barra-progreso { height: 10px; }
+  .etapa-fila { margin-bottom: 12px; }
+  .etapa-fila .cab { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+  .etapa-fila .cab b { font-weight: 700; }
+  .caliente { border: 1px solid var(--linea); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+  .caliente:hover { border-color: var(--verde); }
+  .caliente .cab { display: flex; justify-content: space-between; font-size: 13px; }
+  .caliente .txt { font-size: 13px; color: var(--gris); margin-top: 4px; }
   .panel h2 { font-size: 15px; margin: 0 0 12px; }
   table { width: 100%; border-collapse: collapse; }
   th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
@@ -125,6 +134,7 @@
       <button data-v="programados">Pedidos programados</button>
       <button data-v="catalogo">Líneas · Ingredientes · Artesanos</button>
       <button data-v="whatsapp">WhatsApp · Arte-SanoBot</button>
+      <button data-v="monitorConversaciones">Monitor conversaciones</button>
       <button data-v="monitorTokens">Monitor de tokens</button>
       <button data-v="ajustes">Ajustes</button>
       <button data-v="diagnostico">Diagnóstico</button>
@@ -160,7 +170,7 @@ $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') cerr
 // ============================================================
 //  Navegacion
 // ============================================================
-const vistas = { resumen, financiero, productos, pedidos, programados, catalogo, whatsapp, monitorTokens, ajustes, diagnostico };
+const vistas = { resumen, financiero, productos, pedidos, programados, catalogo, whatsapp, monitorConversaciones, monitorTokens, ajustes, diagnostico };
 $('#nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) ir(b.dataset.v); });
 function ir(v) {
   document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
@@ -548,6 +558,85 @@ async function monitorTokens() {
       ${(m.porDia || []).map((d) => `<tr><td>${esc(d.dia)}</td><td>${d.llamadas}</td><td>${d.tokens.toLocaleString('es-CO')}</td><td>${cop(d.costoCOP)}</td></tr>`).join('') || '<tr><td colspan="4" class="sub">Aún no hay consumo registrado.</td></tr>'}
       </tbody></table></div>`;
 }
+
+// ============================================================
+//  Monitor de conversaciones (canal, embudo, calientes, meta semanal)
+// ============================================================
+function etapaFila(lbl, val, total, pct) {
+  const w = total ? Math.max(2, Math.round((val / total) * 100)) : 0;
+  return `<div class="etapa-fila"><div class="cab"><span>${lbl}</span><b>${val}${pct != null ? ' · ' + pct + '%' : ''}</b></div><div class="barra-progreso"><div class="barra-progreso-r" style="width:${w}%"></div></div></div>`;
+}
+function qsRango(r) {
+  const p = new URLSearchParams();
+  if (r?.desde) p.set('desde', r.desde);
+  if (r?.hasta) p.set('hasta', r.hasta);
+  const s = p.toString();
+  return s ? '?' + s : '';
+}
+let RANGO_MONITOR = {};
+function presetMonitor(tipo) {
+  const iso = (d) => d.toISOString().slice(0, 10);
+  const hoy = new Date();
+  if (tipo === 'hoy') RANGO_MONITOR = { desde: iso(hoy), hasta: iso(hoy) };
+  else if (tipo === '7') { const d = new Date(hoy); d.setDate(d.getDate() - 6); RANGO_MONITOR = { desde: iso(d), hasta: iso(hoy) }; }
+  else if (tipo === '30') { const d = new Date(hoy); d.setDate(d.getDate() - 29); RANGO_MONITOR = { desde: iso(d), hasta: iso(hoy) }; }
+  else RANGO_MONITOR = {};
+  monitorConversaciones();
+}
+async function monitorConversaciones() {
+  const [mon, meta, emb, cal] = await Promise.all([
+    api('/monitor' + qsRango(RANGO_MONITOR)), api('/meta-semanal'),
+    api('/embudo' + qsRango(RANGO_MONITOR)), api('/calientes'),
+  ]);
+  const c = mon.conversaciones;
+  const totalCanales = mon.canales.reduce((s, x) => s + x.total, 0);
+  main.innerHTML = `<h1>Monitor de conversaciones</h1><div class="sub">Actividad, canal de origen y conversión de los chats de Arte-SanoBot.</div>
+    <div class="barra" style="margin-bottom:18px"><button class="btn mini" onclick="presetMonitor('hoy')">Hoy</button><button class="btn mini" onclick="presetMonitor('7')">7 días</button><button class="btn mini" onclick="presetMonitor('30')">30 días</button><button class="btn mini primario" onclick="presetMonitor('todo')">Todo</button></div>
+    <div class="tarjetas">
+      <div class="tarjeta"><div class="k">Activas</div><div class="v">${c.activas}</div><div class="d">Actividad en 24 h o con atención humana</div></div>
+      <div class="tarjeta"><div class="k">Inactivas</div><div class="v">${c.inactivas}</div></div>
+      <div class="tarjeta"><div class="k">Total</div><div class="v">${c.total}</div><div class="d">En el rango seleccionado</div></div>
+      <div class="tarjeta"><div class="k">Atención humana</div><div class="v">${c.enHumano}</div></div>
+    </div>
+    <div class="panel"><h2>🎯 Meta semanal de pedidos</h2>
+      <div class="sub" style="margin-bottom:10px">Esta semana: ${meta.semana.pedidos} de ${meta.meta} pedidos (${meta.semana.pct}%) · faltan ${meta.semana.faltan} · proyección al cierre: ${meta.semana.proyeccion}</div>
+      <div class="barra-progreso"><div class="barra-progreso-r" style="width:${meta.semana.pct}%"></div></div>
+      <div class="barra" style="margin-top:12px;align-items:center"><button class="btn mini" onclick="cambiarMetaSemanal()">Cambiar meta</button><span class="sub" style="margin:0">${meta.semanasCumplidas} de ${meta.semanasCerradas} semanas cerradas cumplieron la meta</span></div>
+      <table style="margin-top:14px"><thead><tr><th>Semana</th><th>Pedidos</th><th>Chats</th><th>Conversión</th><th>Meta</th></tr></thead><tbody>
+      ${meta.historial.slice().reverse().map((s) => `<tr><td>${esc(s.desde)}</td><td>${s.pedidos}</td><td>${s.chats}</td><td>${s.conversionPct == null ? '—' : s.conversionPct + '%'}</td><td>${s.cumplida ? '✅' : '—'}</td></tr>`).join('')}
+      </tbody></table></div>
+    <div class="panel"><h2>De dónde llegan (por canal)</h2>
+      ${mon.canales.length ? mon.canales.map((x) => `<div class="canal-fila"><div>${esc(x.canal)}</div><div class="barra-progreso"><div class="barra-progreso-r" style="width:${totalCanales ? Math.round((x.total / totalCanales) * 100) : 0}%"></div></div><div>${x.total}</div></div>`).join('') : '<div class="sub">Aún no hay conversaciones en el rango.</div>'}
+    </div>
+    <div class="panel"><h2>Embudo de conversión</h2>
+      ${etapaFila('💬 Llegaron', emb.etapas.total, emb.etapas.total, null)}
+      ${etapaFila('🙋 Interesados', emb.etapas.interesadas, emb.etapas.total, emb.tasas.interesPct)}
+      ${etapaFila('💰 Cotizados', emb.etapas.cotizadas, emb.etapas.total, emb.tasas.cotizacionPct)}
+      ${etapaFila('✅ Compraron', emb.etapas.compraron, emb.etapas.total, emb.tasas.cierrePct)}
+      <div class="sub" style="margin-top:2px">Conversión total: <b>${emb.tasas.conversionPct == null ? '—' : emb.tasas.conversionPct + '%'}</b></div>
+      <table style="margin-top:14px"><thead><tr><th>Canal</th><th>Chats</th><th>Interés</th><th>Cotizados</th><th>Compraron</th><th>Conv.</th></tr></thead><tbody>
+      ${emb.canales.map((x) => `<tr><td>${esc(x.canal)}</td><td>${x.total}</td><td>${x.interesadas}</td><td>${x.cotizadas}</td><td><b>${x.compraron}</b></td><td>${x.conversionPct == null ? '—' : x.conversionPct + '%'}</td></tr>`).join('') || '<tr><td colspan="6" class="sub">Sin datos todavía.</td></tr>'}
+      </tbody></table></div>
+    <div class="panel"><h2>🔥 Conversaciones calientes (${cal.calientes.length})</h2>
+      <div class="sub" style="margin-bottom:10px">Preguntaron por precio o producto y no compraron · últimas 72 h</div>
+      ${cal.calientes.length ? cal.calientes.map((x) => `<div class="caliente" onclick="irAChat('${x.waId}')"><div class="cab"><b>${esc(x.nombre || '+' + x.waId)}</b><span>${x.horasDesde} h · ${esc(x.canal || 'Directo / Otro')}</span></div><div class="txt">${esc((x.ultimoTexto || '').slice(0, 90))}</div></div>`).join('') : '<div class="sub">No hay conversaciones pendientes de cierre. 🎉</div>'}
+    </div>`;
+}
+async function cambiarMetaSemanal() {
+  const v = prompt('¿Cuántos pedidos quieres lograr por semana?', '10');
+  if (v == null) return;
+  const n = parseInt(v, 10);
+  if (!n || n < 1) { alert('Escribe un número mayor que cero.'); return; }
+  const r = await post('/meta-semanal', { meta: n });
+  if (!r.ok) { alert(r.error || 'No se pudo guardar.'); return; }
+  monitorConversaciones();
+}
+async function irAChat(waId) {
+  document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('activo', b.dataset.v === 'whatsapp'));
+  await whatsapp();
+  await abrirChat(waId);
+}
+
 async function abrirChat(waId) {
   const d = await api('/conversaciones/' + waId);
   if (!d.ok) return;
