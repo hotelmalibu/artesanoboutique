@@ -17,6 +17,7 @@
 //   POST /admin/api/pedidos/:id/confirmar-pago  -> confirmacion manual
 //   POST /admin/api/pedidos/:id/reprogramar     -> { fecha }
 //   GET/POST /admin/api/ajustes
+//   GET  /admin/api/financiero · POST /admin/api/financiero/meta
 //   GET  /admin/api/conversaciones[/:waId] · POST .../responder · POST .../modo
 //   GET  /admin/api/diagnostico · POST /admin/api/diagnostico/correo
 //   GET  /admin/api/seguridad · GET /admin/api/seguridad/totp/nuevo
@@ -29,6 +30,7 @@ import { config, TIPOS_IVA } from '../config.js';
 import { listar, obtener, guardar, eliminar, enriquecer, bajoStock, resumenCatalogo, ESTADOS_PRODUCTO, TABLAS } from '../almacen/catalogo.js';
 import { listarPedidos, obtenerPedido, actualizarEstado, reprogramar, resumenVentas, programadosProximos, ESTADOS, NOMBRES_ESTADO } from '../almacen/pedidos.js';
 import { todosLosAjustes, fijarAjuste } from '../almacen/ajustes.js';
+import { resumenFinanciero, fijarMetaFinanciera } from '../almacen/financiero.js';
 import { store } from '../almacen/conversaciones.js';
 import { dbActivo, dbDiagnostico } from '../almacen/db.js';
 import { confirmarPago } from '../pagos/confirmar.js';
@@ -274,6 +276,18 @@ adminRouter.post('/api/ajustes', (req, res) => {
   if (!['envio', 'inicio', 'pedidosProgramados'].includes(clave)) return res.status(400).json({ ok: false, error: 'Ajuste no editable.' });
   fijarAjuste(clave, valor);
   res.json({ ok: true, ajustes: todosLosAjustes() });
+});
+
+// ---------- Modelo financiero ----------
+
+adminRouter.get('/api/financiero', (_req, res) => res.json({ ok: true, ...resumenFinanciero() }));
+
+adminRouter.post('/api/financiero/meta', (req, res) => {
+  try {
+    res.json({ ok: true, meta: fijarMetaFinanciera(req.body || {}) });
+  } catch (err) {
+    res.status(400).json({ ok: false, error: err.message });
+  }
 });
 
 // ---------- WhatsApp ----------

@@ -278,6 +278,44 @@ export function productos(ids) {
       imagenes: etiqueta('proteccion-mineral'),
       variantes: [{ sku: 'AS-DESO-MINERAL-60', nombre: 'Spray 60 ml', precioCop: 20000, precioUsd: 7.2, stock: 25, porDefecto: true }],
     },
+    {
+      ...comunes, nombre: 'Jabón Líquido Artesanal', slug: 'jabon-liquido-artesanal',
+      categoriaId: cat('aseo'), ingredienteIds: [], ingredienteProtagonistaId: null,
+      descripcionCorta: 'Jabón líquido de manos y cuerpo, presentación de 300 ml.',
+      descripcion: '<p>Jabón líquido artesanal para manos y cuerpo, elaborado en pequeños lotes. Fórmula suave para uso diario en toda la familia.</p>',
+      beneficios: '<ul><li>Limpieza suave para uso diario</li><li>Presentación de 300 ml</li></ul>',
+      modoUso: '<p>Aplicar sobre la piel húmeda, frotar hasta generar espuma y enjuagar.</p>',
+      tipoPiel: ['todo tipo'], pesoGramos: 300, precioCop: 27500, precioUsd: 10,
+      imagenes: etiqueta('jabon-liquido'),
+      variantes: [{ sku: 'AS-JABLIQ-300', nombre: '300 ml', precioCop: 27500, precioUsd: 10, stock: 20, porDefecto: true }],
+    },
+
+    // ---------- Hogar ----------
+    // ⚠️ Sin datos reales todavía (línea Hogar recién creada): productos de
+    // ejemplo con precio de referencia, mismo tratamiento que el resto de
+    // "precio-de-ejemplo" en este catálogo hasta que el negocio confirme.
+    {
+      ...comunes, nombre: 'Limpiador Multiusos Natural', slug: 'limpiador-multiusos-natural',
+      categoriaId: cat('hogar'), ingredienteIds: [], ingredienteProtagonistaId: null,
+      descripcionCorta: 'Limpiador natural multiusos para superficies del hogar.',
+      descripcion: '<p>Limpiador multiusos elaborado con ingredientes naturales, para el aseo diario de superficies del hogar.</p>',
+      beneficios: '<ul><li>Uso multiusos en superficies del hogar</li><li>Ingredientes naturales</li></ul>',
+      modoUso: '<p>Rociar sobre la superficie y limpiar con un paño húmedo.</p>',
+      tipoPiel: [], pesoGramos: 500, precioCop: 24000, precioUsd: 8.7,
+      imagenes: etiqueta('limpiador-multiusos'),
+      variantes: [{ sku: 'AS-LIMP-MULTI-500', nombre: '500 ml', precioCop: 24000, precioUsd: 8.7, stock: 15, porDefecto: true }],
+    },
+    {
+      ...comunes, nombre: 'Detergente en Polvo Artesanal', slug: 'detergente-en-polvo-artesanal',
+      categoriaId: cat('hogar'), ingredienteIds: [], ingredienteProtagonistaId: null,
+      descripcionCorta: 'Detergente en polvo para ropa, elaborado en pequeños lotes.',
+      descripcion: '<p>Detergente en polvo artesanal para el lavado de ropa, elaborado en pequeños lotes.</p>',
+      beneficios: '<ul><li>Para el lavado diario de ropa</li><li>Elaborado en pequeños lotes</li></ul>',
+      modoUso: '<p>Usar una medida por carga de lavado, según la cantidad de ropa.</p>',
+      tipoPiel: [], pesoGramos: 1000, precioCop: 32000, precioUsd: 11.5,
+      imagenes: etiqueta('detergente-polvo'),
+      variantes: [{ sku: 'AS-DETER-POLVO-1K', nombre: '1 kg', precioCop: 32000, precioUsd: 11.5, stock: 15, porDefecto: true }],
+    },
 
     // ---------- Otros ----------
     {

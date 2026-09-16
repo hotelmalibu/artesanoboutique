@@ -31,6 +31,9 @@ const POR_DEFECTO = {
     subtitulo: 'Jabones, cremas y lociones artesanales con plantas medicinales de la cultura Zenú. Del corazón de Córdoba y Sucre para el mundo.',
   },
   pedidosProgramados: { minDias: 2, maxDias: 90 },
+  // Modelo financiero interno (no visible al cliente): meta de ventas del
+  // mes y % de costo por defecto sobre el precio (70% costo = 30% margen).
+  financiero: { metaMensualCop: 50000000, margenObjetivoPct: 30 },
 };
 
 export function hidratarAjustes(filas) {

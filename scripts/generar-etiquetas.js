@@ -24,6 +24,9 @@ const PRODUCTOS = [
   { slug: 'gel-cannabis-coca-arnica', nombre: 'Cannabis, Coca y Árnica', ingrediente: 'Gel para golpes e inflamación', leyenda: 'Producto artesanal', tipo: 'frasco' },
   { slug: 'proteccion-mineral', nombre: 'Protección Mineral', ingrediente: 'Desodorante natural en spray', leyenda: 'Producto artesanal', tipo: 'frasco' },
   { slug: 'colada-de-chopo', nombre: 'Colada de Chopo', ingrediente: 'Alimento tradicional Zenú', leyenda: 'Suplemento sin gluten', tipo: 'frasco' },
+  { slug: 'jabon-liquido', nombre: 'Jabón Líquido', ingrediente: 'Manos y cuerpo', leyenda: 'Presentación 300 ml', tipo: 'frasco' },
+  { slug: 'limpiador-multiusos', nombre: 'Limpiador Multiusos', ingrediente: 'Línea Hogar', leyenda: 'Producto artesanal', tipo: 'frasco' },
+  { slug: 'detergente-polvo', nombre: 'Detergente en Polvo', ingrediente: 'Línea Hogar', leyenda: 'Producto artesanal', tipo: 'frasco' },
 ];
 
 for (const p of PRODUCTOS) {

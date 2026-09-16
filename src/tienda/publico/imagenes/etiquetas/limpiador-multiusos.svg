@@ -1,0 +1,28 @@
+<svg viewBox="0 0 480 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Limpiador Multiusos">
+  <rect width="480" height="600" fill="#F7F1E6"/>
+  <rect x="14" y="14" width="452" height="572" fill="none" stroke="#D8C9A8" stroke-width="2"/>
+  <rect x="20" y="20" width="440" height="560" fill="none" stroke="#D8C9A8" stroke-width="1"/>
+
+  <g transform="translate(240,64)">
+    <path d="M-30,-6 C-16,-20 16,-20 30,-6" fill="none" stroke="#B08552" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="-30" cy="-6" r="4" fill="#B08552"/>
+    <circle cx="30" cy="-6" r="4" fill="#B08552"/>
+  </g>
+
+  <text x="240" y="128" text-anchor="middle" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-style="italic" font-weight="600" font-size="34" fill="#7C8B5D">Arte<tspan fill="#B08552">'</tspan>Sano</text>
+  <text x="240" y="150" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="11" letter-spacing="6" fill="#5F6D45">BOUTIQUE</text>
+
+  <line x1="170" y1="172" x2="310" y2="172" stroke="#D8C9A8" stroke-width="1.5"/>
+
+  <g transform="translate(210.1,194) scale(1.15)" fill="none" stroke="#5F6D45" stroke-width="2.2" stroke-linejoin="round">
+    <rect x="14" y="0" width="24" height="10" rx="2"/>
+    <path d="M18 10 L18 20 L8 34 L8 78 Q8 82 12 82 L40 82 Q44 82 44 78 L44 34 L34 20 L34 10"/>
+    <line x1="8" y1="46" x2="44" y2="46"/>
+  </g>
+
+  <text x="240" y="372" text-anchor="middle" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-weight="700" font-size="34" letter-spacing="2" fill="#5F6D45">LIMPIADOR</text><text x="240" y="412" text-anchor="middle" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-weight="700" font-size="34" letter-spacing="2" fill="#5F6D45">MULTIUSOS</text>
+  <text x="240" y="458" text-anchor="middle" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-style="italic" font-size="17" fill="#B08552">Línea Hogar</text>
+
+  <line x1="150" y1="534" x2="330" y2="534" stroke="#D8C9A8" stroke-width="1"/>
+  <text x="240" y="560" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="12" letter-spacing="2" fill="#5F6D45">PRODUCTO ARTESANAL</text>
+</svg>

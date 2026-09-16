@@ -165,6 +165,9 @@ export function normalizarProducto(p, previo) {
     tipoIva,
     precioIncluyeIva: p.precioIncluyeIva !== false,
     precioCop,
+    // Costo estimado (interno, no visible al cliente): si no se fija a mano,
+    // el modelo financiero lo calcula como % del precio (ver almacen/financiero.js).
+    costoCop: numero(p.costoCop) || null,
     precioComparacionCop: numero(p.precioComparacionCop) || null,
     precioUsd: numero(p.precioUsd) || null,
     precioMayoristaCop: numero(p.precioMayoristaCop) || null,

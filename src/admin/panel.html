@@ -38,6 +38,8 @@
   .tarjeta .v { font-size: 24px; font-weight: 700; margin-top: 4px; }
   .tarjeta .d { font-size: 12px; color: var(--gris); margin-top: 2px; }
   .panel { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 18px; margin-bottom: 18px; }
+  .barra-progreso { background: var(--crema); border-radius: 999px; height: 14px; overflow: hidden; }
+  .barra-progreso-r { background: var(--verde); height: 100%; border-radius: 999px; transition: width .3s; }
   .panel h2 { font-size: 15px; margin: 0 0 12px; }
   table { width: 100%; border-collapse: collapse; }
   th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
@@ -117,6 +119,7 @@
     </div>
     <nav id="nav">
       <button data-v="resumen" class="activo">Resumen</button>
+      <button data-v="financiero">Financiero</button>
       <button data-v="productos">Productos</button>
       <button data-v="pedidos">Pedidos</button>
       <button data-v="programados">Pedidos programados</button>
@@ -156,7 +159,7 @@ $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') cerr
 // ============================================================
 //  Navegacion
 // ============================================================
-const vistas = { resumen, productos, pedidos, programados, catalogo, whatsapp, ajustes, diagnostico };
+const vistas = { resumen, financiero, productos, pedidos, programados, catalogo, whatsapp, ajustes, diagnostico };
 $('#nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) ir(b.dataset.v); });
 function ir(v) {
   document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
@@ -195,6 +198,39 @@ async function resumen() {
         ${d.bajoStock.map((b) => `<tr class="fila-click" onclick="editarProducto(${b.productoId})"><td>${esc(b.producto)} · ${esc(b.variante)}</td><td><code>${esc(b.sku)}</code></td><td><b style="color:var(--alerta)">${b.stock}</b></td></tr>`).join('') || '<tr><td colspan="3" class="sub">Todo con stock suficiente.</td></tr>'}
         </tbody></table></div>
     </div>`;
+}
+
+// ============================================================
+//  Financiero
+// ============================================================
+async function financiero() {
+  const d = await api('/financiero');
+  const m = d.meta;
+  const barraPct = Math.min(100, d.progresoPct);
+  main.innerHTML = `
+    <h1>Modelo financiero</h1><div class="sub">Meta de ventas, costo estimado y margen por producto. Solo lo ves tú: no aparece en la tienda pública.</div>
+    <div class="tarjetas">
+      <div class="tarjeta"><div class="k">Meta mensual</div><div class="v">${cop(m.metaMensualCop)}</div><div class="d">Costo ${100 - m.margenObjetivoPct}% del precio · margen objetivo ${m.margenObjetivoPct}%</div></div>
+      <div class="tarjeta"><div class="k">Ventas este mes</div><div class="v">${cop(d.ventasMesCop)}</div><div class="d">${d.pedidosMes} pedidos</div></div>
+      <div class="tarjeta"><div class="k">Progreso hacia la meta</div><div class="v">${d.progresoPct}%</div><div class="d">${d.faltanteCop > 0 ? 'Faltan ' + cop(d.faltanteCop) : '¡Meta alcanzada!'}</div></div>
+      <div class="tarjeta"><div class="k">Margen bruto del mes</div><div class="v">${cop(d.margenMesCop)}</div><div class="d">Estimado sobre pedidos facturados en COP</div></div>
+    </div>
+    <div class="panel"><div class="barra-progreso"><div class="barra-progreso-r" style="width:${barraPct}%"></div></div></div>
+    <div class="panel"><h2>Meta y costo por defecto</h2><div class="grid2">
+      <div class="campo"><label>Meta de ventas mensual (COP)</label><input id="f-meta" type="number" min="0" step="1000" value="${m.metaMensualCop}"></div>
+      <div class="campo"><label>Margen objetivo por defecto (%)</label><input id="f-margen" type="number" min="1" max="95" value="${m.margenObjetivoPct}"><small>El costo por defecto de cada producto es ${100 - m.margenObjetivoPct}% del precio, salvo que le fijes un costo propio al editarlo.</small></div></div>
+      <div class="barra" style="margin-top:10px"><button class="btn primario" onclick="guardarMetaFinanciera()">Guardar meta</button><span class="error" id="f-error"></span></div></div>
+    <div class="panel"><h2>Productos: precio, costo y margen</h2>
+      <table><thead><tr><th>Producto</th><th>Línea</th><th>Precio</th><th>Costo est.</th><th>Margen</th><th>Margen %</th><th>Unidades para la meta</th></tr></thead><tbody>
+      ${d.productos.map((p) => `<tr class="fila-click" onclick="editarProducto(${p.id})"><td>${esc(p.nombre)}</td><td>${esc(p.categoria)}</td><td>${cop(p.precio)}</td><td>${cop(p.costo)}</td><td>${cop(p.margenCop)}</td><td>${p.margenPct}%</td><td>${p.unidadesParaMeta ?? '—'}</td></tr>`).join('') || '<tr><td colspan="7" class="sub">Aún no hay productos publicados.</td></tr>'}
+      </tbody></table>
+      <div class="sub" style="margin-top:8px">"Unidades para la meta" es una referencia: cuántas unidades de ESE producto solo, vendidas este mes, cubrirían la meta completa. Para fijar un costo real distinto al 70% en un producto puntual, edítalo y usa el campo "Costo" en Precio e impuestos.</div>
+    </div>`;
+}
+async function guardarMetaFinanciera() {
+  const r = await post('/financiero/meta', { metaMensualCop: Number($('#f-meta').value), margenObjetivoPct: Number($('#f-margen').value) });
+  if (!r.ok) $('#f-error').textContent = r.error || 'No se pudo guardar.';
+  else financiero();
 }
 
 // ============================================================
@@ -278,6 +314,7 @@ async function editarProducto(id) {
         <div class="campo"><label>Precio USD (internacional)</label><input id="p-usd" type="number" min="0" step="0.01" value="${P.precioUsd || ''}" placeholder="auto por tasa"></div>
         <div class="campo"><label>Precio de comparación COP (tachado)</label><input id="p-comp" type="number" min="0" value="${P.precioComparacionCop || ''}"></div>
         <div class="campo"><label>Precio mayorista COP (B2B)</label><input id="p-mayor" type="number" min="0" value="${P.precioMayoristaCop || ''}"></div>
+        <div class="campo"><label>Costo COP (interno)</label><input id="p-costo" type="number" min="0" value="${P.costoCop || ''}" placeholder="auto: 70% del precio"><small>Vacío = se calcula solo con el % de costo del modelo financiero.</small></div>
         <div class="campo"><label>Peso (gramos, para envío)</label><input id="p-peso" type="number" min="0" value="${P.pesoGramos || 0}"></div>
         <div class="campo"><label>Registro INVIMA / NSO</label><input id="p-invima" value="${esc(P.invima)}"></div>
       </div>
@@ -350,7 +387,7 @@ async function guardarProducto() {
     descripcionCorta: val('#p-corta'), descripcion: val('#p-desc'), beneficios: val('#p-benef'), modoUso: val('#p-uso'), advertencias: val('#p-adv'),
     ingredienteIds: [...$('#p-ings').selectedOptions].map((o) => Number(o.value)), ingredienteProtagonistaId: Number(val('#p-prota')) || null,
     tipoPiel: val('#p-piel'), etiquetas: val('#p-etiq'),
-    precioCop: Number(val('#p-precio')), tipoIva: val('#p-iva'), precioIncluyeIva: val('#p-incl') === '1', precioUsd: val('#p-usd'), precioComparacionCop: val('#p-comp'), precioMayoristaCop: val('#p-mayor'),
+    precioCop: Number(val('#p-precio')), tipoIva: val('#p-iva'), precioIncluyeIva: val('#p-incl') === '1', precioUsd: val('#p-usd'), precioComparacionCop: val('#p-comp'), precioMayoristaCop: val('#p-mayor'), costoCop: val('#p-costo'),
     pesoGramos: Number(val('#p-peso')), invima: val('#p-invima'), seoTitulo: val('#p-seot'), seoDescripcion: val('#p-seod') };
   delete datos.categoria; delete datos.artesano; delete datos.ingredientes; delete datos.protagonista; delete datos.variantePorDefecto;
   const r = await post('/productos', datos);
