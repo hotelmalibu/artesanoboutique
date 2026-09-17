@@ -40,7 +40,7 @@ tiendaRouter.get('/', (_req, res) => {
   // Excluye jabones cuya única foto real disponible en Facebook era de baja
   // resolución (206×206) — en el rotativo grande del hero se ven pixelados
   // y desentonan junto a las fotos y etiquetas de buena calidad.
-  const JABONES_BAJA_RES = ['jabon-de-pepino', 'jabon-carbon-activado'];
+  const JABONES_BAJA_RES = ['jabon-carbon-activado'];
   const jabones = productosPublicados({}).filter((p) => /^jabón/i.test(p.nombre) && p.imagenPrincipal && !JABONES_BAJA_RES.includes(p.slug)).slice(0, 7);
   const lineas = listar('categorias').filter((c) => c.activo !== false);
   const ingredientes = listar('ingredientes').filter((i) => i.activo !== false).slice(0, 6);

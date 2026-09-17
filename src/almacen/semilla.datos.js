@@ -97,6 +97,7 @@ export const ARTESANOS = [
   {
     slug: 'arte-sano-boutique', nombre: 'Arte\'Sano Boutique', municipio: 'Sampués / Sincelejo', departamento: 'Sucre',
     bio: 'Marca artesanal elaborada en Sucre, Colombia. Participante activa de ferias regionales (Feria del Sombrero Vueltiao, Feria de la Juventud, ExpoMadres) y aliada del programa ZASCA para el fortalecimiento de emprendimientos artesanales.',
+    fotoUrl: '/publico/imagenes/artesanos/arte-sano-boutique.jpg',
   },
 ];
 
@@ -118,7 +119,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Nutre, aclara y humecta</li><li>Disminuye manchas</li><li>Técnica oriental</li><li>100% natural</li></ul>',
       modoUso: '<p>Humedece la piel, frota el jabón hasta formar espuma, masajea suavemente y enjuaga.</p>',
       tipoPiel: ['todo tipo'], pesoGramos: 100, precioCop: 18000, precioUsd: 6.5,
-      imagenes: [...foto('arroz.jpg'), ...foto('arroz-2.jpg')],
+      imagenes: [...foto('arroz.jpg'), ...foto('arroz-2.jpg'), ...foto('arroz-3.jpg')],
       variantes: [{ sku: 'AS-ARROZ-100', nombre: '100 g', precioCop: 18000, precioUsd: 6.5, stock: 30, porDefecto: true }],
     },
     {
@@ -164,7 +165,7 @@ export function productos(ids) {
       beneficios: '<ul><li>100% natural, medicinal y artesanal</li><li>Purifica y refresca</li><li>Controla el brillo facial</li><li>Ayuda con el acné tipo 1</li></ul>',
       modoUso: '<p>Aplicar sobre el rostro húmedo, masajear suavemente y enjuagar.</p>',
       tipoPiel: ['grasa', 'mixta'], pesoGramos: 100, precioCop: 18000, precioUsd: 6.5,
-      imagenes: foto('pepino.jpg'),
+      imagenes: [...foto('pepino-2.png'), ...foto('pepino.jpg')],
       variantes: [{ sku: 'AS-PEPINO-100', nombre: '100 g', precioCop: 18000, precioUsd: 6.5, stock: 25, porDefecto: true }],
     },
     {
@@ -201,7 +202,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Propiedades antibióticas naturales</li><li>Ayuda con caspa, rasquiña y empeine</li></ul>',
       advertencias: 'Uso externo. Suspender si hay irritación.',
       tipoPiel: ['con hongos', 'cuero cabelludo sensible'], pesoGramos: 100, precioCop: 20000, precioUsd: 7.2,
-      imagenes: etiqueta('mataraton'),
+      imagenes: [...foto('mataraton.jpg'), ...foto('mataraton-2.jpg'), ...foto('mataraton-3.png')],
       variantes: [{ sku: 'AS-MATARRATON-100', nombre: '100 g', precioCop: 20000, precioUsd: 7.2, stock: 20, porDefecto: true }],
     },
     {
@@ -212,7 +213,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Nutre y fortalece el cuero cabelludo</li><li>Protege el color del cabello</li><li>Limpieza natural</li><li>Suaviza y humecta</li><li>Intensifica el brillo natural</li><li>Acción anticaída</li><li>No contiene químicos ni sales agresivas</li></ul>',
       modoUso: '<p>Aplica el shampoo sobre el cabello húmedo, masajea el cuero cabelludo y enjuaga. Sigue con el acondicionador de puntas a medios.</p>',
       tipoPiel: ['todo tipo de cabello'], pesoGramos: 260, precioCop: 32000, precioUsd: 11.5,
-      imagenes: [...foto('guasimo-shampoo-1.jpg'), ...foto('guasimo-shampoo-2.jpg'), ...foto('guasimo-info.jpg')],
+      imagenes: [...foto('guasimo-shampoo-1.jpg'), ...foto('guasimo-shampoo-2.jpg'), ...foto('guasimo-shampoo-4.png'), ...foto('guasimo-info.jpg')],
       variantes: [
         { sku: 'AS-GUASIMO-SHP-250', nombre: 'Shampoo 250 ml', precioCop: 32000, precioUsd: 11.5, stock: 20, porDefecto: true },
         { sku: 'AS-GUASIMO-ACOND-100', nombre: 'Acondicionador 100 ml', precioCop: 22000, precioUsd: 8, stock: 20 },
@@ -239,7 +240,7 @@ export function productos(ids) {
       modoUso: '<p>Aplicar sobre la zona afectada con un masaje suave.</p>',
       advertencias: 'Uso externo únicamente. No aplicar sobre heridas abiertas. Consultar en caso de embarazo o lactancia.',
       tipoPiel: [], pesoGramos: 60, precioCop: 25000, precioUsd: 9,
-      imagenes: etiqueta('gel-cannabis-coca-arnica'),
+      imagenes: foto('gel-cannabis-coca-arnica.png'),
       variantes: [{ sku: 'AS-GEL-CCA-60', nombre: '60 ml', precioCop: 25000, precioUsd: 9, stock: 15, porDefecto: true }],
     },
     {
@@ -275,7 +276,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Sin químicos ni metales agresivos</li><li>Protección 24 horas</li><li>No mancha la ropa</li></ul>',
       modoUso: '<p>Aplicar directamente en las axilas, limpias y secas.</p>',
       tipoPiel: ['sensible'], pesoGramos: 60, precioCop: 20000, precioUsd: 7.2,
-      imagenes: etiqueta('proteccion-mineral'),
+      imagenes: [...foto('proteccion-mineral.jpg'), ...foto('proteccion-mineral-2.jpg')],
       variantes: [{ sku: 'AS-DESO-MINERAL-60', nombre: 'Spray 60 ml', precioCop: 20000, precioUsd: 7.2, stock: 25, porDefecto: true }],
     },
     {
