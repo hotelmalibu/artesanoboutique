@@ -33,15 +33,20 @@ export const tiendaRouter = Router();
 //  Paginas
 // ============================================================
 
+// Solo la página principal (hero, Favoritos, Recién hechos) exige foto real
+// de producto — /tienda sigue mostrando todo, incluidos los que aún tienen
+// solo una etiqueta genérica en lugar de fotografía.
+const tieneFotoReal = (p) => !!p.imagenPrincipal && p.imagenPrincipal.includes('/imagenes/productos/');
+
 tiendaRouter.get('/', (_req, res) => {
   const inicio = ajuste('inicio');
-  const destacados = productosPublicados({ destacado: true }).slice(0, 4);
-  const nuevos = productosPublicados({ orden: 'nuevos' }).slice(0, 8);
+  const destacados = productosPublicados({ destacado: true }).filter(tieneFotoReal).slice(0, 4);
+  const nuevos = productosPublicados({ orden: 'nuevos' }).filter(tieneFotoReal).slice(0, 8);
   // Excluye jabones cuya única foto real disponible en Facebook era de baja
   // resolución (206×206) — en el rotativo grande del hero se ven pixelados
   // y desentonan junto a las fotos y etiquetas de buena calidad.
   const JABONES_BAJA_RES = ['jabon-carbon-activado'];
-  const jabones = productosPublicados({}).filter((p) => /^jabón/i.test(p.nombre) && p.imagenPrincipal && !JABONES_BAJA_RES.includes(p.slug)).slice(0, 7);
+  const jabones = productosPublicados({}).filter((p) => /^jabón/i.test(p.nombre) && tieneFotoReal(p) && !JABONES_BAJA_RES.includes(p.slug)).slice(0, 7);
   const lineas = listar('categorias').filter((c) => c.activo !== false);
   const ingredientes = listar('ingredientes').filter((i) => i.activo !== false).slice(0, 6);
   const contenido = `
