@@ -326,6 +326,7 @@ async function api(ruta, opciones) {
 const post = (ruta, cuerpo) => api(ruta, { method: 'POST', body: JSON.stringify(cuerpo || {}) });
 const main = $('#main');
 let CAT = { categorias: [], ingredientes: [], artesanos: [], tiposIva: [] };
+let INTEG = {};
 function abrirModal(html) { $('#modal-cuerpo').innerHTML = html; $('#modal').classList.add('abierto'); }
 function cerrarModal() { $('#modal').classList.remove('abierto'); }
 $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') cerrarModal(); });
@@ -380,6 +381,7 @@ async function resumen() {
   $('#usuario').textContent = d.usuario || '';
   badgeWa(d.chatsSinLeer || 0);
   const v = d.ventas, c = d.catalogo, i = d.integraciones;
+  INTEG = i;
   const pill = (ok, n) => `<span class="pill-int ${ok ? 'ok' : ''}"><i></i>${n}</span>`;
   const usd = (x) => (x.USD ? ' · US$ ' + x.USD.toFixed(2) : '');
   const tarjeta = (k, val, det, icono, cls = '') => `<div class="tarjeta"><div class="icono ${cls}">${ico(icono)}</div><div class="k">${k}</div><div class="v">${val}</div><div class="d">${det}</div></div>`;
@@ -394,7 +396,7 @@ async function resumen() {
       ${tarjeta('Catálogo', c.publicados, `publicados · ${c.borradores} borradores · ${c.bajoStock} con bajo stock`, 'layers', c.bajoStock ? 'alerta' : 'info')}
     </div>
     <div class="panel"><h2>${ico('activity')} Integraciones</h2>
-      ${pill(i.db, 'PostgreSQL')}${pill(i.rapyd, 'RAPYD' + (i.rapydSandbox && i.rapyd ? ' (sandbox)' : ''))}${pill(i.resend, 'Resend')}${pill(i.whatsapp, 'WhatsApp')}${pill(i.cloudinary, 'Cloudinary')}${pill(i.ia, 'Claude (IA)')}
+      ${pill(i.db, 'PostgreSQL')}${pill(i.rapyd, 'RAPYD' + (i.rapydSandbox && i.rapyd ? ' (sandbox)' : ''))}${pill(i.resend, 'Resend')}${pill(i.whatsapp, 'WhatsApp')}${pill(i.ia, 'Claude (IA)')}${i.cloudinary ? pill(true, 'Cloudinary') : ''}
       <div class="sub" style="margin:8px 0 0">URL pública: <code>${esc(i.publicUrl)}</code></div>
     </div>
     <div class="grid2">
@@ -551,9 +553,9 @@ async function editarProducto(id) {
       <table><thead><tr><th>SKU *</th><th>Nombre</th><th>Precio COP</th><th>Precio USD</th><th>Stock</th><th>Umbral</th><th>Imagen URL</th><th>Defecto</th><th></th></tr></thead><tbody id="p-vars"></tbody></table>
       <button class="btn mini" style="margin-top:8px" onclick="agregarVariante()">+ Variante</button></div>
     <div class="seccion"><h3>Imágenes</h3>
-      <div class="dropzone" id="dz">Arrastra imágenes aquí o haz clic para elegir (se suben a Cloudinary)</div>
+      ${INTEG.cloudinary === false ? '' : '<div class="dropzone" id="dz">Arrastra imágenes aquí o haz clic para elegir (se suben a Cloudinary)</div>'}
       <input type="file" id="dz-file" accept="image/*" multiple style="display:none">
-      <div class="barra" style="margin-top:10px"><input id="p-img-url" placeholder="…o pega la URL de una imagen" style="flex:1"><button class="btn mini" onclick="agregarImagenUrl()">Agregar URL</button></div>
+      <div class="barra" style="margin-top:10px"><input id="p-img-url" placeholder="${INTEG.cloudinary === false ? 'Pega la URL de una imagen (p. ej. /publico/imagenes/productos/foto.jpg)' : '…o pega la URL de una imagen'}" style="flex:1"><button class="btn mini" onclick="agregarImagenUrl()">Agregar URL</button></div>
       <div class="miniaturas" id="p-imgs"></div></div>
     <div class="seccion"><h3>SEO</h3>
       <div class="grid2"><div class="campo"><label>Título SEO (70)</label><input id="p-seot" maxlength="70" value="${esc(P.seoTitulo)}"></div><div class="campo"><label>Descripción SEO (160)</label><input id="p-seod" maxlength="160" value="${esc(P.seoDescripcion)}"></div></div></div>
@@ -565,6 +567,7 @@ async function editarProducto(id) {
   pintarVariantes(); pintarImagenes(); desglose();
   $('#p-precio').addEventListener('input', desglose); $('#p-iva').addEventListener('change', desglose); $('#p-incl').addEventListener('change', desglose);
   const dz = $('#dz'), file = $('#dz-file');
+  if (!dz) return;
   dz.addEventListener('click', () => file.click());
   dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('sobre'); });
   dz.addEventListener('dragleave', () => dz.classList.remove('sobre'));
@@ -1020,7 +1023,7 @@ async function diagnostico() {
       ${fila('Métodos de pago (CO/COP)', d.metodosRapyd ? (d.metodosRapyd.ok ? `${d.metodosRapyd.cantidad}: ${esc((d.metodosRapyd.metodos || []).join(', '))}` : esc(d.metodosRapyd.error)) : '')}
       ${fila('Resend', i.resend ? `<span class="chip ok">configurado</span> remitente ${esc(d.correo.remitente)}` : '<span class="chip no">sin API key</span>')}
       ${fila('WhatsApp', i.whatsapp ? '<span class="chip ok">configurado</span>' : '<span class="chip no">sin credenciales</span>')}
-      ${fila('Cloudinary', i.cloudinary ? '<span class="chip ok">configurado</span>' : '<span class="chip no">no configurado (imágenes por URL)</span>')}
+      ${fila('Cloudinary', i.cloudinary ? '<span class="chip ok">configurado</span>' : '<span class="chip">opcional · sin usar</span> <small>Las fotos de productos se cargan por URL o desde el repositorio.</small>')}
     </tbody></table></div>
     <div class="panel"><h2>Probar correo</h2><div class="barra"><input id="dg-to" placeholder="correo@destino.com"><button class="btn" onclick="probarCorreo()">Enviar prueba</button><span id="dg-res"></span></div>
       <table><thead><tr><th>Cuándo</th><th>Para</th><th>Asunto</th><th>Resultado</th></tr></thead><tbody>${(d.correo.ultimos || []).map((u) => `<tr><td>${esc(u.cuando)}</td><td>${esc(u.to)}</td><td>${esc(u.subject)}</td><td>${u.ok ? '<span class="chip ok">ok</span>' : '<span class="chip no">' + esc(u.error || u.status) + '</span>'}</td></tr>`).join('')}</tbody></table></div>
