@@ -301,6 +301,35 @@ adminRouter.post('/api/financiero/meta', (req, res) => {
 
 adminRouter.get('/api/conversaciones', (_req, res) => res.json({ ok: true, conversaciones: store.listar() }));
 
+// Diagnostico/reparacion: suscribe la app de Meta a la cuenta de WhatsApp (WABA).
+// Sin esa suscripcion el webhook se verifica bien pero Meta no entrega mensajes.
+adminRouter.get('/api/waba/reparar', async (req, res) => {
+  const { token, graphBase, graphVersion } = config.whatsapp;
+  const wabaId = String(req.query.waba || process.env.WHATSAPP_WABA_ID || '').trim();
+  if (!token) return res.status(400).json({ ok: false, error: 'Falta WHATSAPP_TOKEN en el entorno (Render).' });
+  if (!wabaId) return res.status(400).json({ ok: false, error: 'Falta el ID de la WABA. Abre esta ruta con ?waba=TU_ID.' });
+
+  const url = `${graphBase}/${graphVersion}/${encodeURIComponent(wabaId)}/subscribed_apps`;
+  const headers = { Authorization: `Bearer ${token}` };
+  try {
+    const antesResp = await fetch(url, { headers });
+    const antes = await antesResp.json();
+    if (!antesResp.ok) {
+      return res.status(502).json({ ok: false, pista: 'Graph API rechazo la consulta. Causa tipica: token vencido (el temporal dura ~24 h) o ID de WABA incorrecto.', respuesta: antes });
+    }
+    const subResp = await fetch(url, { method: 'POST', headers });
+    const suscripcion = await subResp.json();
+    const despues = await (await fetch(url, { headers })).json();
+    res.json({
+      ok: subResp.ok,
+      mensaje: subResp.ok ? 'Listo: la app quedo suscrita a la WABA. Escribe un "Hola" al numero.' : 'No se pudo suscribir; revisa la respuesta.',
+      wabaId, antes, suscripcion, appsSuscritas: despues,
+    });
+  } catch (err) {
+    res.status(502).json({ ok: false, error: err.message });
+  }
+});
+
 adminRouter.get('/api/ia/metricas', (_req, res) => {
   const pedidosBot = listarPedidos().filter((p) => p.canal === 'whatsapp').length;
   res.json({ ok: true, activa: !!config.ia.apiKey, ...resumenMetricas(pedidosBot) });
