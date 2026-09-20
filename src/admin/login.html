@@ -9,22 +9,22 @@
 <link rel="apple-touch-icon" href="/publico/favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600&display=swap" />
 <style>
   :root {
-    --tinta: #4A3F35; --verde: #7C8B5D; --verde-osc: #5F6D45; --beige: #C9A876; --crema: #F5EDE0; --blush: #E8C9C0;
-    --blanco: #ffffff; --linea: #E6DCC8; --gris: #8A7F72; --alerta: #B8553F;
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, system-ui, sans-serif;
+    --tinta: #3F352C; --verde: #7C8B5D; --verde-osc: #5F6D45; --beige: #C9A876; --crema: #F7F1E6; --blush: #E8C9C0;
+    --blanco: #ffffff; --linea: #E7DFD0; --gris: #8A7F72; --alerta: #B8553F;
+    font-family: "Inter", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; }
   body { background: radial-gradient(1000px 500px at 50% -10%, #fff 0%, var(--crema) 60%), var(--crema); color: var(--tinta); display: flex; align-items: center; justify-content: center; padding: 24px; }
   .tarjeta { width: 100%; max-width: 400px; background: var(--blanco); border: 1px solid var(--linea); border-radius: 18px; box-shadow: 0 24px 60px rgba(74,63,53,.10); padding: 34px 32px 30px; text-align: center; }
   .logo { width: 96px; height: 96px; margin: 0 auto 8px; }
-  .titulo { font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--verde); font-weight: 700; }
-  .sub { font-size: 13px; color: var(--gris); margin: 6px 0 22px; }
+  .titulo { font: italic 600 24px/1.2 "Playfair Display", Georgia, serif; color: var(--verde-osc); }
+  .sub { font-size: 14px; color: var(--gris); margin: 6px 0 22px; }
   form { text-align: left; }
-  label { display: block; font-size: 12.5px; font-weight: 600; margin: 14px 0 6px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; color: var(--gris); }
   input { width: 100%; padding: 12px 13px; border: 1px solid var(--linea); border-radius: 10px; font-size: 15px; color: var(--tinta); background: #fcfaf5; }
   input:focus { outline: 2px solid var(--verde); border-color: transparent; background: #fff; }
   .btn { width: 100%; margin-top: 22px; padding: 13px; border: none; border-radius: 11px; background: linear-gradient(135deg, #93A272, var(--verde) 55%, var(--verde-osc)); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }

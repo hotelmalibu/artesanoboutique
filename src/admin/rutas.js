@@ -33,7 +33,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { config, TIPOS_IVA } from '../config.js';
 import { listar, obtener, guardar, eliminar, enriquecer, bajoStock, resumenCatalogo, ESTADOS_PRODUCTO, TABLAS } from '../almacen/catalogo.js';
-import { listarPedidos, obtenerPedido, actualizarEstado, reprogramar, resumenVentas, programadosProximos, ESTADOS, NOMBRES_ESTADO } from '../almacen/pedidos.js';
+import { listarPedidos, obtenerPedido, actualizarEstado, reprogramar, resumenVentas, programadosProximos, pedidosDeCliente, ESTADOS, NOMBRES_ESTADO } from '../almacen/pedidos.js';
 import { todosLosAjustes, fijarAjuste } from '../almacen/ajustes.js';
 import { resumenFinanciero, fijarMetaFinanciera, fijarReparto } from '../almacen/financiero.js';
 import { resumenMetricas } from '../ia/metricas.js';
@@ -130,6 +130,7 @@ adminRouter.get('/api/resumen', (req, res) => {
     programados: programadosProximos().slice(0, 20).map((p) => ({ id: p.id, numero: p.numero, fecha: p.programadoPara, cliente: p.cliente.nombre, estado: p.estado })),
     ultimosPedidos: listarPedidos().slice(0, 8).map(resumenPedido),
     integraciones: integraciones(),
+    chatsSinLeer: store.listar().reduce((n, c) => n + (c.sinLeer || 0), 0),
   });
 });
 
@@ -243,13 +244,18 @@ adminRouter.post('/api/pedidos/:id/estado', async (req, res) => {
     if (transportadora !== undefined) extra.transportadora = String(transportadora).slice(0, 80);
     if (urlSeguimiento !== undefined) extra.urlSeguimiento = String(urlSeguimiento).slice(0, 300);
     const actualizado = actualizarEstado(p.id, estado, String(nota || '').slice(0, 300), extra);
+    const avisarWhatsApp = (msg) => {
+      if (!actualizado.waId || !store.ventanaAbierta(actualizado.waId)) return;
+      enviarTexto(actualizado.waId, msg).catch(() => {});
+      store.registrarSaliente({ waId: actualizado.waId, autor: 'tienda', texto: msg });
+    };
     if (estado === 'enviado') {
       avisarEnvioPorCorreo(actualizado).catch(() => {});
-      if (actualizado.waId && store.ventanaAbierta(actualizado.waId)) {
-        const msg = `📦 Tu pedido *${actualizado.numero}* va en camino con ${actualizado.transportadora || 'nuestra transportadora'}.` + (actualizado.guia ? ` Guía: ${actualizado.guia}.` : '') + ` Síguelo en ${config.publicUrl}/pedido/${actualizado.numero}`;
-        enviarTexto(actualizado.waId, msg).catch(() => {});
-        store.registrarSaliente({ waId: actualizado.waId, autor: 'tienda', texto: msg });
-      }
+      avisarWhatsApp(`📦 Tu pedido *${actualizado.numero}* va en camino con ${actualizado.transportadora || 'nuestra transportadora'}.` + (actualizado.guia ? ` Guía: ${actualizado.guia}.` : '') + ` Síguelo en ${config.publicUrl}/pedido/${actualizado.numero}`);
+    } else if (estado === 'cancelado' && p.estado !== 'cancelado') {
+      avisarWhatsApp(`Tu pedido *${actualizado.numero}* fue cancelado.` + (nota ? ` Motivo: ${String(nota).slice(0, 200)}.` : '') + ' Si tienes dudas, escríbenos por aquí y con gusto te ayudamos.');
+    } else if (estado === 'entregado' && p.estado !== 'entregado') {
+      avisarWhatsApp(`🎉 Tu pedido *${actualizado.numero}* fue entregado. ¡Gracias por comprar en Arte'Sano! Cuéntanos cómo te fue con tus productos.`);
     }
     res.json({ ok: true, pedido: actualizado });
   } catch (err) {
@@ -373,7 +379,11 @@ adminRouter.get('/api/conversaciones/:waId', (req, res) => {
   const c = store.obtener(req.params.waId);
   if (!c) return res.status(404).json({ ok: false, error: 'No existe.' });
   store.marcarLeida(c.waId);
-  res.json({ ok: true, conversacion: { waId: c.waId, nombre: c.nombre, modo: c.modo, mensajes: c.mensajes, ventanaAbierta: store.ventanaAbierta(c.waId) } });
+  res.json({
+    ok: true,
+    conversacion: { waId: c.waId, nombre: c.nombre, modo: c.modo, canal: c.canal || '', mensajes: c.mensajes, ventanaAbierta: store.ventanaAbierta(c.waId) },
+    pedidos: pedidosDeCliente({ waId: c.waId }).map(resumenPedido),
+  });
 });
 
 adminRouter.post('/api/conversaciones/:waId/responder', async (req, res) => {

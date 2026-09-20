@@ -9,142 +9,253 @@
 <link rel="apple-touch-icon" href="/publico/favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" />
 <style>
   :root {
-    --tinta: #4A3F35; --verde: #7C8B5D; --verde-osc: #5F6D45; --verde-suave: #E9EFE1; --beige: #C9A876; --crema: #F5EDE0; --blush: #E8C9C0;
-    --blanco: #fff; --linea: #E6DCC8; --gris: #8A7F72; --alerta: #B8553F; --ok: #4E8A5C; --aviso: #C08A2E;
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, system-ui, sans-serif;
+    --tinta: #3F352C; --tinta-2: #5C5147; --verde: #7C8B5D; --verde-osc: #5F6D45; --verde-suave: #EDF1E4; --verde-tenue: #F5F7EF;
+    --beige: #C9A876; --crema: #F7F1E6; --crema-osc: #EFE6D6; --blush: #E8C9C0; --blanco: #fff; --linea: #E7DFD0; --linea-2: #F0EAE0;
+    --gris: #8A7F72; --gris-2: #B3A99C; --alerta: #B8553F; --alerta-suave: #F9E4DF; --ok: #3F8A55; --ok-suave: #E1F1E5; --aviso: #B77C1E; --aviso-suave: #FBEFD6; --info: #4E6FA3; --info-suave: #E5ECF7;
+    --radio: 14px; --radio-sm: 10px; --sombra: 0 1px 2px rgba(63,53,44,.04), 0 8px 24px -12px rgba(63,53,44,.18);
+    --sans: "Inter", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; --serif: "Playfair Display", Georgia, serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--crema); color: var(--tinta); font-size: 14px; }
-  a { color: var(--verde); }
-  .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
-  aside { background: #fff; border-right: 1px solid var(--linea); padding: 18px 14px; position: sticky; top: 0; height: 100vh; }
-  .marca { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
-  .marca svg { width: 40px; height: 40px; }
-  .marca b { display: block; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--verde); }
-  .marca small { color: var(--gris); }
-  nav button { display: block; width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; border-radius: 10px; font-size: 14px; color: var(--tinta); cursor: pointer; }
-  nav button.activo { background: var(--verde-suave); color: var(--verde-osc); font-weight: 700; }
-  nav button:hover { background: #f6f2ea; }
-  .salir { position: absolute; bottom: 18px; left: 14px; right: 14px; font-size: 12px; color: var(--gris); }
-  main { padding: 26px 30px; max-width: 1400px; }
-  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
-  .sub { color: var(--gris); margin-bottom: 20px; }
-  .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 22px; }
-  .tarjeta { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 16px 18px; }
-  .tarjeta .k { font-size: 12px; color: var(--gris); text-transform: uppercase; letter-spacing: .08em; }
-  .tarjeta .v { font-size: 24px; font-weight: 700; margin-top: 4px; }
-  .tarjeta .d { font-size: 12px; color: var(--gris); margin-top: 2px; }
-  .panel { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 18px; margin-bottom: 18px; }
-  .barra-progreso { background: var(--crema); border-radius: 999px; height: 14px; overflow: hidden; }
-  .barra-progreso-r { background: var(--verde); height: 100%; border-radius: 999px; transition: width .3s; }
-  .canal-fila { display: grid; grid-template-columns: 140px 1fr 50px; align-items: center; gap: 10px; padding: 6px 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--crema); color: var(--tinta); font: 15px/1.5 var(--sans); }
+  a { color: var(--verde-osc); text-decoration: none; } a:hover { text-decoration: underline; }
+  svg.ico { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; }
+  .app { display: grid; grid-template-columns: 256px 1fr; min-height: 100vh; }
+
+  /* ---- Barra superior (solo móvil) ---- */
+  .topbar { display: none; position: sticky; top: 0; z-index: 40; background: #fff; border-bottom: 1px solid var(--linea); padding: 9px 14px; align-items: center; gap: 10px; }
+  .topbar .marca { padding: 0; }
+  .topbar .btn-icono { margin-left: auto; }
+
+  /* ---- Menú lateral ---- */
+  aside { background: #fff; border-right: 1px solid var(--linea); padding: 20px 14px 16px; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; overflow: auto; }
+  .marca { display: flex; align-items: center; gap: 12px; padding: 4px 8px 14px; }
+  .marca svg { width: 42px; height: 42px; flex: none; }
+  .marca b { display: block; font: italic 600 19px/1.1 var(--serif); color: var(--verde-osc); }
+  .marca small { display: block; font-size: 11px; color: var(--gris); text-transform: uppercase; letter-spacing: .14em; margin-top: 3px; }
+  nav { flex: 1; }
+  .nav-grupo { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gris-2); padding: 14px 12px 5px; }
+  nav button { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left; background: none; border: none; padding: 9px 12px; border-radius: var(--radio-sm); font: 500 14.5px/1.3 var(--sans); color: var(--tinta-2); cursor: pointer; position: relative; transition: background .12s, color .12s; }
+  nav button .ico { color: var(--gris); }
+  nav button:hover { background: var(--crema); color: var(--tinta); }
+  nav button.activo { background: var(--verde-suave); color: var(--verde-osc); font-weight: 600; }
+  nav button.activo .ico { color: var(--verde-osc); }
+  nav button.activo::before { content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--verde); }
+  .badge { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--alerta); color: #fff; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  .salir { border-top: 1px solid var(--linea-2); margin-top: 12px; padding-top: 12px; font-size: 13px; color: var(--gris); display: flex; flex-direction: column; gap: 7px; }
+  .salir a, .salir span { display: inline-flex; align-items: center; gap: 8px; }
+  .salir .ico { width: 15px; height: 15px; }
+
+  /* ---- Contenido ---- */
+  main { padding: 28px 34px 40px; max-width: 1480px; width: 100%; min-width: 0; }
+  .cabecera { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  h1 { font: 600 27px/1.2 var(--serif); margin: 0 0 4px; }
+  .sub { color: var(--gris); margin-bottom: 20px; font-size: 14.5px; }
+  .cabecera .sub { margin-bottom: 0; }
+  h2 { font: 600 16px/1.3 var(--sans); margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+  .panel h2 .ico { color: var(--verde); }
+  .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 22px; }
+  .tarjeta { background: #fff; border: 1px solid var(--linea); border-radius: var(--radio); padding: 18px 20px; box-shadow: var(--sombra); position: relative; }
+  .tarjeta .k { font-size: 12.5px; font-weight: 600; color: var(--gris); letter-spacing: .02em; padding-right: 44px; }
+  .tarjeta .v { font-size: 28px; font-weight: 700; margin-top: 6px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tarjeta .d { font-size: 13px; color: var(--gris); margin-top: 4px; }
+  .tarjeta .icono { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 10px; background: var(--verde-tenue); color: var(--verde-osc); display: flex; align-items: center; justify-content: center; }
+  .tarjeta .icono.alerta { background: var(--alerta-suave); color: var(--alerta); }
+  .tarjeta .icono.aviso { background: var(--aviso-suave); color: var(--aviso); }
+  .tarjeta .icono.info { background: var(--info-suave); color: var(--info); }
+  .panel { background: #fff; border: 1px solid var(--linea); border-radius: var(--radio); padding: 20px 22px; margin-bottom: 18px; box-shadow: var(--sombra); overflow-x: auto; }
+  .barra-progreso { background: var(--crema-osc); border-radius: 999px; height: 12px; overflow: hidden; }
+  .barra-progreso-r { background: linear-gradient(90deg, #93A272, var(--verde)); height: 100%; border-radius: 999px; transition: width .4s; }
+  .canal-fila { display: grid; grid-template-columns: 150px 1fr 56px; align-items: center; gap: 12px; padding: 7px 0; font-size: 14px; }
   .canal-fila .barra-progreso { height: 10px; }
   .etapa-fila { margin-bottom: 12px; }
-  .etapa-fila .cab { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
-  .etapa-fila .cab b { font-weight: 700; }
-  .caliente { border: 1px solid var(--linea); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
-  .caliente:hover { border-color: var(--verde); }
-  .caliente .cab { display: flex; justify-content: space-between; font-size: 13px; }
-  .caliente .txt { font-size: 13px; color: var(--gris); margin-top: 4px; }
-  .panel h2 { font-size: 15px; margin: 0 0 12px; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
-  th { font-size: 12px; color: var(--gris); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
-  tr:hover td { background: #fcfaf5; }
+  .etapa-fila .cab { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; }
+  .caliente { border: 1px solid var(--linea); border-radius: var(--radio-sm); padding: 12px 14px; margin-bottom: 8px; cursor: pointer; transition: border-color .12s, background .12s; }
+  .caliente:hover { border-color: var(--verde); background: var(--verde-tenue); }
+  .caliente .cab { display: flex; justify-content: space-between; font-size: 14px; gap: 10px; }
+  .caliente .txt { font-size: 13.5px; color: var(--gris); margin-top: 4px; }
+
+  /* ---- Tablas ---- */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--linea-2); vertical-align: middle; }
+  th { font-size: 12px; color: var(--gris); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+  tbody tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FCFAF6; }
   .fila-click { cursor: pointer; }
-  .chip { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--crema); color: var(--tinta); }
-  .chip.publicado, .chip.pagado, .chip.entregado, .chip.ok { background: #E4F0E6; color: var(--ok); }
-  .chip.borrador, .chip.pendiente_pago { background: #FBF0D9; color: var(--aviso); }
-  .chip.archivado, .chip.cancelado, .chip.rechazado, .chip.reembolsado, .chip.no { background: #F7E1DC; color: var(--alerta); }
-  .chip.enviado, .chip.en_preparacion { background: var(--verde-suave); color: var(--verde-osc); }
+  td small, .tarjeta small { color: var(--gris); }
+
+  /* ---- Chips ---- */
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 600; background: var(--crema-osc); color: var(--tinta-2); white-space: nowrap; line-height: 1.4; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .8; }
+  .chip.publicado, .chip.pagado, .chip.entregado, .chip.ok { background: var(--ok-suave); color: var(--ok); }
+  .chip.borrador, .chip.pendiente_pago, .chip.humano { background: var(--aviso-suave); color: var(--aviso); }
+  .chip.archivado, .chip.cancelado, .chip.rechazado, .chip.reembolsado, .chip.no { background: var(--alerta-suave); color: var(--alerta); }
+  .chip.enviado, .chip.en_preparacion { background: var(--info-suave); color: var(--info); }
+  .chip.bot { background: var(--verde-suave); color: var(--verde-osc); }
+
+  /* ---- Botones y campos ---- */
   .barra { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
-  .btn { padding: 9px 14px; border-radius: 10px; border: 1px solid var(--linea); background: #fff; color: var(--tinta); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 15px; border-radius: var(--radio-sm); border: 1px solid var(--linea); background: #fff; color: var(--tinta); font: 600 14px/1.2 var(--sans); cursor: pointer; transition: background .12s, border-color .12s, transform .06s; white-space: nowrap; }
+  .btn .ico { width: 16px; height: 16px; }
+  .btn:hover { background: var(--crema); border-color: #D9CFBD; }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 3px solid rgba(124,139,93,.35); outline-offset: 1px; }
   .btn.primario { background: var(--verde); border-color: var(--verde); color: #fff; }
-  .btn.peligro { color: var(--alerta); }
-  .btn:disabled { opacity: .5; cursor: default; }
-  .btn.mini { padding: 5px 9px; font-size: 12px; }
-  input, select, textarea { padding: 9px 11px; border: 1px solid var(--linea); border-radius: 9px; font-size: 13px; color: var(--tinta); background: #fcfaf5; font-family: inherit; }
-  input:focus, select:focus, textarea:focus { outline: 2px solid var(--verde); border-color: transparent; background: #fff; }
-  textarea { width: 100%; min-height: 80px; resize: vertical; }
-  .campo { display: flex; flex-direction: column; gap: 5px; }
-  .campo label { font-size: 12px; font-weight: 600; color: var(--gris); }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  .modal-fondo { position: fixed; inset: 0; background: rgba(74,63,53,.45); display: none; align-items: flex-start; justify-content: center; padding: 30px 16px; overflow: auto; z-index: 50; }
+  .btn.primario:hover { background: var(--verde-osc); border-color: var(--verde-osc); }
+  .btn.exito { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .btn.exito:hover { background: #33734A; border-color: #33734A; }
+  .btn.peligro { color: var(--alerta); border-color: #EBC9C0; background: #fff; }
+  .btn.peligro:hover { background: var(--alerta-suave); }
+  .btn.fantasma { border-color: transparent; background: transparent; color: var(--verde-osc); }
+  .btn.fantasma:hover { background: var(--verde-tenue); }
+  .btn:disabled { opacity: .5; cursor: default; transform: none; }
+  .btn.mini { padding: 6px 10px; font-size: 13px; border-radius: 8px; }
+  .btn.mini .ico { width: 14px; height: 14px; }
+  .btn-icono { width: 38px; height: 38px; padding: 0; border-radius: 10px; }
+  input, select, textarea { padding: 10px 12px; border: 1px solid var(--linea); border-radius: var(--radio-sm); font: 400 14.5px/1.4 var(--sans); color: var(--tinta); background: #FCFAF6; transition: border-color .12s, box-shadow .12s, background .12s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px rgba(124,139,93,.18); background: #fff; }
+  textarea { width: 100%; min-height: 84px; resize: vertical; }
+  .campo { display: flex; flex-direction: column; gap: 6px; }
+  .campo label { font-size: 12.5px; font-weight: 600; color: var(--gris); }
+  .campo small { font-size: 12.5px; color: var(--gris); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .buscador { position: relative; min-width: 260px; flex: 1; max-width: 420px; }
+  .buscador .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gris); width: 16px; height: 16px; }
+  .buscador input { width: 100%; padding-left: 36px; }
+
+  /* ---- Modal ---- */
+  .modal-fondo { position: fixed; inset: 0; background: rgba(63,53,44,.5); display: none; align-items: flex-start; justify-content: center; padding: 30px 16px; overflow: auto; z-index: 50; }
   .modal-fondo.abierto { display: flex; }
-  .modal { background: #fff; border-radius: 16px; width: 100%; max-width: 980px; padding: 24px 26px; box-shadow: 0 30px 80px rgba(0,0,0,.25); }
-  .modal h2 { margin: 0 0 14px; font-size: 18px; }
-  .seccion { border-top: 1px solid var(--linea); margin-top: 16px; padding-top: 14px; }
-  .seccion h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--verde); margin: 0 0 10px; }
+  .modal { background: #fff; border-radius: 18px; width: 100%; max-width: 1000px; padding: 26px 28px; box-shadow: 0 30px 80px rgba(0,0,0,.28); animation: subir .18s ease-out; }
+  @keyframes subir { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal h2 { font: 600 22px/1.2 var(--serif); margin: 0 0 16px; flex-wrap: wrap; }
+  .modal-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .modal-cab h2 { margin: 0; }
+  .seccion { border-top: 1px solid var(--linea-2); margin-top: 18px; padding-top: 16px; }
+  .seccion h3 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--verde-osc); margin: 0 0 12px; display: flex; align-items: center; gap: 7px; }
+  .seccion h3 .ico { width: 15px; height: 15px; }
+  .acciones-rapidas { display: flex; gap: 10px; flex-wrap: wrap; }
+  .historial { display: flex; flex-direction: column; gap: 8px; }
+  .historial div { display: grid; grid-template-columns: 150px auto 1fr; gap: 10px; font-size: 13.5px; align-items: center; }
   .miniaturas { display: flex; gap: 10px; flex-wrap: wrap; }
   .miniatura { position: relative; width: 92px; height: 92px; border-radius: 10px; overflow: hidden; border: 1px solid var(--linea); background: var(--crema); }
   .miniatura img { width: 100%; height: 100%; object-fit: cover; }
   .miniatura button { position: absolute; top: 3px; right: 3px; background: rgba(0,0,0,.55); color: #fff; border: none; border-radius: 6px; font-size: 11px; cursor: pointer; }
   .miniatura .principal { position: absolute; bottom: 0; left: 0; right: 0; background: var(--verde); color: #fff; font-size: 10px; text-align: center; }
-  .dropzone { border: 2px dashed var(--linea); border-radius: 12px; padding: 16px; text-align: center; color: var(--gris); font-size: 13px; cursor: pointer; }
+  .dropzone { border: 2px dashed var(--linea); border-radius: 12px; padding: 18px; text-align: center; color: var(--gris); font-size: 14px; cursor: pointer; }
   .dropzone.sobre { border-color: var(--verde); background: var(--verde-suave); }
-  .aviso { background: #FBF0D9; border: 1px solid #EFD9A8; color: #7A5A12; padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-bottom: 12px; }
-  .error { color: var(--alerta); font-weight: 600; font-size: 13px; min-height: 18px; }
-  .exito { color: var(--ok); font-weight: 600; font-size: 13px; }
-  .img-lista { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--crema); border: 1px solid var(--linea); }
-  .pill-int { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: var(--crema); font-size: 12px; margin: 0 6px 6px 0; }
+  .aviso { background: var(--aviso-suave); border: 1px solid #EFD9A8; color: #7A5A12; padding: 11px 14px; border-radius: var(--radio-sm); font-size: 14px; margin-bottom: 12px; }
+  .error { color: var(--alerta); font-weight: 600; font-size: 13.5px; min-height: 18px; }
+  .exito { color: var(--ok); font-weight: 600; font-size: 13.5px; }
+  .img-lista { width: 46px; height: 46px; border-radius: 9px; object-fit: cover; background: var(--crema); border: 1px solid var(--linea); }
+  .pill-int { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: var(--crema); font-size: 13px; font-weight: 500; margin: 0 8px 8px 0; }
   .pill-int i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--alerta); }
-  .pill-int.ok i { background: var(--ok); }
-  .chat { display: grid; grid-template-columns: 300px 1fr; gap: 14px; min-height: 420px; }
-  .chat-lista { border-right: 1px solid var(--linea); overflow: auto; max-height: 560px; }
-  .chat-item { padding: 10px; border-bottom: 1px solid var(--linea); cursor: pointer; }
+  .pill-int.ok i { background: var(--ok); box-shadow: 0 0 0 3px var(--ok-suave); }
+  .detalle-pedido dt { font-size: 12px; color: var(--gris); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+  .detalle-pedido dd { margin: 3px 0 12px; }
+  code { background: var(--crema); padding: 2px 7px; border-radius: 6px; font-size: 12.5px; }
+  .vacio { padding: 26px 10px; text-align: center; color: var(--gris); font-size: 14px; }
+  .vacio .ico { width: 26px; height: 26px; color: var(--gris-2); display: block; margin: 0 auto 6px; }
+
+  /* ---- Chat / WhatsApp ---- */
+  .chat { display: grid; grid-template-columns: 320px 1fr; gap: 0; padding: 0; overflow: hidden; }
+  .chat-lista { border-right: 1px solid var(--linea); overflow: auto; max-height: 720px; }
+  .chat-lista-cab { padding: 12px 14px; border-bottom: 1px solid var(--linea-2); position: sticky; top: 0; background: #fff; z-index: 1; }
+  .chat-lista-cab .buscador { min-width: 0; max-width: none; }
+  .chat-item { display: grid; grid-template-columns: 42px 1fr auto; gap: 11px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--linea-2); cursor: pointer; transition: background .12s; }
+  .chat-item:hover { background: #FCFAF6; }
   .chat-item.activo { background: var(--verde-suave); }
-  .burbujas { max-height: 460px; overflow: auto; padding: 10px; background: var(--crema); border-radius: 12px; }
-  .burbuja { max-width: 75%; padding: 8px 12px; border-radius: 12px; margin: 6px 0; font-size: 13px; white-space: pre-wrap; }
-  .burbuja.in { background: #fff; }
-  .burbuja.out { background: var(--verde-suave); margin-left: auto; }
-  .detalle-pedido dt { font-size: 12px; color: var(--gris); text-transform: uppercase; letter-spacing: .06em; }
-  .detalle-pedido dd { margin: 2px 0 10px; }
-  code { background: var(--crema); padding: 2px 6px; border-radius: 6px; font-size: 12px; }
-  @media (max-width: 900px) { .app { grid-template-columns: 1fr; } aside { position: static; height: auto; } .grid2, .grid3, .grid4 { grid-template-columns: 1fr; } .chat { grid-template-columns: 1fr; } }
+  .chat-item > div { min-width: 0; }
+  .chat-item .nombre { font-weight: 600; font-size: 14.5px; display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .chat-item .nombre span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-item .ultimo { font-size: 13px; color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .chat-item .meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; font-size: 11.5px; color: var(--gris); }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; flex: none; }
+  .chat-cuerpo { display: flex; flex-direction: column; min-width: 0; }
+  .chat-cab { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--linea-2); flex-wrap: wrap; }
+  .chat-cab .quien { flex: 1; min-width: 160px; }
+  .chat-cab .quien b { display: block; font-size: 15.5px; }
+  .chat-cab .quien small { color: var(--gris); font-size: 12.5px; }
+  .pedidos-chat { display: flex; gap: 10px; padding: 12px 18px; overflow-x: auto; border-bottom: 1px solid var(--linea-2); background: #FCFAF6; }
+  .pedido-mini { flex: none; width: 290px; background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 12px 14px; }
+  .nowrap { white-space: nowrap; }
+  .pedido-mini .cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .pedido-mini .cab b { font-size: 14px; }
+  .pedido-mini .info { font-size: 13px; color: var(--gris); margin-bottom: 10px; }
+  .pedido-mini .acciones { display: flex; gap: 6px; flex-wrap: wrap; }
+  .burbujas { flex: 1; overflow: auto; padding: 16px 18px; background: var(--crema); display: flex; flex-direction: column; gap: 6px; min-height: 320px; max-height: 470px; }
+  .burbuja { max-width: 72%; padding: 9px 13px; border-radius: 14px; font-size: 14px; white-space: pre-wrap; word-break: break-word; box-shadow: 0 1px 1px rgba(63,53,44,.05); }
+  .burbuja small { display: block; color: var(--gris); font-size: 11.5px; margin-bottom: 3px; }
+  .burbuja.in { background: #fff; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .burbuja.out { background: var(--verde-suave); align-self: flex-end; border-bottom-right-radius: 4px; }
+  .burbuja.out.tienda { background: #DCE8F8; }
+  .respuestas-rapidas { display: flex; gap: 8px; padding: 10px 18px 0; flex-wrap: wrap; }
+  .respuestas-rapidas button { border: 1px solid var(--linea); background: #fff; border-radius: 999px; padding: 5px 12px; font: 500 13px var(--sans); color: var(--tinta-2); cursor: pointer; }
+  .respuestas-rapidas button:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .compositor { display: flex; gap: 10px; padding: 12px 18px 16px; align-items: flex-end; }
+  .compositor textarea { flex: 1; min-height: 44px; max-height: 140px; resize: none; }
+  .compositor .btn { height: 44px; }
+
+  /* ---- Toast ---- */
+  #toasts { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
+  .toast { background: var(--tinta); color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 14px; display: flex; align-items: center; gap: 9px; box-shadow: 0 12px 30px rgba(0,0,0,.25); animation: subir .18s ease-out; }
+  .toast.ok { background: var(--ok); } .toast.error { background: var(--alerta); }
+
+  @media (max-width: 1100px) { .chat { grid-template-columns: 280px 1fr; } }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .topbar { display: flex; }
+    aside { display: none; position: fixed; inset: 58px 0 0 0; height: auto; z-index: 39; border-right: none; }
+    .app.nav-abierto aside { display: flex; }
+    main { padding: 18px 16px 30px; }
+    h1 { font-size: 23px; }
+    .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+    .chat { grid-template-columns: 1fr; }
+    .chat-lista { max-height: 300px; border-right: none; border-bottom: 1px solid var(--linea); }
+    .chat.con-abierto .chat-lista { display: none; }
+    .burbuja { max-width: 88%; }
+    .modal { padding: 20px 16px; }
+    .historial div { grid-template-columns: 1fr; gap: 2px; }
+  }
 </style>
 </head>
 <body>
-<div class="app">
+<svg style="display:none" aria-hidden="true"><symbol id="logo-as" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#F5EDE0"/>
+  <path d="M22 68c1-11 6-20 17-26" fill="none" stroke="#5F6D45" stroke-width="2" stroke-linecap="round"/>
+  <g fill="#5F6D45">
+    <ellipse cx="25" cy="63" rx="4.6" ry="2.1" transform="rotate(-42 25 63)"/>
+    <ellipse cx="29.5" cy="56.5" rx="5.1" ry="2.3" transform="rotate(-34 29.5 56.5)"/>
+    <ellipse cx="34" cy="50.5" rx="5.6" ry="2.5" transform="rotate(-26 34 50.5)"/>
+    <ellipse cx="38.5" cy="45" rx="6" ry="2.6" transform="rotate(-16 38.5 45)"/>
+  </g>
+  <text x="33" y="67" font-family="'Playfair Display',Georgia,serif" font-style="italic" font-weight="600" font-size="44" fill="#5F6D45">A</text>
+  <text x="49" y="73" font-family="'Playfair Display',Georgia,serif" font-style="italic" font-weight="600" font-size="33" fill="#5F6D45">S</text>
+</symbol></svg>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="marca"><svg><use href="#logo-as"/></svg><div><b>Arte'Sano</b><small>Panel</small></div></div>
+    <button class="btn btn-icono" id="btn-menu" aria-label="Abrir menú"><i data-ico="menu"></i></button>
+  </header>
   <aside>
-    <div class="marca">
-      <svg viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="48" fill="#F5EDE0"/>
-        <path d="M22 68c1-11 6-20 17-26" fill="none" stroke="#5F6D45" stroke-width="2" stroke-linecap="round"/>
-        <g fill="#5F6D45">
-          <ellipse cx="25" cy="63" rx="4.6" ry="2.1" transform="rotate(-42 25 63)"/>
-          <ellipse cx="29.5" cy="56.5" rx="5.1" ry="2.3" transform="rotate(-34 29.5 56.5)"/>
-          <ellipse cx="34" cy="50.5" rx="5.6" ry="2.5" transform="rotate(-26 34 50.5)"/>
-          <ellipse cx="38.5" cy="45" rx="6" ry="2.6" transform="rotate(-16 38.5 45)"/>
-        </g>
-        <text x="33" y="67" font-family="'Playfair Display',Georgia,serif" font-style="italic" font-weight="600" font-size="44" fill="#5F6D45">A</text>
-        <text x="49" y="73" font-family="'Playfair Display',Georgia,serif" font-style="italic" font-weight="600" font-size="33" fill="#5F6D45">S</text>
-      </svg>
-      <div><b>Arte'Sano</b><small>Panel administrativo</small></div>
+    <div class="marca"><svg><use href="#logo-as"/></svg><div><b>Arte'Sano</b><small>Panel administrativo</small></div></div>
+    <nav id="nav"></nav>
+    <div class="salir">
+      <span><i data-ico="user"></i><span id="usuario"></span></span>
+      <a href="/" target="_blank"><i data-ico="external"></i>Ver tienda</a>
+      <a href="/admin/logout"><i data-ico="logout"></i>Salir</a>
     </div>
-    <nav id="nav">
-      <button data-v="resumen" class="activo">Resumen</button>
-      <button data-v="financiero">Financiero</button>
-      <button data-v="productos">Productos</button>
-      <button data-v="pedidos">Pedidos</button>
-      <button data-v="programados">Pedidos programados</button>
-      <button data-v="catalogo">Líneas · Ingredientes · Artesanos</button>
-      <button data-v="whatsapp">WhatsApp · Arte-SanoBot</button>
-      <button data-v="monitorConversaciones">Monitor conversaciones</button>
-      <button data-v="monitorTokens">Monitor de tokens</button>
-      <button data-v="ajustes">Ajustes</button>
-      <button data-v="diagnostico">Diagnóstico</button>
-    </nav>
-    <div class="salir"><span id="usuario"></span> · <a href="/" target="_blank">Ver tienda</a> · <a href="/admin/logout">Salir</a></div>
   </aside>
   <main id="main"></main>
 </div>
 
 <div class="modal-fondo" id="modal"><div class="modal" id="modal-cuerpo"></div></div>
+<div id="toasts"></div>
 
 <script>
 // ============================================================
@@ -155,6 +266,58 @@ const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const cop = (n) => '$' + Math.round(Number(n) || 0).toLocaleString('es-CO');
 const dinero = (n, m) => (m === 'USD' ? 'US$ ' + Number(n || 0).toFixed(2) : cop(n));
 const fecha = (ts) => (ts ? new Date(ts).toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' }) : '');
+const hora = (ts) => (ts ? new Date(ts).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) : '');
+const haceCuanto = (ts) => { const m = Math.round((Date.now() - ts) / 60000); if (m < 1) return 'ahora'; if (m < 60) return m + ' min'; const h = Math.round(m / 60); if (h < 24) return h + ' h'; return Math.round(h / 24) + ' d'; };
+
+// Iconos (trazo, 24x24). Uso: ico('check')
+const ICONOS = {
+  dashboard: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  trending: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  package: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/>',
+  bag: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  layers: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  chat: '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/>',
+  activity: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  cpu: '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>',
+  sliders: '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+  wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  send: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  bot: '<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="m19 17 .8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8z"/>',
+  hand: '<path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.3l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
+  truck: '<rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+  card: '<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  refresh: '<polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
+  menu: '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+  external: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  alert: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+  phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+  pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  dollar: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+  target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  inbox: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  filter: '<polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"/>',
+  undo: '<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>',
+};
+const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONOS[n] || ''}</svg>`;
+document.querySelectorAll('[data-ico]').forEach((el) => { el.outerHTML = ico(el.dataset.ico); });
+
+function toast(msg, tipo = '') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + tipo;
+  t.innerHTML = ico(tipo === 'error' ? 'alert' : 'check') + esc(msg);
+  $('#toasts').appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
 async function api(ruta, opciones) {
   const r = await fetch('/admin/api' + ruta, { headers: { 'Content-Type': 'application/json' }, ...opciones });
   if (r.status === 401) { window.location.href = '/admin/login'; return {}; }
@@ -166,16 +329,47 @@ let CAT = { categorias: [], ingredientes: [], artesanos: [], tiposIva: [] };
 function abrirModal(html) { $('#modal-cuerpo').innerHTML = html; $('#modal').classList.add('abierto'); }
 function cerrarModal() { $('#modal').classList.remove('abierto'); }
 $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') cerrarModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModal(); });
 
 // ============================================================
 //  Navegacion
 // ============================================================
+const NAV = [
+  { grupo: 'Negocio' },
+  { v: 'resumen', t: 'Resumen', i: 'dashboard' },
+  { v: 'financiero', t: 'Financiero', i: 'trending' },
+  { grupo: 'Ventas' },
+  { v: 'pedidos', t: 'Pedidos', i: 'bag' },
+  { v: 'programados', t: 'Pedidos programados', i: 'calendar' },
+  { grupo: 'Catálogo' },
+  { v: 'productos', t: 'Productos', i: 'package' },
+  { v: 'catalogo', t: 'Líneas · Ingredientes · Artesanos', i: 'layers' },
+  { grupo: 'Arte-SanoBot' },
+  { v: 'whatsapp', t: 'WhatsApp', i: 'chat', badge: 'badge-wa' },
+  { v: 'monitorConversaciones', t: 'Monitor conversaciones', i: 'activity' },
+  { v: 'monitorTokens', t: 'Monitor de tokens', i: 'cpu' },
+  { grupo: 'Sistema' },
+  { v: 'ajustes', t: 'Ajustes', i: 'sliders' },
+  { v: 'diagnostico', t: 'Diagnóstico', i: 'wrench' },
+];
 const vistas = { resumen, financiero, productos, pedidos, programados, catalogo, whatsapp, monitorConversaciones, monitorTokens, ajustes, diagnostico };
+$('#nav').innerHTML = NAV.map((n) => n.grupo ? `<div class="nav-grupo">${n.grupo}</div>` : `<button data-v="${n.v}">${ico(n.i)}<span>${n.t}</span>${n.badge ? `<span class="badge" id="${n.badge}" style="display:none"></span>` : ''}</button>`).join('');
 $('#nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) ir(b.dataset.v); });
+$('#btn-menu').addEventListener('click', () => $('#app').classList.toggle('nav-abierto'));
+let VISTA = 'resumen';
 function ir(v) {
+  detenerChat();
+  VISTA = v;
   document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
+  $('#app').classList.remove('nav-abierto');
   main.innerHTML = '<p class="sub">Cargando…</p>';
   vistas[v]().catch((e) => (main.innerHTML = '<p class="error">' + esc(e.message) + '</p>'));
+}
+function badgeWa(n) { const b = $('#badge-wa'); if (!b) return; b.textContent = n; b.style.display = n ? '' : 'none'; }
+/** Vuelve a pintar la vista actual sin perder el chat abierto. */
+async function refrescarVista() {
+  if (VISTA === 'whatsapp' && WA) return abrirChat(WA.waId);
+  return vistas[VISTA]();
 }
 
 // ============================================================
@@ -184,29 +378,33 @@ function ir(v) {
 async function resumen() {
   const d = await api('/resumen');
   $('#usuario').textContent = d.usuario || '';
+  badgeWa(d.chatsSinLeer || 0);
   const v = d.ventas, c = d.catalogo, i = d.integraciones;
   const pill = (ok, n) => `<span class="pill-int ${ok ? 'ok' : ''}"><i></i>${n}</span>`;
+  const usd = (x) => (x.USD ? ' · US$ ' + x.USD.toFixed(2) : '');
+  const tarjeta = (k, val, det, icono, cls = '') => `<div class="tarjeta"><div class="icono ${cls}">${ico(icono)}</div><div class="k">${k}</div><div class="v">${val}</div><div class="d">${det}</div></div>`;
   main.innerHTML = `
-    <h1>Resumen</h1><div class="sub">Así va ${esc(d.tienda)} hoy.</div>
+    <div class="cabecera"><div><h1>Resumen</h1><div class="sub">Así va ${esc(d.tienda)} hoy.</div></div>
+      <div class="barra" style="margin:0"><button class="btn" onclick="resumen()">${ico('refresh')} Actualizar</button><button class="btn primario" onclick="ir('pedidos')">${ico('bag')} Ver pedidos</button></div></div>
     <div class="tarjetas">
-      <div class="tarjeta"><div class="k">Ventas hoy</div><div class="v">${cop(v.hoy.COP)}</div><div class="d">${v.hoy.pedidos} pedidos${v.hoy.USD ? ' · US$ ' + v.hoy.USD.toFixed(2) : ''}</div></div>
-      <div class="tarjeta"><div class="k">Esta semana</div><div class="v">${cop(v.semana.COP)}</div><div class="d">${v.semana.pedidos} pedidos${v.semana.USD ? ' · US$ ' + v.semana.USD.toFixed(2) : ''}</div></div>
-      <div class="tarjeta"><div class="k">Este mes</div><div class="v">${cop(v.mes.COP)}</div><div class="d">${v.mes.pedidos} pedidos${v.mes.USD ? ' · US$ ' + v.mes.USD.toFixed(2) : ''}</div></div>
-      <div class="tarjeta"><div class="k">Por preparar</div><div class="v">${v.porPreparar}</div><div class="d">${v.pendientesPago} pendientes de pago · ${v.programados} programados</div></div>
-      <div class="tarjeta"><div class="k">Catálogo</div><div class="v">${c.publicados}</div><div class="d">publicados · ${c.borradores} borradores · ${c.bajoStock} con bajo stock</div></div>
+      ${tarjeta('Ventas hoy', cop(v.hoy.COP), `${v.hoy.pedidos} pedidos${usd(v.hoy)}`, 'dollar')}
+      ${tarjeta('Esta semana', cop(v.semana.COP), `${v.semana.pedidos} pedidos${usd(v.semana)}`, 'trending')}
+      ${tarjeta('Este mes', cop(v.mes.COP), `${v.mes.pedidos} pedidos${usd(v.mes)}`, 'calendar')}
+      ${tarjeta('Por preparar', v.porPreparar, `${v.pendientesPago} pendientes de pago · ${v.programados} programados`, 'package', v.porPreparar ? 'aviso' : '')}
+      ${tarjeta('Catálogo', c.publicados, `publicados · ${c.borradores} borradores · ${c.bajoStock} con bajo stock`, 'layers', c.bajoStock ? 'alerta' : 'info')}
     </div>
-    <div class="panel"><h2>Integraciones</h2>
+    <div class="panel"><h2>${ico('activity')} Integraciones</h2>
       ${pill(i.db, 'PostgreSQL')}${pill(i.rapyd, 'RAPYD' + (i.rapydSandbox && i.rapyd ? ' (sandbox)' : ''))}${pill(i.resend, 'Resend')}${pill(i.whatsapp, 'WhatsApp')}${pill(i.cloudinary, 'Cloudinary')}${pill(i.ia, 'Claude (IA)')}
       <div class="sub" style="margin:8px 0 0">URL pública: <code>${esc(i.publicUrl)}</code></div>
     </div>
     <div class="grid2">
-      <div class="panel"><h2>Últimos pedidos</h2>
+      <div class="panel"><h2>${ico('bag')} Últimos pedidos</h2>
         <table><thead><tr><th>Pedido</th><th>Cliente</th><th>Total</th><th>Estado</th></tr></thead><tbody>
-        ${d.ultimosPedidos.map((p) => `<tr class="fila-click" onclick="verPedido(${p.id})"><td><b>${esc(p.numero)}</b><br><small>${fecha(p.creado)}</small></td><td>${esc(p.cliente)}</td><td>${dinero(p.total, p.moneda)}</td><td><span class="chip ${p.estado}">${esc(p.estadoNombre)}</span></td></tr>`).join('') || '<tr><td colspan="4" class="sub">Aún no hay pedidos.</td></tr>'}
+        ${d.ultimosPedidos.map((p) => `<tr class="fila-click" onclick="verPedido(${p.id})"><td><b class="nowrap">${esc(p.numero)}</b><br><small>${fecha(p.creado)}</small></td><td>${esc(p.cliente)}</td><td>${dinero(p.total, p.moneda)}</td><td><span class="chip ${p.estado}">${esc(p.estadoNombre)}</span></td></tr>`).join('') || `<tr><td colspan="4"><div class="vacio">${ico('inbox')}Aún no hay pedidos.</div></td></tr>`}
         </tbody></table></div>
-      <div class="panel"><h2>Bajo stock</h2>
+      <div class="panel"><h2>${ico('alert')} Bajo stock</h2>
         <table><thead><tr><th>Producto</th><th>SKU</th><th>Stock</th></tr></thead><tbody>
-        ${d.bajoStock.map((b) => `<tr class="fila-click" onclick="editarProducto(${b.productoId})"><td>${esc(b.producto)} · ${esc(b.variante)}</td><td><code>${esc(b.sku)}</code></td><td><b style="color:var(--alerta)">${b.stock}</b></td></tr>`).join('') || '<tr><td colspan="3" class="sub">Todo con stock suficiente.</td></tr>'}
+        ${d.bajoStock.map((b) => `<tr class="fila-click" onclick="editarProducto(${b.productoId})"><td>${esc(b.producto)} · ${esc(b.variante)}</td><td><code>${esc(b.sku)}</code></td><td><b style="color:var(--alerta)">${b.stock}</b></td></tr>`).join('') || `<tr><td colspan="3"><div class="vacio">${ico('check')}Todo con stock suficiente.</div></td></tr>`}
         </tbody></table></div>
     </div>`;
 }
@@ -428,39 +626,52 @@ async function guardarProducto() {
 // ============================================================
 //  Pedidos
 // ============================================================
+const ESTADOS_ACTIVOS = ['pendiente_pago', 'pagado', 'en_preparacion', 'enviado'];
 async function pedidos(filtro = {}) {
   const qs = new URLSearchParams(filtro).toString();
   const d = await api('/pedidos' + (qs ? '?' + qs : ''));
   main.innerHTML = `
-    <h1>Pedidos</h1><div class="sub">Pagos, preparación y envíos. Haz clic en un pedido para ver el detalle.</div>
+    <div class="cabecera"><div><h1>Pedidos</h1><div class="sub">Pagos, preparación y envíos. Haz clic en un pedido para gestionarlo.</div></div></div>
     <div class="barra">
-      <input id="q" placeholder="Buscar por número, cliente, correo…" style="min-width:260px" value="${esc(filtro.q || '')}">
-      <select id="fe"><option value="">Todos los estados</option>${d.estados.map((e) => `<option value="${e.valor}" ${filtro.estado === e.valor ? 'selected' : ''}>${e.nombre}</option>`).join('')}</select>
-      <button class="btn" onclick="pedidos({q:$('#q').value, estado:$('#fe').value})">Filtrar</button>
+      <div class="buscador">${ico('search')}<input id="q" placeholder="Buscar por número, cliente, correo o teléfono…" value="${esc(filtro.q || '')}" onkeydown="if(event.key==='Enter')pedidos({q:this.value, estado:$('#fe').value})"></div>
+      <select id="fe" onchange="pedidos({q:$('#q').value, estado:this.value})"><option value="">Todos los estados</option>${d.estados.map((e) => `<option value="${e.valor}" ${filtro.estado === e.valor ? 'selected' : ''}>${e.nombre}</option>`).join('')}</select>
+      <button class="btn" onclick="pedidos({q:$('#q').value, estado:$('#fe').value})">${ico('filter')} Filtrar</button>
+      ${filtro.q || filtro.estado ? `<button class="btn fantasma" onclick="pedidos()">${ico('x')} Limpiar</button>` : ''}
+      <span class="sub" style="margin:0 0 0 auto">${d.pedidos.length} pedidos</span>
     </div>
     <div class="panel"><table><thead><tr><th>Pedido</th><th>Cliente</th><th>Destino</th><th>Total</th><th>Canal</th><th>Programado</th><th>Estado</th></tr></thead><tbody>
       ${d.pedidos.map((p) => `<tr class="fila-click" onclick="verPedido(${p.id})">
-        <td><b>${esc(p.numero)}</b><br><small>${fecha(p.creado)}</small></td>
+        <td><b class="nowrap">${esc(p.numero)}</b><br><small>${fecha(p.creado)}</small></td>
         <td>${esc(p.cliente)}<br><small>${esc(p.email)} · ${esc(p.telefono)}</small></td>
-        <td>${esc(p.ciudad)} (${esc(p.pais)})</td><td>${dinero(p.total, p.moneda)}</td><td>${esc(p.canal)}</td>
-        <td>${p.programadoPara ? '📅 ' + p.programadoPara : ''}</td>
-        <td><span class="chip ${p.estado}">${esc(p.estadoNombre)}</span></td></tr>`).join('') || '<tr><td colspan="7" class="sub">Sin pedidos.</td></tr>'}
+        <td>${esc(p.ciudad)} (${esc(p.pais)})</td><td><b>${dinero(p.total, p.moneda)}</b><br><small>${p.items} ${p.items === 1 ? 'artículo' : 'artículos'}</small></td>
+        <td>${p.canal === 'whatsapp' ? ico('chat') + ' Sofía' : p.canal === 'admin' ? ico('user') + ' Manual' : ico('external') + ' Web'}</td>
+        <td>${p.programadoPara ? ico('calendar') + ' ' + p.programadoPara : '<small>—</small>'}</td>
+        <td><span class="chip ${p.estado}">${esc(p.estadoNombre)}</span></td></tr>`).join('') || `<tr><td colspan="7"><div class="vacio">${ico('inbox')}Sin pedidos con ese filtro.</div></td></tr>`}
     </tbody></table></div>`;
 }
 async function verPedido(id) {
   const d = await api('/pedidos/' + id);
-  if (!d.ok) return alert(d.error);
+  if (!d.ok) return toast(d.error, 'error');
   const p = d.pedido, t = p.totales, m = p.moneda, dir = p.direccion;
   const estados = ['pendiente_pago', 'pagado', 'en_preparacion', 'enviado', 'entregado', 'cancelado', 'reembolsado'];
+  const nombres = { pendiente_pago: 'Pendiente de pago', pagado: 'Pagado', en_preparacion: 'En preparación', enviado: 'Enviado', entregado: 'Entregado', cancelado: 'Cancelado', reembolsado: 'Reembolsado', rechazado: 'Rechazado' };
+  const acciones = [];
+  if (p.estado === 'pendiente_pago') acciones.push(`<button class="btn exito" onclick="confirmarManual(${p.id})">${ico('check')} Confirmar pago</button>`);
+  if (p.estado === 'pagado') acciones.push(`<button class="btn primario" onclick="accionPedido(${p.id}, 'en_preparacion')">${ico('package')} Pasar a preparación</button>`);
+  if (p.estado === 'pagado' || p.estado === 'en_preparacion') acciones.push(`<button class="btn primario" onclick="prepararEnvio()">${ico('truck')} Marcar enviado</button>`);
+  if (p.estado === 'enviado') acciones.push(`<button class="btn exito" onclick="accionPedido(${p.id}, 'entregado')">${ico('check')} Marcar entregado</button>`);
+  if (ESTADOS_ACTIVOS.includes(p.estado)) acciones.push(`<button class="btn peligro" onclick="cancelarPedido(${p.id})">${ico('x')} Cancelar pedido</button>`);
+  if (p.waId) acciones.push(`<button class="btn" onclick="cerrarModal(); irAChat('${esc(p.waId)}')">${ico('chat')} Abrir chat</button>`);
   abrirModal(`
-    <h2>Pedido ${esc(p.numero)} <span class="chip ${p.estado}">${esc(p.estado)}</span></h2>
-    <div class="grid2">
+    <div class="modal-cab"><h2>Pedido ${esc(p.numero)} <span class="chip ${p.estado}">${nombres[p.estado] || esc(p.estado)}</span></h2><button class="btn btn-icono" onclick="cerrarModal()" aria-label="Cerrar">${ico('x')}</button></div>
+    <div class="acciones-rapidas">${acciones.join('')}<span class="error" id="e-error" style="align-self:center"></span></div>
+    <div class="grid2" style="margin-top:18px">
       <div><dl class="detalle-pedido">
-        <dt>Cliente</dt><dd>${esc(p.cliente.nombre)}<br>${esc(p.cliente.email)} · ${esc(p.cliente.telefono)}${p.waId ? ' · WhatsApp ' + esc(p.waId) : ''}</dd>
+        <dt>Cliente</dt><dd><b>${esc(p.cliente.nombre)}</b><br>${esc(p.cliente.email)} · ${esc(p.cliente.telefono)}${p.waId ? '<br><small>WhatsApp ' + esc(p.waId) + '</small>' : ''}</dd>
         <dt>Entrega</dt><dd>${esc(dir.linea1)}${dir.linea2 ? ', ' + esc(dir.linea2) : ''}<br>${esc(dir.ciudad)}${dir.departamento ? ', ' + esc(dir.departamento) : ''} · ${esc(dir.pais)} ${esc(dir.codigoPostal || '')}<br><small>${esc(p.envio.zona)} · ${esc(p.envio.transportadora)} · ${esc(p.envio.dias)}</small></dd>
-        ${p.programadoPara ? `<dt>Entrega programada</dt><dd>📅 ${esc(p.programadoPara)} <button class="btn mini" onclick="reprogramarPedido(${p.id})">Cambiar</button></dd>` : ''}
+        ${p.programadoPara ? `<dt>Entrega programada</dt><dd>${ico('calendar')} ${esc(p.programadoPara)} <button class="btn mini" onclick="reprogramarPedido(${p.id})">Cambiar</button></dd>` : ''}
         ${p.nota ? `<dt>Nota del cliente</dt><dd>${esc(p.nota)}</dd>` : ''}
-        <dt>Pago</dt><dd>${esc(p.referenciaPago || '—')}${p.checkoutId ? '<br><small>checkout ' + esc(p.checkoutId) + '</small>' : ''}${p.urlPago && p.estado === 'pendiente_pago' ? `<br><a href="${esc(p.urlPago)}" target="_blank">Link de pago</a>` : ''}</dd>
+        <dt>Pago</dt><dd>${esc(p.referenciaPago || '—')}${p.checkoutId ? '<br><small>checkout ' + esc(p.checkoutId) + '</small>' : ''}${p.urlPago && p.estado === 'pendiente_pago' ? `<br><a href="${esc(p.urlPago)}" target="_blank">${ico('external')} Link de pago</a>` : ''}</dd>
         <dt>Envío</dt><dd>${esc(p.transportadora || '—')} ${p.guia ? '· guía ' + esc(p.guia) : ''} ${p.urlSeguimiento ? `· <a href="${esc(p.urlSeguimiento)}" target="_blank">rastrear</a>` : ''}</dd>
       </dl></div>
       <div><table><thead><tr><th>Producto</th><th>Cant.</th><th>Total</th></tr></thead><tbody>
@@ -470,43 +681,60 @@ async function verPedido(id) {
         <tr><td colspan="2">Envío${p.envio.gratis ? ' (gratis)' : ''}</td><td>${dinero(t.envio + t.envioIva, m)}</td></tr>
         <tr><td colspan="2"><b>Total</b></td><td><b>${dinero(t.total, m)}</b></td></tr></tbody></table></div>
     </div>
-    <div class="seccion"><h3>Cambiar estado</h3>
+    <div class="seccion" id="sec-envio"><h3>${ico('truck')} Envío y cambio de estado</h3>
       <div class="grid4">
-        <div class="campo"><label>Nuevo estado</label><select id="e-estado">${estados.map((e) => `<option value="${e}" ${p.estado === e ? 'selected' : ''}>${e}</option>`).join('')}</select></div>
+        <div class="campo"><label>Nuevo estado</label><select id="e-estado">${estados.map((e) => `<option value="${e}" ${p.estado === e ? 'selected' : ''}>${nombres[e]}</option>`).join('')}</select></div>
         <div class="campo"><label>Transportadora</label><input id="e-trans" value="${esc(p.transportadora || p.envio.transportadora || '')}"></div>
         <div class="campo"><label>Número de guía</label><input id="e-guia" value="${esc(p.guia || '')}"></div>
         <div class="campo"><label>URL de rastreo</label><input id="e-url" value="${esc(p.urlSeguimiento || '')}"></div>
       </div>
-      <div class="campo" style="margin-top:10px"><label>Nota interna</label><input id="e-nota"></div>
-      <div class="barra" style="margin-top:12px">
-        <button class="btn primario" onclick="cambiarEstadoPedido(${p.id})">Guardar estado</button>
-        ${p.estado === 'pendiente_pago' ? `<button class="btn" onclick="confirmarManual(${p.id})">Confirmar pago manual</button>` : ''}
-        <span class="error" id="e-error"></span>
-      </div></div>
-    <div class="seccion"><h3>Historial</h3>${p.historial.map((h) => `<div><small>${fecha(h.ts)}</small> · <b>${esc(h.estado)}</b> ${esc(h.nota || '')}</div>`).join('')}</div>
-    <div class="seccion"><button class="btn" onclick="cerrarModal()">Cerrar</button></div>`);
+      <div class="campo" style="margin-top:12px"><label>Nota interna</label><input id="e-nota" placeholder="Opcional: motivo, referencia, comentario…"></div>
+      <div class="barra" style="margin-top:12px"><button class="btn primario" onclick="cambiarEstadoPedido(${p.id})">${ico('check')} Guardar cambios</button></div></div>
+    <div class="seccion"><h3>${ico('clock')} Historial</h3><div class="historial">${p.historial.map((h) => `<div><small>${fecha(h.ts)}</small><span class="chip ${h.estado}">${nombres[h.estado] || esc(h.estado)}</span><span>${esc(h.nota || '')}</span></div>`).join('')}</div></div>`);
+}
+function prepararEnvio() {
+  $('#e-estado').value = 'enviado';
+  $('#sec-envio').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const g = $('#e-guia'); g.focus();
+  toast('Completa la transportadora y la guía, y pulsa "Guardar cambios".');
+}
+async function accionPedido(id, estado, nota = '') {
+  const r = await post(`/pedidos/${id}/estado`, { estado, nota });
+  if (!r.ok) return toast(r.error || 'No se pudo actualizar', 'error');
+  toast('Pedido ' + r.pedido.numero + ' → ' + estado.replace('_', ' '), 'ok');
+  if ($('#modal').classList.contains('abierto')) verPedido(id);
+  refrescarVista();
+}
+async function cancelarPedido(id) {
+  const motivo = prompt('¿Cancelar este pedido? Escribe el motivo (se le avisa al cliente por WhatsApp si el chat está abierto):');
+  if (motivo === null) return;
+  accionPedido(id, 'cancelado', motivo);
 }
 async function cambiarEstadoPedido(id) {
   const r = await post(`/pedidos/${id}/estado`, { estado: $('#e-estado').value, nota: $('#e-nota').value, guia: $('#e-guia').value, transportadora: $('#e-trans').value, urlSeguimiento: $('#e-url').value });
-  if (!r.ok) { $('#e-error').textContent = r.error; return; }
-  verPedido(id);
+  if (!r.ok) { $('#e-error').textContent = r.error; return toast(r.error, 'error'); }
+  toast('Pedido actualizado', 'ok');
+  verPedido(id); refrescarVista();
 }
 async function confirmarManual(id) {
-  if (!confirm('¿Confirmar que este pedido ya fue pagado (transferencia, efectivo, etc.)?')) return;
+  if (!confirm('¿Confirmar que este pedido ya fue pagado (transferencia, efectivo, etc.)? Se le avisa al cliente.')) return;
   const r = await post(`/pedidos/${id}/confirmar-pago`, { referencia: 'manual' });
-  if (!r.ok) alert(r.error || 'No se pudo confirmar'); verPedido(id);
+  if (!r.ok) return toast(r.error || 'No se pudo confirmar', 'error');
+  toast('Pago confirmado', 'ok');
+  if ($('#modal').classList.contains('abierto')) verPedido(id);
+  refrescarVista();
 }
 async function reprogramarPedido(id) {
   const f = prompt('Nueva fecha de entrega (AAAA-MM-DD):'); if (!f) return;
   const r = await post(`/pedidos/${id}/reprogramar`, { fecha: f });
-  if (!r.ok) alert(r.error); else verPedido(id);
+  if (!r.ok) toast(r.error, 'error'); else { toast('Fecha actualizada', 'ok'); verPedido(id); }
 }
 async function programados() {
   const d = await api('/pedidos?programados=1');
   const lista = d.pedidos.filter((p) => !['cancelado', 'rechazado', 'reembolsado', 'entregado'].includes(p.estado)).sort((a, b) => a.programadoPara.localeCompare(b.programadoPara));
-  main.innerHTML = `<h1>Pedidos programados</h1><div class="sub">Entregas con fecha futura. Los recordatorios al cliente se envían 3 y 1 día antes.</div>
+  main.innerHTML = `<div class="cabecera"><div><h1>Pedidos programados</h1><div class="sub">Entregas con fecha futura. Los recordatorios al cliente se envían 3 y 1 día antes.</div></div></div>
     <div class="panel"><table><thead><tr><th>Fecha</th><th>Pedido</th><th>Cliente</th><th>Destino</th><th>Estado</th></tr></thead><tbody>
-    ${lista.map((p) => `<tr class="fila-click" onclick="verPedido(${p.id})"><td><b>📅 ${p.programadoPara}</b></td><td>${esc(p.numero)}</td><td>${esc(p.cliente)}</td><td>${esc(p.ciudad)} (${esc(p.pais)})</td><td><span class="chip ${p.estado}">${esc(p.estadoNombre)}</span></td></tr>`).join('') || '<tr><td colspan="5" class="sub">No hay pedidos programados.</td></tr>'}
+    ${lista.map((p) => `<tr class="fila-click" onclick="verPedido(${p.id})"><td><b>${ico('calendar')} ${p.programadoPara}</b></td><td>${esc(p.numero)}</td><td>${esc(p.cliente)}</td><td>${esc(p.ciudad)} (${esc(p.pais)})</td><td><span class="chip ${p.estado}">${esc(p.estadoNombre)}</span></td></tr>`).join('') || `<tr><td colspan="5"><div class="vacio">${ico('calendar')}No hay pedidos programados.</div></td></tr>`}
     </tbody></table></div>`;
 }
 
@@ -551,12 +779,41 @@ async function borrarAux(tabla, id) {
 // ============================================================
 //  WhatsApp
 // ============================================================
-let WA = null;
+let WA = null, WA_TIMER = null, WA_LISTA = [], WA_FILTRO = '';
+const RESPUESTAS_RAPIDAS = [
+  '¡Hola! Soy del equipo de Arte\'Sano 🌿 ¿En qué te puedo ayudar?',
+  'Ya reviso tu pedido y te confirmo en un momento.',
+  'Tu pedido quedó confirmado ✅ Te avisamos cuando salga.',
+  'Puedes pagar con el link que te enviamos y me avisas cuando lo hagas 🙏',
+  '¡Gracias por tu compra! 💚',
+];
+const COLORES_AVATAR = ['#7C8B5D', '#C9A876', '#B8553F', '#4E6FA3', '#8A7F72', '#A0708F'];
+function avatar(nombre, waId) {
+  const base = (nombre || '').trim() || String(waId || '');
+  const ini = base.split(/\s+/).slice(0, 2).map((s) => s[0]).join('').toUpperCase() || '#';
+  let h = 0; for (const ch of String(waId || base)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return `<span class="avatar" style="background:${COLORES_AVATAR[h % COLORES_AVATAR.length]}">${esc(ini.replace(/[^A-Z0-9#+]/g, '') || '#')}</span>`;
+}
+function pintarListaChats() {
+  const f = WA_FILTRO.toLowerCase();
+  const lista = WA_LISTA.filter((c) => !f || (c.nombre || '').toLowerCase().includes(f) || c.waId.includes(f) || (c.ultimo || '').toLowerCase().includes(f));
+  $('#wa-items').innerHTML = lista.map((c) => `<div class="chat-item ${WA && WA.waId === c.waId ? 'activo' : ''}" onclick="abrirChat('${c.waId}')">
+      ${avatar(c.nombre, c.waId)}
+      <div><div class="nombre"><span>${esc(c.nombre || '+' + c.waId)}</span>${c.modo === 'humano' ? '<span class="chip humano">tú</span>' : ''}</div><div class="ultimo">${esc(c.ultimo || '')}</div></div>
+      <div class="meta"><span>${haceCuanto(c.ultimaActividad)}</span>${c.sinLeer ? `<span class="badge">${c.sinLeer}</span>` : ''}</div>
+    </div>`).join('') || `<div class="vacio">${ico('inbox')}${f ? 'Nada coincide con la búsqueda.' : 'Aún no hay conversaciones.'}</div>`;
+}
 async function whatsapp() {
   const d = await api('/conversaciones');
-  main.innerHTML = `<h1>WhatsApp</h1><div class="sub">Conversaciones de Arte-SanoBot. Toma el control para responder tú. Costo y uso de la IA: pestaña "Monitor de tokens".</div>
-    <div class="panel chat"><div class="chat-lista" id="wa-lista">${d.conversaciones.map((c) => `<div class="chat-item" onclick="abrirChat('${c.waId}')"><b>${esc(c.nombre || c.waId)}</b> ${c.modo === 'humano' ? '<span class="chip pendiente_pago">humano</span>' : ''} ${c.sinLeer ? `<span class="chip">${c.sinLeer}</span>` : ''}<br><small>${esc(c.ultimo).slice(0, 60)}</small></div>`).join('') || '<div class="sub" style="padding:10px">Aún no hay conversaciones.</div>'}</div>
-    <div id="wa-chat"><div class="sub">Selecciona una conversación.</div></div></div>`;
+  WA_LISTA = d.conversaciones || [];
+  badgeWa(WA_LISTA.reduce((n, c) => n + (c.sinLeer || 0), 0));
+  main.innerHTML = `<div class="cabecera"><div><h1>WhatsApp · Arte-SanoBot</h1><div class="sub">Sofía atiende sola; toma el control cuando quieras responder tú. Costo de la IA en "Monitor de tokens".</div></div>
+      <div class="barra" style="margin:0"><button class="btn" onclick="whatsapp()">${ico('refresh')} Actualizar</button></div></div>
+    <div class="panel chat" id="chat">
+      <div class="chat-lista"><div class="chat-lista-cab"><div class="buscador">${ico('search')}<input id="wa-buscar" placeholder="Buscar chat…" value="${esc(WA_FILTRO)}" oninput="WA_FILTRO=this.value; pintarListaChats()"></div></div><div id="wa-items"></div></div>
+      <div class="chat-cuerpo" id="wa-chat"><div class="vacio" style="padding:80px 20px">${ico('chat')}Selecciona una conversación para verla aquí.</div></div>
+    </div>`;
+  pintarListaChats();
 }
 
 // ============================================================
@@ -617,7 +874,7 @@ async function monitorConversaciones() {
       <div class="tarjeta"><div class="k">Total</div><div class="v">${c.total}</div><div class="d">En el rango seleccionado</div></div>
       <div class="tarjeta"><div class="k">Atención humana</div><div class="v">${c.enHumano}</div></div>
     </div>
-    <div class="panel"><h2>🎯 Meta semanal de pedidos</h2>
+    <div class="panel"><h2>${ico('target')} Meta semanal de pedidos</h2>
       <div class="sub" style="margin-bottom:10px">Esta semana: ${meta.semana.pedidos} de ${meta.meta} pedidos (${meta.semana.pct}%) · faltan ${meta.semana.faltan} · proyección al cierre: ${meta.semana.proyeccion}</div>
       <div class="barra-progreso"><div class="barra-progreso-r" style="width:${meta.semana.pct}%"></div></div>
       <div class="barra" style="margin-top:12px;align-items:center"><button class="btn mini" onclick="cambiarMetaSemanal()">Cambiar meta</button><span class="sub" style="margin:0">${meta.semanasCumplidas} de ${meta.semanasCerradas} semanas cerradas cumplieron la meta</span></div>
@@ -636,7 +893,7 @@ async function monitorConversaciones() {
       <table style="margin-top:14px"><thead><tr><th>Canal</th><th>Chats</th><th>Interés</th><th>Cotizados</th><th>Compraron</th><th>Conv.</th></tr></thead><tbody>
       ${emb.canales.map((x) => `<tr><td>${esc(x.canal)}</td><td>${x.total}</td><td>${x.interesadas}</td><td>${x.cotizadas}</td><td><b>${x.compraron}</b></td><td>${x.conversionPct == null ? '—' : x.conversionPct + '%'}</td></tr>`).join('') || '<tr><td colspan="6" class="sub">Sin datos todavía.</td></tr>'}
       </tbody></table></div>
-    <div class="panel"><h2>🔥 Conversaciones calientes (${cal.calientes.length})</h2>
+    <div class="panel"><h2>${ico('flame')} Conversaciones calientes (${cal.calientes.length})</h2>
       <div class="sub" style="margin-bottom:10px">Preguntaron por precio o producto y no compraron · últimas 72 h</div>
       ${cal.calientes.length ? cal.calientes.map((x) => `<div class="caliente" onclick="irAChat('${x.waId}')"><div class="cab"><b>${esc(x.nombre || '+' + x.waId)}</b><span>${x.horasDesde} h · ${esc(x.canal || 'Directo / Otro')}</span></div><div class="txt">${esc((x.ultimoTexto || '').slice(0, 90))}</div></div>`).join('') : '<div class="sub">No hay conversaciones pendientes de cierre. 🎉</div>'}
     </div>`;
@@ -659,18 +916,58 @@ async function irAChat(waId) {
 async function abrirChat(waId) {
   const d = await api('/conversaciones/' + waId);
   if (!d.ok) return;
-  WA = d.conversacion;
-  $('#wa-chat').innerHTML = `<div class="barra"><b>${esc(WA.nombre || WA.waId)}</b> <small>${esc(WA.waId)}</small>
-      ${WA.modo === 'humano' ? `<button class="btn mini" onclick="modoChat('bot')">Devolver al bot</button>` : `<button class="btn mini primario" onclick="modoChat('humano')">Tomar control</button>`}
-      ${WA.ventanaAbierta ? '<span class="chip ok">ventana 24 h abierta</span>' : '<span class="chip no">ventana cerrada</span>'}</div>
-    <div class="burbujas" id="burbujas">${WA.mensajes.map((m) => `<div class="burbuja ${m.direccion}"><small style="color:var(--gris)">${esc(m.autor)} · ${fecha(m.ts)}</small><br>${esc(m.texto)}</div>`).join('')}</div>
-    <div class="barra" style="margin-top:10px"><input id="wa-texto" placeholder="Escribe una respuesta…" style="flex:1"><button class="btn primario" onclick="responderChat()">Enviar</button><span class="error" id="wa-error"></span></div>`;
+  const borrador = $('#wa-texto')?.value || '';
+  WA = d.conversacion; WA.pedidos = d.pedidos || [];
+  $('#chat')?.classList.add('con-abierto');
+  document.querySelectorAll('.chat-item').forEach((el) => el.classList.toggle('activo', el.getAttribute('onclick')?.includes(`'${waId}'`)));
+  const pedidoMini = (p) => {
+    const acc = [];
+    if (p.estado === 'pendiente_pago') acc.push(`<button class="btn mini exito" onclick="confirmarManual(${p.id})">${ico('check')} Confirmar</button>`);
+    if (p.estado === 'pagado' || p.estado === 'en_preparacion') acc.push(`<button class="btn mini primario" onclick="verPedido(${p.id}).then(prepararEnvio)">${ico('truck')} Enviar</button>`);
+    if (p.estado === 'enviado') acc.push(`<button class="btn mini exito" onclick="accionPedido(${p.id}, 'entregado')">${ico('check')} Entregado</button>`);
+    if (ESTADOS_ACTIVOS.includes(p.estado)) acc.push(`<button class="btn mini peligro" onclick="cancelarPedido(${p.id})">${ico('x')} Cancelar</button>`);
+    acc.push(`<button class="btn mini" onclick="verPedido(${p.id})">${ico('eye')} Ver</button>`);
+    return `<div class="pedido-mini"><div class="cab"><b class="nowrap">${esc(p.numero)}</b><span class="chip ${p.estado}">${esc(p.estadoNombre)}</span></div><div class="info">${dinero(p.total, p.moneda)} · ${p.items} ${p.items === 1 ? 'artículo' : 'artículos'}${p.programadoPara ? ' · ' + p.programadoPara : ''}</div><div class="acciones">${acc.join('')}</div></div>`;
+  };
+  $('#wa-chat').innerHTML = `
+    <div class="chat-cab">
+      <button class="btn btn-icono" onclick="cerrarChat()" aria-label="Volver" title="Volver a la lista">${ico('undo')}</button>
+      ${avatar(WA.nombre, WA.waId)}
+      <div class="quien"><b>${esc(WA.nombre || '+' + WA.waId)}</b><small>+${esc(WA.waId)}${WA.canal ? ' · llegó por ' + esc(WA.canal) : ''}</small></div>
+      ${WA.modo === 'humano' ? '<span class="chip humano">Lo atiendes tú</span>' : '<span class="chip bot">Atiende Sofía</span>'}
+      ${WA.ventanaAbierta ? '<span class="chip ok">ventana 24 h abierta</span>' : '<span class="chip no" title="El cliente debe escribir primero para poder responderle">ventana cerrada</span>'}
+      ${WA.modo === 'humano' ? `<button class="btn" onclick="modoChat('bot')">${ico('bot')} Devolver a Sofía</button>` : `<button class="btn primario" onclick="modoChat('humano')">${ico('hand')} Tomar control</button>`}
+    </div>
+    ${WA.pedidos.length ? `<div class="pedidos-chat">${WA.pedidos.map(pedidoMini).join('')}</div>` : ''}
+    <div class="burbujas" id="burbujas">${WA.mensajes.map((m) => `<div class="burbuja ${m.direccion} ${m.autor === 'tienda' ? 'tienda' : ''}"><small>${m.autor === 'cliente' ? esc(WA.nombre || 'Cliente') : m.autor === 'tienda' ? 'Tú' : 'Sofía'} · ${fecha(m.ts)}</small>${esc(m.texto)}</div>`).join('') || `<div class="vacio">${ico('chat')}Sin mensajes todavía.</div>`}</div>
+    <div class="respuestas-rapidas">${RESPUESTAS_RAPIDAS.map((t) => `<button type="button" onclick="usarRapida(this.textContent)">${esc(t)}</button>`).join('')}</div>
+    <div class="compositor"><textarea id="wa-texto" rows="1" placeholder="${WA.modo === 'humano' ? 'Escribe tu respuesta… (Enter envía, Shift+Enter salto de línea)' : 'Escribe para responder tú (Sofía seguirá activa salvo que tomes el control)'}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();responderChat();}">${esc(borrador)}</textarea><button class="btn primario" onclick="responderChat()">${ico('send')} Enviar</button></div>
+    <div class="error" id="wa-error" style="padding:0 18px 10px"></div>`;
   const b = $('#burbujas'); b.scrollTop = b.scrollHeight;
+  clearInterval(WA_TIMER);
+  WA_TIMER = setInterval(refrescarChat, 8000);
 }
-async function modoChat(modo) { await post(`/conversaciones/${WA.waId}/modo`, { modo }); abrirChat(WA.waId); }
+async function refrescarChat() {
+  if (!WA || VISTA !== 'whatsapp') return;
+  const [d, l] = await Promise.all([api('/conversaciones/' + WA.waId), api('/conversaciones')]);
+  if (l.conversaciones) { WA_LISTA = l.conversaciones; pintarListaChats(); badgeWa(WA_LISTA.reduce((n, c) => n + (c.sinLeer || 0), 0)); }
+  const firma = (c, ps) => c.mensajes.length + '|' + c.modo + '|' + (ps || []).map((p) => p.id + ':' + p.estado).join(',');
+  if (d.ok && firma(d.conversacion, d.pedidos) !== firma(WA, WA.pedidos)) abrirChat(WA.waId);
+}
+function detenerChat() { clearInterval(WA_TIMER); WA_TIMER = null; WA = null; }
+function cerrarChat() { detenerChat(); $('#chat')?.classList.remove('con-abierto'); $('#wa-chat').innerHTML = `<div class="vacio" style="padding:80px 20px">${ico('chat')}Selecciona una conversación para verla aquí.</div>`; pintarListaChats(); }
+function usarRapida(t) { const ta = $('#wa-texto'); ta.value = t; ta.focus(); }
+async function modoChat(modo) {
+  await post(`/conversaciones/${WA.waId}/modo`, { modo });
+  toast(modo === 'humano' ? 'Tomaste el control del chat' : 'Sofía vuelve a atender este chat', 'ok');
+  abrirChat(WA.waId);
+}
 async function responderChat() {
-  const r = await post(`/conversaciones/${WA.waId}/responder`, { texto: $('#wa-texto').value });
-  if (!r.ok) { $('#wa-error').textContent = r.error; return; }
+  const texto = $('#wa-texto').value.trim();
+  if (!texto) return;
+  const r = await post(`/conversaciones/${WA.waId}/responder`, { texto });
+  if (!r.ok) { $('#wa-error').textContent = r.error; return toast(r.error, 'error'); }
+  $('#wa-texto').value = '';
   abrirChat(WA.waId);
 }
 
