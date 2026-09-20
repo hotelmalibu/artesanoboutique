@@ -231,12 +231,31 @@ async function financiero() {
       <div class="campo"><label>Meta de ventas mensual (COP)</label><input id="f-meta" type="number" min="0" step="1000" value="${m.metaMensualCop}"></div>
       <div class="campo"><label>Margen objetivo por defecto (%)</label><input id="f-margen" type="number" min="1" max="95" value="${m.margenObjetivoPct}"><small>El costo por defecto de cada producto es ${100 - m.margenObjetivoPct}% del precio, salvo que le fijes un costo propio al editarlo.</small></div></div>
       <div class="barra" style="margin-top:10px"><button class="btn primario" onclick="guardarMetaFinanciera()">Guardar meta</button><span class="error" id="f-error"></span></div></div>
-    <div class="panel"><h2>Productos: precio, costo y margen</h2>
-      <table><thead><tr><th>Producto</th><th>Línea</th><th>Precio</th><th>Costo est.</th><th>Margen</th><th>Margen %</th><th>Unidades para la meta</th></tr></thead><tbody>
-      ${d.productos.map((p) => `<tr class="fila-click" onclick="editarProducto(${p.id})"><td>${esc(p.nombre)}</td><td>${esc(p.categoria)}</td><td>${cop(p.precio)}</td><td>${cop(p.costo)}</td><td>${cop(p.margenCop)}</td><td>${p.margenPct}%</td><td>${p.unidadesParaMeta ?? '—'}</td></tr>`).join('') || '<tr><td colspan="7" class="sub">Aún no hay productos publicados.</td></tr>'}
+    <div class="tarjetas">
+      <div class="tarjeta"><div class="k">Plan: unidades a vender en el mes</div><div class="v">${d.plan.unidades.toLocaleString('es-CO')}</div><div class="d">Entre todos los productos, según el reparto de abajo</div></div>
+      <div class="tarjeta"><div class="k">Ventas del plan</div><div class="v">${cop(d.plan.ventasCop)}</div><div class="d">Meta: ${cop(m.metaMensualCop)}</div></div>
+      <div class="tarjeta"><div class="k">Utilidad esperada del plan</div><div class="v">${cop(d.plan.margenCop)}</div><div class="d">Con el costo estimado de cada producto</div></div>
+    </div>
+    <div class="panel"><h2>Reparto de la meta entre productos</h2>
+      <div class="sub">Cada producto aporta una parte de la meta de ventas. Las unidades salen de esa parte dividida entre el <b>precio</b>. Por defecto es en partes iguales; cambia los % y se ajustan solos para sumar 100%.</div>
+      <table><thead><tr><th>Producto</th><th>Precio</th><th>Margen</th><th>% de la meta</th><th>Ventas meta</th><th>Unidades meta</th><th>Vendidas este mes</th><th>Avance</th></tr></thead><tbody>
+      ${d.productos.map((p) => `<tr><td class="fila-click" onclick="editarProducto(${p.id})">${esc(p.nombre)}<br><small class="sub">${esc(p.categoria)}</small></td><td>${cop(p.precio)}</td><td>${cop(p.margenCop)} · ${p.margenPct}%</td><td><input class="f-part" data-slug="${esc(p.slug)}" type="number" min="0" step="0.1" value="${p.participacionPct}" style="width:80px"></td><td>${cop(p.metaVentasCop)}</td><td><b>${p.unidadesMeta.toLocaleString('es-CO')}</b></td><td>${p.vendidasMes}</td><td>${p.avanceUnidadesPct}%</td></tr>`).join('') || '<tr><td colspan="8" class="sub">Aún no hay productos publicados.</td></tr>'}
       </tbody></table>
-      <div class="sub" style="margin-top:8px">"Unidades para la meta" es una referencia: cuántas unidades de ESE producto solo, vendidas este mes, cubrirían la meta completa. Para fijar un costo real distinto al 70% en un producto puntual, edítalo y usa el campo "Costo" en Precio e impuestos.</div>
+      <div class="barra" style="margin-top:10px"><button class="btn primario" onclick="guardarReparto()">Guardar reparto</button><button class="btn" onclick="repartoIgual()">Partes iguales</button><span class="error" id="f-reparto-error"></span></div>
+      <div class="sub" style="margin-top:8px">Referencia: si vendieras <b>un solo producto</b>, la meta completa pediría ${d.productos.length ? 'entre ' + Math.min(...d.productos.filter((p) => p.unidadesSolo).map((p) => p.unidadesSolo)).toLocaleString('es-CO') + ' y ' + Math.max(...d.productos.filter((p) => p.unidadesSolo).map((p) => p.unidadesSolo)).toLocaleString('es-CO') + ' unidades de ese producto' : '—'}. Repartida entre todos, el plan de arriba es el número real. Para un costo real distinto al ${100 - m.margenObjetivoPct}% en un producto, edítalo y usa el campo "Costo".</div>
     </div>`;
+}
+async function guardarReparto() {
+  const participaciones = {};
+  document.querySelectorAll('.f-part').forEach((i) => { participaciones[i.dataset.slug] = Number(i.value) || 0; });
+  const r = await post('/financiero/reparto', { participaciones });
+  if (!r.ok) $('#f-reparto-error').textContent = r.error || 'No se pudo guardar.';
+  else financiero();
+}
+async function repartoIgual() {
+  const r = await post('/financiero/reparto', { participaciones: {} });
+  if (!r.ok) $('#f-reparto-error').textContent = r.error || 'No se pudo guardar.';
+  else financiero();
 }
 async function guardarMetaFinanciera() {
   const r = await post('/financiero/meta', { metaMensualCop: Number($('#f-meta').value), margenObjetivoPct: Number($('#f-margen').value) });

@@ -17,7 +17,7 @@
 //   POST /admin/api/pedidos/:id/confirmar-pago  -> confirmacion manual
 //   POST /admin/api/pedidos/:id/reprogramar     -> { fecha }
 //   GET/POST /admin/api/ajustes
-//   GET  /admin/api/financiero · POST /admin/api/financiero/meta
+//   GET  /admin/api/financiero · POST /admin/api/financiero/meta · POST .../reparto
 //   GET  /admin/api/conversaciones[/:waId] · POST .../responder · POST .../modo
 //   GET  /admin/api/ia/metricas          -> costo y uso de Arte-SanoBot
 //   GET  /admin/api/monitor              -> conversaciones por canal
@@ -35,7 +35,7 @@ import { config, TIPOS_IVA } from '../config.js';
 import { listar, obtener, guardar, eliminar, enriquecer, bajoStock, resumenCatalogo, ESTADOS_PRODUCTO, TABLAS } from '../almacen/catalogo.js';
 import { listarPedidos, obtenerPedido, actualizarEstado, reprogramar, resumenVentas, programadosProximos, ESTADOS, NOMBRES_ESTADO } from '../almacen/pedidos.js';
 import { todosLosAjustes, fijarAjuste } from '../almacen/ajustes.js';
-import { resumenFinanciero, fijarMetaFinanciera } from '../almacen/financiero.js';
+import { resumenFinanciero, fijarMetaFinanciera, fijarReparto } from '../almacen/financiero.js';
 import { resumenMetricas } from '../ia/metricas.js';
 import { store } from '../almacen/conversaciones.js';
 import { resumenMetaSemanal, fijarMetaSemanalPedidos, waIdsConCompra } from '../almacen/metaSemanal.js';
@@ -292,6 +292,14 @@ adminRouter.get('/api/financiero', (_req, res) => res.json({ ok: true, ...resume
 adminRouter.post('/api/financiero/meta', (req, res) => {
   try {
     res.json({ ok: true, meta: fijarMetaFinanciera(req.body || {}) });
+  } catch (err) {
+    res.status(400).json({ ok: false, error: err.message });
+  }
+});
+
+adminRouter.post('/api/financiero/reparto', (req, res) => {
+  try {
+    res.json({ ok: true, meta: fijarReparto(req.body?.participaciones || {}) });
   } catch (err) {
     res.status(400).json({ ok: false, error: err.message });
   }
