@@ -708,12 +708,19 @@ async function diagnostico() {
     </tbody></table></div>
     <div class="panel"><h2>Probar correo</h2><div class="barra"><input id="dg-to" placeholder="correo@destino.com"><button class="btn" onclick="probarCorreo()">Enviar prueba</button><span id="dg-res"></span></div>
       <table><thead><tr><th>Cuándo</th><th>Para</th><th>Asunto</th><th>Resultado</th></tr></thead><tbody>${(d.correo.ultimos || []).map((u) => `<tr><td>${esc(u.cuando)}</td><td>${esc(u.to)}</td><td>${esc(u.subject)}</td><td>${u.ok ? '<span class="chip ok">ok</span>' : '<span class="chip no">' + esc(u.error || u.status) + '</span>'}</td></tr>`).join('')}</tbody></table></div>
+    <div class="panel"><h2>WhatsApp: suscripción de la app a la cuenta (WABA)</h2><div class="sub">Si el webhook se verifica pero no llegan mensajes, suscribe la app a la cuenta de WhatsApp Business.</div>
+      <div class="barra"><input id="dg-waba" value="3424934204355425" placeholder="ID de la cuenta de WhatsApp Business"><button class="btn" onclick="repararWaba()">Reparar suscripción</button></div><pre id="dg-waba-res" style="white-space:pre-wrap;font-size:12px"></pre></div>
     <div class="panel"><h2>Seguridad</h2><div id="dg-seg">Cargando…</div></div>`;
   const s = await api('/seguridad');
   $('#dg-seg').innerHTML = `2FA: ${s.totpActivo ? '<span class="chip ok">activo</span>' : '<span class="chip no">inactivo</span> <button class="btn mini" onclick="nuevoTotp()">Generar secreto 2FA</button>'} <div id="totp"></div>
     <table style="margin-top:10px"><thead><tr><th>Cuándo</th><th>IP</th><th>Usuario</th><th>Resultado</th></tr></thead><tbody>${s.intentos.map((x) => `<tr><td>${fecha(x.ts)}</td><td>${esc(x.ip)}</td><td>${esc(x.usuario)}</td><td>${x.ok ? '<span class="chip ok">ok</span>' : '<span class="chip no">' + esc(x.motivo) + '</span>'}</td></tr>`).join('')}</tbody></table>`;
 }
 async function probarCorreo() { const r = await post('/diagnostico/correo', { to: $('#dg-to').value }); $('#dg-res').innerHTML = r.ok ? '<span class="exito">Enviado ✓</span>' : '<span class="error">' + esc(r.error || 'falló') + '</span>'; }
+async function repararWaba() {
+  const out = $('#dg-waba-res'); out.textContent = 'Consultando a Meta…';
+  const r = await api('/waba/reparar?waba=' + encodeURIComponent($('#dg-waba').value.trim()));
+  out.textContent = (r.mensaje || r.error || r.pista || '') + '\n\n' + JSON.stringify(r, null, 2);
+}
 async function nuevoTotp() { const r = await api('/seguridad/totp/nuevo'); $('#totp').innerHTML = `<div class="aviso">Agrega este secreto en Google Authenticator y ponlo en Render como <code>ADMIN_TOTP_SECRET</code>:<br><code>${esc(r.secreto)}</code><br><small>${esc(r.uri)}</small></div>`; }
 
 ir('resumen');
