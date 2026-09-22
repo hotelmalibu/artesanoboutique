@@ -409,7 +409,7 @@ adminRouter.post('/api/conversaciones/:waId/modo', (req, res) => {
 adminRouter.get('/api/diagnostico', async (req, res) => {
   const [db, rapyd] = await Promise.all([dbDiagnostico(), req.query.rapyd === '1' ? probarAuth() : Promise.resolve(null)]);
   const metodos = req.query.rapyd === '1' ? await metodosPais(config.rapyd.pais, 'COP') : null;
-  res.json({ ok: true, integraciones: integraciones(), db, rapyd, metodosRapyd: metodos, correo: ultimosEnviosCorreo() });
+  res.json({ ok: true, integraciones: integraciones(), db, rapyd, metodosRapyd: metodos, correo: ultimosEnviosCorreo(), wabaId: process.env.WHATSAPP_WABA_ID || '' });
 });
 
 adminRouter.post('/api/diagnostico/correo', async (req, res) => {
