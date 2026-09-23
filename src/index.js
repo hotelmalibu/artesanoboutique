@@ -102,6 +102,7 @@ app.post('/webhook/rapyd', async (req, res) => {
     const evento = req.body || {};
     const tipo = String(evento.type || '');
     const data = evento.data || {};
+    console.log(`[rapyd] Webhook recibido: ${tipo} · pedido ${data.merchant_reference_id || '?'} · estado ${data.status || '?'}`);
     const pedido = obtenerPorNumero(data.merchant_reference_id);
     if (!pedido) return console.warn('[rapyd] Pedido no encontrado para el evento', tipo, data.merchant_reference_id);
     if (tipo.includes('PAYMENT_COMPLETED') || data.paid === true || data.status === 'CLO') await confirmarPago(pedido, data.id || '');
@@ -130,7 +131,7 @@ async function revisarPagosPendientes() {
     if (!p.checkoutId || ahora - p.creado > VENTANA_REVISION_MS) continue;
     const estado = await consultarCheckout(p.checkoutId);
     if (!estado) continue;
-    if (estado.pagado) await confirmarPago(p, estado.referencia);
+    if (estado.pagado) { console.log(`[rapyd] Revisor: pedido ${p.numero} aparece pagado en RAPYD (sin webhook).`); await confirmarPago(p, estado.referencia); }
     else if (estado.rechazado) rechazarPago(p);
   }
 }
