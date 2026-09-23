@@ -202,7 +202,7 @@ export function productos(ids) {
       beneficios: '<ul><li>Propiedades antibióticas naturales</li><li>Ayuda con caspa, rasquiña y empeine</li></ul>',
       advertencias: 'Uso externo. Suspender si hay irritación.',
       tipoPiel: ['con hongos', 'cuero cabelludo sensible'], pesoGramos: 100, precioCop: 20000, precioUsd: 7.2,
-      imagenes: [...foto('mataraton.jpg'), ...foto('mataraton-2.jpg'), ...foto('mataraton-3.png')],
+      imagenes: [...foto('mataraton-1.jpg'), ...foto('mataraton.jpg'), ...foto('mataraton-2.jpg'), ...foto('mataraton-3.png')],
       variantes: [{ sku: 'AS-MATARRATON-100', nombre: '100 g', precioCop: 20000, precioUsd: 7.2, stock: 20, porDefecto: true }],
     },
     {
