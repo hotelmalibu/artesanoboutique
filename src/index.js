@@ -6,7 +6,7 @@
 //   /                          -> tienda publica (tienda/rutas.js)
 //   /admin                     -> panel administrativo (admin/rutas.js)
 //   GET/POST /webhook/whatsapp -> Meta (verificacion + mensajes)
-//   POST /webhook/rapyd        -> confirmacion de pagos
+//   POST /webhook/wompi        -> confirmacion de pagos
 //   GET  /privacidad           -> politica de datos (requerida por Meta)
 // ============================================================
 import express from 'express';
@@ -25,7 +25,7 @@ import { parsearMensajes } from './whatsapp/recibir.js';
 import { enviarTexto, marcarLeido, whatsappActivo } from './whatsapp/enviar.js';
 import { responderBot } from './whatsapp/bot.js';
 import { responderIA } from './ia/agente.js';
-import { verificarWebhook as verificarWebhookRapyd, consultarCheckout, rapydActivo } from './pagos/rapyd.js';
+import { verificarWebhook as verificarWebhookWompi, consultarTransaccion, wompiActivo } from './pagos/wompi.js';
 import { confirmarPago, rechazarPago } from './pagos/confirmar.js';
 import { requiereSesion, cabecerasSeguridad } from './admin/sesion.js';
 import { loginRouter, adminRouter } from './admin/rutas.js';
@@ -37,12 +37,12 @@ const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
-// Cuerpo crudo (rawBody) para verificar las firmas de Meta y RAPYD.
+// Cuerpo crudo (rawBody) para verificar la firma de Meta.
 app.use(express.json({ limit: '2mb', verify: (req, _res, buf) => { req.rawBody = buf; } }));
 
 // ---------- Salud ----------
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, servicio: 'artesanoboutique', persistencia: dbActivo() ? 'postgresql' : 'memoria', rapyd: rapydActivo(), whatsapp: whatsappActivo(), ia: !!config.ia.apiKey });
+  res.json({ ok: true, servicio: 'artesanoboutique', persistencia: dbActivo() ? 'postgresql' : 'memoria', wompi: wompiActivo(), whatsapp: whatsappActivo(), ia: !!config.ia.apiKey });
 });
 
 // ---------- Estaticos y legal ----------
@@ -91,24 +91,23 @@ app.post('/webhook/whatsapp', async (req, res) => {
   }
 });
 
-// ---------- Webhook de RAPYD ----------
-app.post('/webhook/rapyd', async (req, res) => {
-  if (!verificarWebhookRapyd(req)) {
-    console.warn('[rapyd] Webhook con firma inválida. Rechazado.');
+// ---------- Webhook de Wompi ----------
+app.post('/webhook/wompi', async (req, res) => {
+  const evento = req.body || {};
+  if (!verificarWebhookWompi(evento)) {
+    console.warn('[wompi] Webhook con checksum inválido. Rechazado.');
     return res.sendStatus(403);
   }
   res.sendStatus(200);
   try {
-    const evento = req.body || {};
-    const tipo = String(evento.type || '');
-    const data = evento.data || {};
-    console.log(`[rapyd] Webhook recibido: ${tipo} · pedido ${data.merchant_reference_id || '?'} · estado ${data.status || '?'}`);
-    const pedido = obtenerPorNumero(data.merchant_reference_id);
-    if (!pedido) return console.warn('[rapyd] Pedido no encontrado para el evento', tipo, data.merchant_reference_id);
-    if (tipo.includes('PAYMENT_COMPLETED') || data.paid === true || data.status === 'CLO') await confirmarPago(pedido, data.id || '');
-    else if (tipo.includes('PAYMENT_FAILED') || data.status === 'ERR') rechazarPago(pedido);
+    const t = evento?.data?.transaction || {};
+    console.log(`[wompi] Webhook recibido: ${evento.event || '?'} · pedido ${t.reference || '?'} · estado ${t.status || '?'}`);
+    const pedido = obtenerPorNumero(t.reference);
+    if (!pedido) return console.warn('[wompi] Pedido no encontrado para el evento', t.reference);
+    if (t.status === 'APPROVED') await confirmarPago(pedido, t.id || '');
+    else if (t.status === 'DECLINED' || t.status === 'ERROR' || t.status === 'VOIDED') rechazarPago(pedido, `Pago ${t.status} en Wompi`);
   } catch (err) {
-    console.error('[rapyd] Error procesando webhook:', err);
+    console.error('[wompi] Error procesando webhook:', err);
   }
 });
 
@@ -125,14 +124,17 @@ app.use((req, res) => {
 const REVISION_PAGOS_MS = 90 * 1000;
 const VENTANA_REVISION_MS = 3 * 60 * 60 * 1000;
 async function revisarPagosPendientes() {
-  if (!rapydActivo()) return;
+  if (!wompiActivo()) return;
   const ahora = Date.now();
   for (const p of pedidosPendientesPago()) {
-    if (!p.checkoutId || ahora - p.creado > VENTANA_REVISION_MS) continue;
-    const estado = await consultarCheckout(p.checkoutId);
+    // checkoutId empieza siendo nuestra referencia; solo se puede consultar
+    // en Wompi una vez que /pago/gracias la reemplaza por el id real de la
+    // transacción (Wompi no soporta buscar por referencia).
+    if (!p.checkoutId || p.checkoutId === p.numero || ahora - p.creado > VENTANA_REVISION_MS) continue;
+    const estado = await consultarTransaccion(p.checkoutId);
     if (!estado) continue;
-    if (estado.pagado) { console.log(`[rapyd] Revisor: pedido ${p.numero} aparece pagado en RAPYD (sin webhook).`); await confirmarPago(p, estado.referencia); }
-    else if (estado.rechazado) rechazarPago(p);
+    if (estado.pagado) { console.log(`[wompi] Revisor: pedido ${p.numero} aparece pagado en Wompi (sin webhook).`); await confirmarPago(p, estado.referenciaPago); }
+    else if (estado.rechazado) rechazarPago(p, `Pago ${estado.estado} en Wompi`);
   }
 }
 

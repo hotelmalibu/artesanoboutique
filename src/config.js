@@ -46,6 +46,16 @@ export const config = {
     pais: process.env.RAPYD_PAIS || 'CO',
   },
 
+  // Pasarela activa (RAPYD no acepta el volumen del negocio; ver docs/pagos).
+  wompi: {
+    publicKey: process.env.WOMPI_PUBLIC_KEY || '',
+    privateKey: process.env.WOMPI_PRIVATE_KEY || '',
+    integritySecret: process.env.WOMPI_INTEGRITY_SECRET || '',
+    eventsSecret: process.env.WOMPI_EVENTS_SECRET || '',
+    baseUrl: process.env.WOMPI_BASE_URL || 'https://sandbox.wompi.co',
+    checkoutUrl: process.env.WOMPI_CHECKOUT_URL || 'https://checkout.wompi.co',
+  },
+
   correo: {
     resendApiKey: process.env.RESEND_API_KEY || '',
     remitente: process.env.CORREO_REMITENTE || "Arte'Sano <pedidos@artesanoboutique.com>",
@@ -78,7 +88,7 @@ export function revisarConfig() {
   const avisos = [];
   if (!config.db.url) avisos.push('Sin DATABASE_URL: catálogo y pedidos viven en memoria (se borran al reiniciar).');
   if (!config.admin.password) avisos.push('Sin ADMIN_PASSWORD: el panel /admin estará cerrado.');
-  if (!config.rapyd.accessKey || !config.rapyd.secretKey) avisos.push('Sin llaves RAPYD: el checkout no podrá cobrar (modo simulado).');
+  if (!config.wompi.publicKey || !config.wompi.privateKey || !config.wompi.integritySecret) avisos.push('Sin llaves Wompi: el checkout no podrá cobrar (modo simulado).');
   if (!config.correo.resendApiKey) avisos.push('Sin RESEND_API_KEY: no se enviarán correos.');
   if (!config.whatsapp.token || !config.whatsapp.phoneNumberId) avisos.push('Sin credenciales de WhatsApp: el bot no responderá.');
   if (!config.tienda.whatsapp) avisos.push('Sin TIENDA_WHATSAPP: los botones "Pedir por WhatsApp" no tendrán número.');

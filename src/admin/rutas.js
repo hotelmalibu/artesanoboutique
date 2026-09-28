@@ -41,7 +41,7 @@ import { store } from '../almacen/conversaciones.js';
 import { resumenMetaSemanal, fijarMetaSemanalPedidos, waIdsConCompra } from '../almacen/metaSemanal.js';
 import { dbActivo, dbDiagnostico } from '../almacen/db.js';
 import { confirmarPago } from '../pagos/confirmar.js';
-import { rapydActivo, probarAuth, metodosPais } from '../pagos/rapyd.js';
+import { wompiActivo, datosComercio } from '../pagos/wompi.js';
 import { probarCorreo, ultimosEnviosCorreo, avisarEnvioPorCorreo } from '../correo/enviar.js';
 import { enviarTexto, whatsappActivo } from '../whatsapp/enviar.js';
 import { cloudinaryActivo, firmaSubida } from '../imagenes/cloudinary.js';
@@ -56,8 +56,8 @@ const LOGIN_HTML = readFileSync(join(__dirname, 'login.html'), 'utf8');
 function integraciones() {
   return {
     db: dbActivo(),
-    rapyd: rapydActivo(),
-    rapydSandbox: /sandbox/.test(config.rapyd.baseUrl),
+    wompi: wompiActivo(),
+    wompiSandbox: /sandbox/.test(config.wompi.baseUrl),
     resend: !!config.correo.resendApiKey,
     whatsapp: whatsappActivo(),
     cloudinary: cloudinaryActivo(),
@@ -407,9 +407,8 @@ adminRouter.post('/api/conversaciones/:waId/modo', (req, res) => {
 // ---------- Diagnostico y seguridad ----------
 
 adminRouter.get('/api/diagnostico', async (req, res) => {
-  const [db, rapyd] = await Promise.all([dbDiagnostico(), req.query.rapyd === '1' ? probarAuth() : Promise.resolve(null)]);
-  const metodos = req.query.rapyd === '1' ? await metodosPais(config.rapyd.pais, 'COP') : null;
-  res.json({ ok: true, integraciones: integraciones(), db, rapyd, metodosRapyd: metodos, correo: ultimosEnviosCorreo(), wabaId: process.env.WHATSAPP_WABA_ID || '' });
+  const [db, wompi] = await Promise.all([dbDiagnostico(), req.query.wompi === '1' ? datosComercio() : Promise.resolve(null)]);
+  res.json({ ok: true, integraciones: integraciones(), db, wompi, correo: ultimosEnviosCorreo(), wabaId: process.env.WHATSAPP_WABA_ID || '' });
 });
 
 adminRouter.post('/api/diagnostico/correo', async (req, res) => {

@@ -1,0 +1,110 @@
+// ============================================================
+//  wompi.js — Integracion con Wompi (pagos en Colombia: tarjetas, PSE,
+//  Nequi, Bancolombia). Reemplaza a RAPYD (rechazado por volumen minimo).
+//
+//  - crearCheckout(): arma la URL del Web Checkout hospedado por Wompi
+//    (no requiere llamada a la API; la firma de integridad se calcula acá).
+//  - consultarTransaccion(): consulta una transaccion por id (para el
+//    regreso del cliente en /pago/gracias, sin depender solo del webhook).
+//  - verificarWebhook(): valida el checksum de los eventos entrantes.
+//
+//  Solo soporta COP (pedidos internacionales en USD no usan Wompi; ver
+//  crearCheckout). Doc: https://docs.wompi.co/docs/colombia/
+// ============================================================
+import crypto from 'crypto';
+import { config } from '../config.js';
+
+function activo() {
+  return !!(config.wompi.publicKey && config.wompi.privateKey && config.wompi.integritySecret);
+}
+
+function firmaIntegridad(referencia, montoCentavos, moneda) {
+  const base = `${referencia}${montoCentavos}${moneda}${config.wompi.integritySecret}`;
+  return crypto.createHash('sha256').update(base).digest('hex');
+}
+
+/**
+ * Arma la URL del Web Checkout de Wompi para un pedido (solo COP).
+ * @param {object} pedido  Pedido creado por almacen/pedidos.js
+ * @returns {{redirectUrl:string, checkoutId:string}|null}
+ */
+export function crearCheckout(pedido) {
+  if (!activo() || pedido.moneda !== 'COP') return null;
+  const montoCentavos = Math.round(Number(pedido.totales.total) * 100);
+  const referencia = String(pedido.numero);
+  const params = new URLSearchParams({
+    'public-key': config.wompi.publicKey,
+    currency: 'COP',
+    'amount-in-cents': String(montoCentavos),
+    reference: referencia,
+    'signature:integrity': firmaIntegridad(referencia, montoCentavos, 'COP'),
+    'redirect-url': `${config.publicUrl}/pago/gracias?p=${encodeURIComponent(referencia)}`,
+    'customer-data:email': pedido.cliente.email,
+    'customer-data:full-name': pedido.cliente.nombre,
+    'customer-data:phone-number': pedido.cliente.telefono.replace(/\D/g, ''),
+  });
+  return { redirectUrl: `${config.wompi.checkoutUrl}/p/?${params.toString()}`, checkoutId: referencia };
+}
+
+/**
+ * Consulta una transaccion de Wompi por su id (lo trae Wompi en el query
+ * `?id=` al volver a redirect-url). Confirma el pago sin esperar webhook.
+ */
+export async function consultarTransaccion(transaccionId) {
+  if (!activo() || !transaccionId) return null;
+  try {
+    const r = await fetch(`${config.wompi.baseUrl}/v1/transactions/${encodeURIComponent(transaccionId)}`, {
+      headers: { Authorization: `Bearer ${config.wompi.privateKey}` },
+    });
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok || !json.data) return null;
+    const t = json.data;
+    return {
+      pagado: t.status === 'APPROVED',
+      rechazado: t.status === 'DECLINED' || t.status === 'ERROR' || t.status === 'VOIDED',
+      estado: t.status,
+      referencia: t.reference,
+      referenciaPago: t.id,
+    };
+  } catch (err) {
+    console.warn('[wompi] No se pudo consultar la transacción', transaccionId, ':', err.message);
+    return null;
+  }
+}
+
+/**
+ * Verifica el checksum de un evento (webhook) entrante de Wompi.
+ * @param {object} evento  Cuerpo JSON ya parseado (req.body).
+ */
+export function verificarWebhook(evento) {
+  if (!activo() || !config.wompi.eventsSecret) return false;
+  const props = evento?.signature?.properties;
+  const checksumRecibido = evento?.signature?.checksum;
+  if (!Array.isArray(props) || !checksumRecibido || !evento.timestamp) return false;
+
+  const valores = props.map((ruta) => ruta.split('.').reduce((o, k) => o?.[k], evento.data)).join('');
+  const base = `${valores}${evento.timestamp}${config.wompi.eventsSecret}`;
+  const esperado = crypto.createHash('sha256').update(base).digest('hex');
+
+  const a = Buffer.from(String(checksumRecibido).toLowerCase());
+  const b = Buffer.from(esperado);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+export const wompiActivo = activo;
+
+/** Datos del comercio (metodos de pago aceptados) para el diagnostico del panel. */
+export async function datosComercio() {
+  if (!activo()) return { ok: false, error: 'Faltan WOMPI_PUBLIC_KEY / WOMPI_PRIVATE_KEY / WOMPI_INTEGRITY_SECRET.' };
+  try {
+    const r = await fetch(`${config.wompi.baseUrl}/v1/merchants/${encodeURIComponent(config.wompi.publicKey)}`);
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok || !json.data) throw new Error(json?.error?.messages ? JSON.stringify(json.error.messages) : `HTTP ${r.status}`);
+    const metodos = (json.data.presigned_acceptance ? ['presigned_acceptance'] : []).concat(
+      (json.data.accepted_payment_methods || []).map((m) => m.name || m),
+    );
+    return { ok: true, mensaje: `Autenticación OK con Wompi ✅ (${json.data.name || config.wompi.publicKey})`, metodos, baseUrl: config.wompi.baseUrl };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+}

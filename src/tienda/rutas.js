@@ -15,11 +15,12 @@ import { Router } from 'express';
 import { config } from '../config.js';
 import { listar, obtenerPorSlug, productosPublicados, productoPublico, variantePorSku, enriquecer } from '../almacen/catalogo.js';
 import { crearPedido, obtenerPorNumero, asignarCheckout, actualizarEstado, NOMBRES_ESTADO } from '../almacen/pedidos.js';
+import { confirmarPago, rechazarPago } from '../pagos/confirmar.js';
 import { ajuste } from '../almacen/ajustes.js';
 import { cotizarEnvio, PAISES } from '../envios/tarifas.js';
 import { calcularLinea, totalesPedido, NOMBRES_IVA } from '../util/iva.js';
 import { precioEn, monedaPorPais, formatear, formatearCOP } from '../util/moneda.js';
-import { crearCheckout, rapydActivo } from '../pagos/rapyd.js';
+import { crearCheckout, consultarTransaccion, wompiActivo } from '../pagos/wompi.js';
 import { escapar } from '../util/texto.js';
 import { optimizar } from '../imagenes/cloudinary.js';
 import { layout, tarjetaProducto, imagenProducto, migas, seccionTitulo, urlWhatsapp, LOGO_SVG, WORDMARK_SVG, decoracionHero } from './plantillas.js';
@@ -76,7 +77,7 @@ tiendaRouter.get('/', (_req, res) => {
   </section>
   ${nuevos.length ? `<section class="contenedor seccion">${seccionTitulo('Catálogo', 'Recién hechos', '', ['/tienda', 'Ver todo'])}<div class="rejilla">${nuevos.map(tarjetaProducto).join('')}</div></section>` : ''}
   <section class="contenedor seccion confianza">
-    <div><b>Pago seguro</b><span>Tarjetas, PSE, Nequi y más con RAPYD. Precios en Colombia con IVA incluido.</span></div>
+    <div><b>Pago seguro</b><span>Tarjetas, PSE, Nequi y más con Wompi. Precios en Colombia con IVA incluido.</span></div>
     <div><b>Envíos a todo el mundo</b><span>Colombia en 2 a 7 días hábiles. Internacional en 5 a 20 días.</span></div>
     <div><b>Programa tu entrega</b><span>Elige la fecha en que quieres recibir tu pedido.</span></div>
     <div><b>Atención por WhatsApp</b><span>Asesoría, pedidos y seguimiento las 24 horas.</span></div>
@@ -232,7 +233,7 @@ tiendaRouter.get('/politicas', (_req, res) => {
     <h2 id="devoluciones">Cambios, devoluciones y retracto</h2>
     <p>Por tratarse de productos de cuidado personal, solo aceptamos devoluciones de productos sellados y sin uso dentro de los 5 días hábiles siguientes a la entrega (derecho de retracto, Ley 1480 de 2011). Si tu producto llegó dañado, escríbenos por WhatsApp con una foto y lo reponemos sin costo.</p>
     <h2 id="pagos">Pagos e impuestos</h2>
-    <p>Los pagos se procesan de forma segura a través de RAPYD (tarjetas, PSE, Nequi y otros medios según el país). Los precios en Colombia incluyen IVA; las ventas internacionales se facturan como exportación (IVA 0 %) en dólares.</p>
+    <p>Los pagos se procesan de forma segura a través de Wompi (tarjetas, PSE, Nequi y Bancolombia). Los precios en Colombia incluyen IVA; las ventas internacionales no cuentan con pasarela de pago en línea por ahora — te contactamos por WhatsApp para completarlas.</p>
     <h2 id="terminos">Términos y condiciones</h2>
     <p>Al comprar en ${escapar(config.tienda.nombre)} aceptas estas políticas y nuestra <a href="/privacidad">política de tratamiento de datos personales</a> (Ley 1581 de 2012). Para cualquier consulta escríbenos a ${escapar(config.correo.contacto)} o por WhatsApp.</p></section>`;
   res.type('html').send(layout({ titulo: 'Políticas', descripcion: 'Envíos, devoluciones, pedidos programados, pagos y términos de Arte\'Sano.', contenido, ruta: '/politicas' }));
@@ -280,7 +281,7 @@ tiendaRouter.get('/checkout', (_req, res) => {
         <label class="radio consent"><input type="checkbox" name="acepto" required /> Acepto las <a href="/politicas" target="_blank">políticas</a> y el <a href="/privacidad" target="_blank">tratamiento de mis datos</a>.</label>
         <div class="error" id="checkout-error"></div>
         <button class="btn primario grande" id="pagar" type="submit">Pagar de forma segura</button>
-        <p class="mini">Serás redirigido a la pasarela de pagos RAPYD. ${rapydActivo() ? '' : '<b>Pasarela en configuración:</b> tu pedido quedará registrado y te contactaremos por WhatsApp para completar el pago.'}</p>
+        <p class="mini">Serás redirigido a la pasarela de pagos Wompi. ${wompiActivo() ? '' : '<b>Pasarela en configuración:</b> tu pedido quedará registrado y te contactaremos por WhatsApp para completar el pago.'}</p>
       </form>
       <aside class="resumen" id="resumen">
         <h3>Tu pedido</h3>
@@ -330,10 +331,20 @@ tiendaRouter.get('/pedido/:numero', (req, res, next) => {
   paginaPedido(res, p);
 });
 
-tiendaRouter.get('/pago/gracias', (req, res) => {
+tiendaRouter.get('/pago/gracias', async (req, res) => {
   const p = obtenerPorNumero(req.query.p);
   if (!p) return res.redirect('/');
-  paginaPedido(res, p, p.estado === 'pendiente_pago'
+  // Wompi agrega ?id=<transaccion> al volver del checkout; lo consultamos de
+  // una vez (no depende solo del webhook) y guardamos el id real para que
+  // el revisor periódico también pueda volver a consultarlo si hace falta.
+  if (p.estado === 'pendiente_pago' && req.query.id) {
+    asignarCheckout(p.id, String(req.query.id), p.urlPago || '');
+    const estado = await consultarTransaccion(req.query.id);
+    if (estado?.pagado) await confirmarPago(p, estado.referenciaPago);
+    else if (estado?.rechazado) rechazarPago(p, `Pago ${estado.estado} en Wompi`);
+  }
+  const actual = obtenerPorNumero(req.query.p);
+  paginaPedido(res, actual, actual.estado === 'pendiente_pago'
     ? '¡Gracias! Estamos confirmando tu pago con la pasarela. En unos minutos recibirás la confirmación por correo y WhatsApp; puedes refrescar esta página.'
     : '¡Pago confirmado! Gracias por apoyar el trabajo artesanal Zenú. 🌿');
 });
@@ -398,18 +409,18 @@ tiendaRouter.post('/api/checkout/totales', (req, res) => {
   }
 });
 
-/** Crea el pedido y devuelve la URL de pago de RAPYD. */
+/** Crea el pedido y devuelve la URL de pago de Wompi (solo pedidos en COP; ver pagos/wompi.js). */
 tiendaRouter.post('/api/pedidos', async (req, res) => {
   try {
     const pedido = crearPedido({ ...(req.body || {}), canal: 'web' });
     let urlPago = '';
-    if (rapydActivo()) {
+    if (wompiActivo()) {
       try {
-        const ck = await crearCheckout(pedido);
+        const ck = crearCheckout(pedido);
         if (ck) { asignarCheckout(pedido.id, ck.checkoutId, ck.redirectUrl); urlPago = ck.redirectUrl; }
       } catch (err) {
-        console.error('[checkout] RAPYD no creó el checkout:', err.message);
-        actualizarEstado(pedido.id, 'pendiente_pago', 'Error creando checkout RAPYD: ' + err.message);
+        console.error('[checkout] Wompi no creó el checkout:', err.message);
+        actualizarEstado(pedido.id, 'pendiente_pago', 'Error creando checkout Wompi: ' + err.message);
       }
     }
     res.json({ ok: true, numero: pedido.numero, urlPago, urlPedido: `/pedido/${pedido.numero}`, total: pedido.totales.total, moneda: pedido.moneda });

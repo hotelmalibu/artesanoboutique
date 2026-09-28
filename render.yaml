@@ -49,6 +49,8 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+      # RAPYD_* quedan sin usar: Rapyd no acepta el volumen del negocio.
+      # Pasarela activa: Wompi.
       - key: RAPYD_ACCESS_KEY
         sync: false
       - key: RAPYD_SECRET_KEY
@@ -57,6 +59,18 @@ services:
         value: https://sandboxapi.rapyd.net
       - key: RAPYD_PAIS
         value: CO
+      - key: WOMPI_PUBLIC_KEY
+        sync: false
+      - key: WOMPI_PRIVATE_KEY
+        sync: false
+      - key: WOMPI_INTEGRITY_SECRET
+        sync: false
+      - key: WOMPI_EVENTS_SECRET
+        sync: false
+      - key: WOMPI_BASE_URL
+        value: https://sandbox.wompi.co
+      - key: WOMPI_CHECKOUT_URL
+        value: https://checkout.wompi.co
       - key: RESEND_API_KEY
         sync: false
       - key: CORREO_REMITENTE

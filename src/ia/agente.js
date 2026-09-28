@@ -22,7 +22,7 @@ import { productosPublicados, productoPublico, listar, obtenerPorSlug } from '..
 import { crearPedido, asignarCheckout, obtenerPorNumero, pedidosDeCliente, NOMBRES_ESTADO } from '../almacen/pedidos.js';
 import { store } from '../almacen/conversaciones.js';
 import { cotizarEnvio } from '../envios/tarifas.js';
-import { crearCheckout, rapydActivo } from '../pagos/rapyd.js';
+import { crearCheckout, wompiActivo } from '../pagos/wompi.js';
 import { formatearCOP, formatear, monedaPorPais } from '../util/moneda.js';
 import { enviarTexto } from '../whatsapp/enviar.js';
 import { registrarUso } from './metricas.js';
@@ -264,12 +264,12 @@ async function ejecutarHerramienta(waId, nombre, entrada) {
       });
 
       let urlPago = '';
-      if (rapydActivo()) {
+      if (wompiActivo()) {
         try {
-          const ck = await crearCheckout(pedido);
+          const ck = crearCheckout(pedido);
           if (ck) { asignarCheckout(pedido.id, ck.checkoutId, ck.redirectUrl); urlPago = ck.redirectUrl; }
         } catch (err) {
-          console.error('[agente] No se pudo crear el checkout RAPYD:', err.message);
+          console.error('[agente] No se pudo crear el checkout Wompi:', err.message);
         }
       }
 

@@ -6,6 +6,8 @@
 **Versión:** 1.1 · **Fecha:** 2026-09-13 · **Estado:** aprobado — Fase 0 implementada (ver README.md)
 
 > **Decisiones confirmadas (2026-09-13):** dominio **artesanoboutique.com** (Hostinger); pasarela única **RAPYD** (Colombia + internacional); stack idéntico a los demás proyectos del equipo: **Node.js ESM + Express + PostgreSQL (`pg`) en Render**, integraciones por `fetch` (RAPYD, Resend, WhatsApp Cloud API, Cloudinary), panel `/admin` servido por el mismo servicio. Las secciones 6, 7, 18, 19 y 20 quedan reemplazadas por la implementación real descrita en `README.md`; el resto del documento (funcionalidad, modelo de datos lógico, reglas de IVA, flujos, roadmap) sigue vigente.
+>
+> **Actualización (2026-09-28):** Rapyd rechazó la vinculación a producción (exige mínimo 1.2M USD/año de volumen y 6 meses de historial; no atiende pymes en la región). La pasarela activa pasó a ser **Wompi** (solo COP; ventas internacionales se cierran manualmente por WhatsApp). Ver README.md.
 
 ---
 

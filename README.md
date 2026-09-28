@@ -1,7 +1,7 @@
 # Arte'Sano — Tienda en línea (artesanoboutique.com)
 
 E-commerce de cosmética artesanal con ingredientes ancestrales Zenú (Córdoba y Sucre, Colombia).
-**Fase 0 — Fundaciones:** tienda pública, panel administrativo para cargar productos (descripción, fotos, precio, IVA, stock), carrito y checkout con RAPYD, correos con Resend, chatbot de WhatsApp (menú guiado), pedidos programados y persistencia en PostgreSQL.
+**Fase 0 — Fundaciones:** tienda pública, panel administrativo para cargar productos (descripción, fotos, precio, IVA, stock), carrito y checkout con Wompi, correos con Resend, chatbot de WhatsApp (menú guiado + Arte-SanoBot con IA), pedidos programados y persistencia en PostgreSQL.
 
 Especificación completa: [docs/ESPECIFICACION.md](docs/ESPECIFICACION.md).
 
@@ -16,7 +16,7 @@ Especificación completa: [docs/ESPECIFICACION.md](docs/ESPECIFICACION.md).
 | `/carrito` `/checkout` `/pedido/:numero` | Compra: carrito (localStorage), checkout con cálculo de IVA y envío por destino, seguimiento. |
 | `/admin` | Panel: resumen, productos (con variantes, imágenes, IVA), pedidos, programados, líneas/ingredientes/artesanos, WhatsApp, ajustes, diagnóstico. |
 | `/api/*` | API pública del checkout. `/admin/api/*` API del panel. |
-| `/webhook/whatsapp` `/webhook/rapyd` | Webhooks de Meta y RAPYD. |
+| `/webhook/whatsapp` `/webhook/wompi` | Webhooks de Meta y Wompi. |
 | `/health` | Health check para Render. |
 
 **Sin `DATABASE_URL` la tienda funciona en memoria** con un catálogo de ejemplo (los productos visibles en Facebook, precios de ejemplo). Con PostgreSQL todo persiste.
@@ -39,7 +39,8 @@ src/
 ├── util/iva.js            # Reglas de IVA y totales
 ├── util/moneda.js         # COP / USD
 ├── envios/tarifas.js      # Cotización por zona
-├── pagos/rapyd.js         # Checkout hospedado + webhook + polling
+├── pagos/wompi.js         # Checkout hospedado + webhook (pasarela activa)
+├── pagos/rapyd.js         # Sin usar (Rapyd no acepta el volumen del negocio)
 ├── pagos/confirmar.js     # Confirmación de pago (correo + WhatsApp)
 ├── correo/enviar.js       # Resend (plantillas de pedido)
 ├── whatsapp/              # Cloud API: firma, recibir, enviar, bot
@@ -103,7 +104,9 @@ El correo corporativo (`pedidos@artesanoboutique.com`) sigue en Hostinger; para 
 
 ## 5) Integraciones
 
-**RAPYD** — llaves en `RAPYD_ACCESS_KEY` / `RAPYD_SECRET_KEY`. Sandbox por defecto (`RAPYD_BASE_URL=https://sandboxapi.rapyd.net`); producción `https://api.rapyd.net`. Webhook en el portal de RAPYD: `https://artesanoboutique.com/webhook/rapyd`. El servidor además consulta cada 90 s los checkouts pendientes, así que confirma el pago aunque el webhook falle.
+**Wompi** — llaves en `WOMPI_PUBLIC_KEY` / `WOMPI_PRIVATE_KEY` / `WOMPI_INTEGRITY_SECRET` / `WOMPI_EVENTS_SECRET`. Sandbox por defecto (`WOMPI_BASE_URL=https://sandbox.wompi.co`); producción `https://production.wompi.co`. Solo cobra en COP (pedidos internacionales en USD quedan pendientes de pago y se cierran por WhatsApp). Webhook en el portal de Wompi (Eventos): `https://artesanoboutique.com/webhook/wompi`. Al volver del checkout, `/pago/gracias` también consulta la transacción de una vez (no depende solo del webhook).
+
+**RAPYD** (sin usar, `src/pagos/rapyd.js`) — se descartó porque Rapyd exige un mínimo de 1.2M USD/año de volumen y 6 meses de historial; no atiende el segmento pyme en la región. El código queda por si el negocio crece lo suficiente para retomarlo.
 
 **Resend** — `RESEND_API_KEY` y dominio verificado; remitente en `CORREO_REMITENTE`.
 
