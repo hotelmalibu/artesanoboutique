@@ -20,6 +20,7 @@ import { hidratarPedidos, obtenerPorNumero, pedidosPendientesPago, expirarPendie
 import { hidratarAjustes } from './almacen/ajustes.js';
 import { store, hidratarConversaciones } from './almacen/conversaciones.js';
 import { sembrarSiVacio } from './almacen/semilla.js';
+import { aplicarMigraciones } from './almacen/migraciones.js';
 import { verificarFirma } from './whatsapp/firma.js';
 import { parsearMensajes } from './whatsapp/recibir.js';
 import { enviarTexto, marcarLeido, whatsappActivo } from './whatsapp/enviar.js';
@@ -175,6 +176,7 @@ async function arrancar() {
     }
   }
   sembrarSiVacio();
+  aplicarMigraciones();
 
   setInterval(() => revisarPagosPendientes().catch((e) => console.error('[pago] revisor:', e.message)), REVISION_PAGOS_MS);
   setInterval(() => { const n = expirarPendientes(); if (n) console.log(`[pedidos] ${n} reservas vencidas canceladas.`); }, 10 * 60 * 1000);

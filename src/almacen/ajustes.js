@@ -28,7 +28,7 @@ const POR_DEFECTO = {
   },
   inicio: {
     titulo: 'Belleza con raíces',
-    subtitulo: 'Jabones, cremas y cuidado del cabello de origen Zenú, hechos a mano en Córdoba y Sucre con plantas medicinales y saberes ancestrales.',
+    subtitulo: 'Jabones, cremas y cuidado del cabello de origen Zenú, hechos a mano en Córdoba y Sucre con plantas y saberes ancestrales.',
   },
   pedidosProgramados: { minDias: 2, maxDias: 90 },
   // Modelo financiero interno (no visible al cliente): meta de ventas del

@@ -44,7 +44,7 @@ const TEXTO_ORIGEN = {
   mataraton: 'Crece en las cercas vivas de la sabana. Usamos el sumo de la maceración de sus tallos en un jabón artesanal de limpieza suave.',
   pepino: 'Fresco y ligero: se usa tradicionalmente para refrescar la piel. Lo incorporamos como sumo purificado a nuestro jabón.',
   coco: 'El aceite de coco es base tradicional de jabones y ungüentos en toda la costa Caribe.',
-  'carbon-activado': 'Purificante natural de la medicina tradicional, combinado aquí con canela en un jabón artesanal.',
+  'carbon-activado': 'Purificante natural de uso tradicional, combinado aquí con canela en un jabón artesanal.',
 };
 const origenRegion = (r) => (!r || /^Sucre, Colombia$/i.test(r) ? 'Córdoba y Sucre' : r);
 const iconoLinea = (slug) => ICONOS_LINEA[slug] || '';
@@ -149,7 +149,7 @@ tiendaRouter.get('/', (_req, res) => {
       <div>
         <span class="sobre">Las manos</span>
         <h2>Arte + Sano: belleza con historia</h2>
-        <p>Nacimos en la sabana de Córdoba y Sucre, territorio del pueblo Zenú, donde las plantas medicinales y los saberes heredados siguen vivos en cada patio y cada cocina.</p>
+        <p>Nacimos en la sabana de Córdoba y Sucre, territorio del pueblo Zenú, donde las plantas y los saberes heredados siguen vivos en cada patio y cada cocina.</p>
         <p>Participamos en ferias regionales y crecemos de la mano de programas como ZASCA, el Ministerio de Industria, Comercio y Turismo y Artesanías de Colombia.</p>
         <a class="btn auto" href="/nosotros">Conoce nuestra historia ${ICONO_FLECHA}</a>
       </div>
@@ -209,7 +209,7 @@ function paginaTienda(req, res, categoria) {
   <section class="contenedor seccion" style="padding-top:28px">
     ${productos.length ? `<div class="rejilla">${productos.map(tarjetaProducto).join('')}</div>` : `<div class="vacio"><h2 style="font-size:30px">No encontramos productos con esos filtros</h2><p>Prueba con otra línea u otro ingrediente.</p><a class="btn auto" href="/tienda">Ver todo</a></div>`}
   </section>`;
-  res.type('html').send(layout({ titulo, descripcion: categoria?.descripcion || 'Jabones, cremas, shampoo y más de origen Zenú, hechos a mano en Córdoba y Sucre con plantas medicinales.', contenido, ruta: categoria ? `/tienda/${categoria.slug}` : '/tienda' }));
+  res.type('html').send(layout({ titulo, descripcion: categoria?.descripcion || 'Jabones, cremas, shampoo y más de origen Zenú, hechos a mano en Córdoba y Sucre con plantas ancestrales.', contenido, ruta: categoria ? `/tienda/${categoria.slug}` : '/tienda' }));
 }
 
 tiendaRouter.get('/tienda', (req, res) => paginaTienda(req, res, null));
@@ -324,7 +324,7 @@ tiendaRouter.get('/artesanos/:slug', (req, res, next) => {
 tiendaRouter.get('/nosotros', (_req, res) => {
   const contenido = `<section class="contenedor seccion texto">${migas([[null, 'Nuestra historia']])}
     <span class="sobre">Arte + Sano</span><h1>Belleza con raíces</h1>
-    <p><b>${escapar(config.tienda.nombre)}</b> es una startup de cuidado de la belleza con productos de origen ancestral. Nacimos en la sabana de Córdoba y Sucre, territorio del pueblo Zenú, donde las plantas medicinales y los saberes heredados siguen vivos en cada patio y cada cocina.</p>
+    <p><b>${escapar(config.tienda.nombre)}</b> es una startup de cuidado de la belleza con productos de origen ancestral. Nacimos en la sabana de Córdoba y Sucre, territorio del pueblo Zenú, donde las plantas y los saberes heredados siguen vivos en cada patio y cada cocina.</p>
     <p>Elaboramos jabones de tocador, cremas, shampoo y lociones a mano, en pequeños lotes, con ingredientes como el <a href="/ingredientes/guasimo">guásimo</a>, el <a href="/ingredientes/arroz">arroz</a>, el <a href="/ingredientes/mataraton">matarratón</a>, el <a href="/ingredientes/coco">coco</a> y el <a href="/ingredientes/chopo">chopo</a>. Cada producto cuenta la historia de las familias artesanas que lo hacen posible.</p>
     <h2>Aliados</h2>
     <p>Crecemos de la mano de programas de fortalecimiento empresarial como <b>ZASCA</b> y del <b>Ministerio de Industria, Comercio y Turismo</b>, entre otros aliados que creen en el talento artesanal colombiano.</p>

@@ -124,7 +124,7 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
     <div class="pie-int">
       <div>
         <a class="marca" href="/">${MARCA}</a>
-        <p>Cosmética artesanal con plantas medicinales y saberes ancestrales del pueblo Zenú. De origen Zenú, hecha a mano en Córdoba y Sucre para el mundo.</p>
+        <p>Cosmética artesanal con plantas y saberes ancestrales del pueblo Zenú. De origen Zenú, hecha a mano en Córdoba y Sucre para el mundo.</p>
         <p><a href="https://www.instagram.com/artesanoboutique_" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.facebook.com/artesanoboutique1" target="_blank" rel="noopener">Facebook</a> · <a href="${urlWhatsapp()}" target="_blank" rel="noopener">WhatsApp</a></p>
         <p class="contacto-info">
           ${config.tienda.whatsapp ? `WhatsApp: <a href="${urlWhatsapp()}" target="_blank" rel="noopener">${formatearTelefono(config.tienda.whatsapp)}</a><br/>` : ''}
