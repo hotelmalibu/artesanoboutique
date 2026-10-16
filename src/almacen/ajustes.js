@@ -27,8 +27,8 @@ const POR_DEFECTO = {
     ivaEnvio: 'iva_19',
   },
   inicio: {
-    titulo: 'El cuidado de la belleza, con productos de origen artesanal',
-    subtitulo: 'Jabones, cremas y lociones artesanales con plantas medicinales de la cultura Zenú. Del corazón de Córdoba y Sucre para el mundo.',
+    titulo: 'Belleza con raíces',
+    subtitulo: 'Jabones, cremas y cuidado del cabello de origen Zenú, hechos a mano en Córdoba y Sucre con plantas medicinales y saberes ancestrales.',
   },
   pedidosProgramados: { minDias: 2, maxDias: 90 },
   // Modelo financiero interno (no visible al cliente): meta de ventas del

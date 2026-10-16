@@ -54,17 +54,17 @@ const INGREDIENTES_BASE = [
     beneficios: 'Cargado de nutrientes; ideal para personas de todas las edades. Suplemento sin gluten.',
   },
   {
-    slug: 'calendula', nombre: 'Caléndula', nombreCientifico: 'Calendula officinalis', region: 'Sucre, Colombia',
+    slug: 'calendula', nombre: 'Caléndula', nombreCientifico: 'Calendula officinalis', region: 'Córdoba y Sucre',
     usoAncestral: 'Planta reconocida por generaciones como remedio tópico para golpes e inflamaciones.',
     beneficios: 'Poderosas propiedades antiinflamatorias; eficaz contra golpes, dolores musculares, artritis y dolor de cabeza. Sensación de frescura, amigable con todo tipo de piel.',
   },
   {
-    slug: 'pepino', nombre: 'Pepino', nombreCientifico: 'Cucumis sativus', region: 'Sucre, Colombia',
+    slug: 'pepino', nombre: 'Pepino', nombreCientifico: 'Cucumis sativus', region: 'Córdoba y Sucre',
     usoAncestral: 'Usado tradicionalmente para refrescar y controlar la grasa de la piel.',
     beneficios: 'Cortador de grasa por naturaleza: controla el brillo excesivo del rostro y ayuda a controlar el acné tipo 1.',
   },
   {
-    slug: 'carbon-activado', nombre: 'Carbón Activado', nombreCientifico: '', region: 'Sucre, Colombia',
+    slug: 'carbon-activado', nombre: 'Carbón Activado', nombreCientifico: '', region: 'Córdoba y Sucre',
     usoAncestral: 'Purificante natural usado en la medicina tradicional, combinado aquí con canela.',
     beneficios: 'Elimina espinillas, puntos negros y poros sucios. Purifica y revitaliza la piel.',
   },
@@ -74,7 +74,7 @@ const INGREDIENTES_BASE = [
     beneficios: 'Desintoxica, nutre, humecta y limpia la piel, al tiempo que reduce las marcas de la edad.',
   },
   {
-    slug: 'hierbabuena', nombre: 'Hierbabuena', nombreCientifico: 'Mentha spicata', region: 'Sucre, Colombia',
+    slug: 'hierbabuena', nombre: 'Hierbabuena', nombreCientifico: 'Mentha spicata', region: 'Córdoba y Sucre',
     usoAncestral: 'Planta medicinal tradicional usada para dolores de cabeza, molestias musculares y digestivas.',
     beneficios: 'Alivia la migraña, trata dolores e inflamaciones, ayuda en problemas digestivos y alivia síntomas de la artritis.',
   },
@@ -95,7 +95,7 @@ export const INGREDIENTES = INGREDIENTES_BASE.map((i) => ({
 
 export const ARTESANOS = [
   {
-    slug: 'arte-sano-boutique', nombre: 'Arte\'Sano Boutique', municipio: 'Sampués / Sincelejo', departamento: 'Sucre',
+    slug: 'arte-sano-boutique', nombre: 'Arte\'Sano Boutique', municipio: 'Origen Zenú', departamento: 'Córdoba y Sucre',
     bio: 'Marca artesanal elaborada en Sucre, Colombia. Participante activa de ferias regionales (Feria del Sombrero Vueltiao, Feria de la Juventud, ExpoMadres) y aliada del programa ZASCA para el fortalecimiento de emprendimientos artesanales.',
     fotoUrl: '/publico/imagenes/artesanos/arte-sano-boutique.jpg',
   },

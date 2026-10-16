@@ -23,6 +23,23 @@ function firmaIntegridad(referencia, montoCentavos, moneda) {
   return crypto.createHash('sha256').update(base).digest('hex');
 }
 
+/** Monto del pedido en centavos, tal como se lo enviamos a Wompi. */
+export function montoEnCentavos(pedido) {
+  return Math.round(Number(pedido.totales.total) * 100);
+}
+
+/** El monto que reporta Wompi debe ser el del pedido; si no, no se confirma el pago. */
+export function montoCoincide(pedido, centavosWompi) {
+  return Number(centavosWompi) === montoEnCentavos(pedido);
+}
+
+/** Celular colombiano a 10 digitos (Wompi pide el prefijo aparte); null si no se puede normalizar. */
+function celularColombiano(telefono) {
+  let d = String(telefono || '').replace(/\D/g, '');
+  if (d.length === 12 && d.startsWith('57')) d = d.slice(2);
+  return /^3\d{9}$/.test(d) ? d : null;
+}
+
 /**
  * Arma la URL del Web Checkout de Wompi para un pedido (solo COP).
  * @param {object} pedido  Pedido creado por almacen/pedidos.js
@@ -30,7 +47,7 @@ function firmaIntegridad(referencia, montoCentavos, moneda) {
  */
 export function crearCheckout(pedido) {
   if (!activo() || pedido.moneda !== 'COP') return null;
-  const montoCentavos = Math.round(Number(pedido.totales.total) * 100);
+  const montoCentavos = montoEnCentavos(pedido);
   const referencia = String(pedido.numero);
   const params = new URLSearchParams({
     'public-key': config.wompi.publicKey,
@@ -41,8 +58,12 @@ export function crearCheckout(pedido) {
     'redirect-url': `${config.publicUrl}/pago/gracias?p=${encodeURIComponent(referencia)}`,
     'customer-data:email': pedido.cliente.email,
     'customer-data:full-name': pedido.cliente.nombre,
-    'customer-data:phone-number': pedido.cliente.telefono.replace(/\D/g, ''),
   });
+  const celular = celularColombiano(pedido.cliente.telefono);
+  if (celular) {
+    params.set('customer-data:phone-number', celular);
+    params.set('customer-data:phone-number-prefix', '+57');
+  }
   return { redirectUrl: `${config.wompi.checkoutUrl}/p/?${params.toString()}`, checkoutId: referencia };
 }
 
@@ -65,6 +86,7 @@ export async function consultarTransaccion(transaccionId) {
       estado: t.status,
       referencia: t.reference,
       referenciaPago: t.id,
+      montoCentavos: t.amount_in_cents,
     };
   } catch (err) {
     console.warn('[wompi] No se pudo consultar la transacción', transaccionId, ':', err.message);

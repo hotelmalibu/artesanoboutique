@@ -52,6 +52,16 @@ src/
 
 ---
 
+## Diseño de la tienda (rediseño botánico-editorial)
+
+- **Estilos y comportamiento:** `src/tienda/publico/estilos.css` (tokens de marca: marfil, verde bosque, salvia, terracota y blush; Fraunces + DM Sans) y `src/tienda/publico/tienda.js` (carrito con cajón lateral, menú móvil, buscador, pestañas de origen, hero rotativo y revelado al hacer scroll). Plantillas en `src/tienda/plantillas.js` y `src/tienda/rutas.js`.
+- **Fotos livianas:** `python scripts/optimizar-imagenes.py` genera variantes WebP de 600 y 1200 px en `src/tienda/publico/imagenes/web/` a partir de las fotos del repo; `optimizar()` (`src/imagenes/cloudinary.js`) las usa solas. Volver a ejecutarlo al agregar fotos nuevas a `imagenes/productos/` o `imagenes/artesanos/`.
+- **Fotos "limpias":** `FOTOS_LIMPIAS` (en `plantillas.js`) lista las fotos sin texto superpuesto que se prefieren en el hero, las líneas, las tarjetas y la galería. Con un set de fotos nuevo la lista deja de aplicar sin romper nada.
+- **Textos editables:** el título y el subtítulo del hero salen de Ajustes → Inicio del panel. El texto de la sección "Origen" del inicio está en `TEXTO_ORIGEN` (`rutas.js`); los demás ingredientes usan su "uso ancestral" del catálogo.
+- **Redacción de marca:** origen Zenú, productos de Córdoba y Sucre (sin nombrar municipios en los textos públicos).
+
+---
+
 ## 1) Correr en local
 
 ```bash

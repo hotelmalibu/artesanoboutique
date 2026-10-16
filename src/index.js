@@ -25,7 +25,7 @@ import { parsearMensajes } from './whatsapp/recibir.js';
 import { enviarTexto, marcarLeido, whatsappActivo } from './whatsapp/enviar.js';
 import { responderBot } from './whatsapp/bot.js';
 import { responderIA } from './ia/agente.js';
-import { verificarWebhook as verificarWebhookWompi, consultarTransaccion, wompiActivo } from './pagos/wompi.js';
+import { verificarWebhook as verificarWebhookWompi, consultarTransaccion, wompiActivo, montoCoincide, montoEnCentavos } from './pagos/wompi.js';
 import { confirmarPago, rechazarPago } from './pagos/confirmar.js';
 import { requiereSesion, cabecerasSeguridad } from './admin/sesion.js';
 import { loginRouter, adminRouter } from './admin/rutas.js';
@@ -47,7 +47,14 @@ app.get('/health', (_req, res) => {
 
 // ---------- Estaticos y legal ----------
 app.use('/publico', express.static(join(__dirname, 'tienda', 'publico'), { maxAge: '1h' }));
-const PRIVACIDAD_HTML = readFileSync(join(__dirname, 'legal', 'privacidad.html'), 'utf8');
+// La política (HTML plano en legal/) se muestra dentro del mismo marco de la tienda.
+const privacidadCuerpo = /<main[^>]*>([\s\S]*?)<\/main>/.exec(readFileSync(join(__dirname, 'legal', 'privacidad.html'), 'utf8'))?.[1] || '';
+const PRIVACIDAD_HTML = layout({
+  titulo: 'Política de privacidad',
+  descripcion: 'Cómo Arte\'Sano trata tus datos personales conforme a la Ley 1581 de 2012.',
+  contenido: `<section class="contenedor seccion texto">${privacidadCuerpo}</section>`,
+  ruta: '/privacidad',
+});
 app.get(['/privacidad', '/politica-de-privacidad', '/privacy'], (_req, res) => res.type('html').send(PRIVACIDAD_HTML));
 
 // ---------- Panel ----------
@@ -104,8 +111,10 @@ app.post('/webhook/wompi', async (req, res) => {
     console.log(`[wompi] Webhook recibido: ${evento.event || '?'} · pedido ${t.reference || '?'} · estado ${t.status || '?'}`);
     const pedido = obtenerPorNumero(t.reference);
     if (!pedido) return console.warn('[wompi] Pedido no encontrado para el evento', t.reference);
-    if (t.status === 'APPROVED') await confirmarPago(pedido, t.id || '');
-    else if (t.status === 'DECLINED' || t.status === 'ERROR' || t.status === 'VOIDED') rechazarPago(pedido, `Pago ${t.status} en Wompi`);
+    if (t.status === 'APPROVED') {
+      if (!montoCoincide(pedido, t.amount_in_cents)) return console.warn(`[wompi] Monto no coincide en el pedido ${pedido.numero}: Wompi ${t.amount_in_cents} vs pedido ${montoEnCentavos(pedido)}. No se confirma.`);
+      await confirmarPago(pedido, t.id || '');
+    } else if (t.status === 'DECLINED' || t.status === 'ERROR' || t.status === 'VOIDED') rechazarPago(pedido, `Pago ${t.status} en Wompi`);
   } catch (err) {
     console.error('[wompi] Error procesando webhook:', err);
   }
@@ -133,7 +142,8 @@ async function revisarPagosPendientes() {
     if (!p.checkoutId || p.checkoutId === p.numero || ahora - p.creado > VENTANA_REVISION_MS) continue;
     const estado = await consultarTransaccion(p.checkoutId);
     if (!estado) continue;
-    if (estado.pagado) { console.log(`[wompi] Revisor: pedido ${p.numero} aparece pagado en Wompi (sin webhook).`); await confirmarPago(p, estado.referenciaPago); }
+    if (estado.pagado && !montoCoincide(p, estado.montoCentavos)) console.warn(`[wompi] Revisor: monto no coincide en el pedido ${p.numero}. No se confirma.`);
+    else if (estado.pagado) { console.log(`[wompi] Revisor: pedido ${p.numero} aparece pagado en Wompi (sin webhook).`); await confirmarPago(p, estado.referenciaPago); }
     else if (estado.rechazado) rechazarPago(p, `Pago ${estado.estado} en Wompi`);
   }
 }

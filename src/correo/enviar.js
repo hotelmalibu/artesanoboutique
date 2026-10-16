@@ -68,7 +68,7 @@ function marco(titulo, cuerpo) {
     </div>
     <div style="padding:22px 26px">${cuerpo}</div>
     <div style="padding:14px 26px;font-size:12px;color:${C.gris};border-top:1px solid ${C.linea}">
-      ${escapar(config.tienda.nombre)} · Cosmética artesanal de origen ancestral Zenú · ${escapar(config.tienda.direccion)}<br/>
+      ${escapar(config.tienda.nombre)} · Cosmética artesanal de origen ancestral Zenú · Córdoba y Sucre, Colombia<br/>
       <a href="${config.publicUrl}" style="color:${C.verde}">${config.publicUrl.replace(/^https?:\/\//, '')}</a>
     </div>
   </div>`;
