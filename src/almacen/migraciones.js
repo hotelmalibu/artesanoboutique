@@ -10,7 +10,7 @@
 // ============================================================
 import { listar, obtenerPorSlug, guardar } from './catalogo.js';
 import { ajuste, fijarAjuste } from './ajustes.js';
-import { CATEGORIAS, INGREDIENTES, ARTESANOS, productos } from './semilla.datos.js';
+import { CATEGORIAS, INGREDIENTES, ARTESANOS, PRECIOS_DEFINITIVOS, productos } from './semilla.datos.js';
 
 // Fotos tipo afiche cuyo texto impreso promete efectos terapeuticos
 // (anticaida, antiinflamatorio, "medicinal", eficaz contra la migraña...).
@@ -19,6 +19,7 @@ const IMAGENES_CON_PROMESAS = ['guasimo-shampoo-1.jpg', 'guasimo-info.jpg', 'mat
 
 // Productos sin foto que se retiran de la tienda (quedan archivados, no borrados).
 const RETIRAR = ['jabon-de-coco', 'jabon-de-aguacate'];
+const RETIRAR_3 = ['vaporub-artesanal', 'colada-de-chopo', 'jabon-liquido-artesanal', 'jabon-carbon-activado', 'jabon-de-rosas'];
 const RETIRAR_2 = ['limpiador-multiusos-natural', 'detergente-liquido-para-pisos', 'gel-cannabis-coca-arnica', 'elixir-de-hierbabuena'];
 
 const CAMPOS_PRODUCTO = ['descripcionCorta', 'descripcion', 'beneficios', 'modoUso', 'advertencias', 'tipoPiel'];
@@ -76,6 +77,22 @@ function archivar(slugs) {
   return cambios;
 }
 
+/** Aplica la lista de precios y stock definitivos (por SKU) y marca el precio como confirmado. */
+function preciosDefinitivos() {
+  let cambios = 0;
+  for (const p of listar('productos')) {
+    if (!(p.variantes || []).some((v) => PRECIOS_DEFINITIVOS[v.sku])) continue;
+    const variantes = p.variantes.map((v) => {
+      const d = PRECIOS_DEFINITIVOS[v.sku];
+      return d ? { ...v, precioCop: d.precioCop, stock: d.stock, precioUsd: null } : v;
+    });
+    const porDefecto = variantes.find((v) => v.porDefecto) || variantes[0];
+    guardar('productos', { ...p, variantes, precioCop: porDefecto.precioCop, precioUsd: null, etiquetas: (p.etiquetas || []).filter((t) => t !== 'precio-de-ejemplo') });
+    cambios++;
+  }
+  return cambios;
+}
+
 const retirarJabonesCocoAguacate = () => archivar(RETIRAR);
 const retirarLimpiadorDetergenteGelElixir = () => archivar(RETIRAR_2);
 
@@ -83,6 +100,7 @@ const MIGRACIONES = [
   { nombre: '2026-10-textos-sin-promesas-terapeuticas', aplicar: textosSinPromesasTerapeuticas },
   { nombre: '2026-10-retirar-jabones-coco-aguacate', aplicar: retirarJabonesCocoAguacate },
   { nombre: '2026-10-retirar-limpiador-detergente-gel-elixir', aplicar: retirarLimpiadorDetergenteGelElixir },
+  { nombre: '2026-10-precios-y-catalogo-definitivos', aplicar: () => archivar(RETIRAR_3) + preciosDefinitivos() },
 ];
 
 /** Aplica las migraciones pendientes. Llamar despues de hidratar el catalogo y sembrar. */

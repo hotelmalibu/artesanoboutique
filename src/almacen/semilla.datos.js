@@ -101,6 +101,30 @@ export const ARTESANOS = [
   },
 ];
 
+// Precios y stock definitivos (lista confirmada por el negocio el 2026-10-18; precio en COP con IVA
+// incluido). Fuente unica: la semilla los aplica a los productos y la migracion "precios definitivos"
+// los aplica al catalogo que ya vive en PostgreSQL. El precio en USD queda sin fijar (se calcula desde COP).
+export const PRECIOS_DEFINITIVOS = {
+  'AS-GUASIMO-SHP-250': { precioCop: 60000, stock: 20 },
+  'AS-GUASIMO-ACOND-100': { precioCop: 45000, stock: 20 },
+  'AS-MATARRATON-100': { precioCop: 20000, stock: 20 },
+  'AS-PEPINO-100': { precioCop: 20000, stock: 24 },
+  'AS-ARROZ-100': { precioCop: 20000, stock: 30 },
+  'AS-KIT-ROSAS': { precioCop: 55000, stock: 10 },
+  'AS-DESO-MINERAL-60': { precioCop: 20000, stock: 25 },
+  'AS-CALENDULA-30': { precioCop: 22000, stock: 20 },
+  'AS-PORCELANA-120': { precioCop: 28000, stock: 15 },
+};
+
+function aplicarPrecioDefinitivo(p) {
+  const variantes = p.variantes.map((v) => {
+    const d = PRECIOS_DEFINITIVOS[v.sku];
+    return d ? { ...v, precioCop: d.precioCop, stock: d.stock, precioUsd: null } : v;
+  });
+  const porDefecto = variantes.find((v) => v.porDefecto) || variantes[0];
+  return { ...p, variantes, precioCop: porDefecto.precioCop, precioUsd: null, etiquetas: [] };
+}
+
 export function productos(ids) {
   const cat = (slug) => ids.categorias[slug];
   const ing = (slug) => ids.ingredientes[slug];
@@ -109,7 +133,7 @@ export function productos(ids) {
   const foto = (archivo) => [{ url: `/publico/imagenes/productos/${archivo}`, alt: '' }];
   const etiqueta = (slug) => [{ url: `/publico/imagenes/etiquetas/${slug}.svg`, alt: '' }];
 
-  return [
+  const lista = [
     // ---------- Cuidado del Cuerpo ----------
     {
       ...comunes, nombre: 'Jabón de Arroz', slug: 'jabon-de-arroz', destacado: true,
@@ -122,18 +146,6 @@ export function productos(ids) {
       imagenes: [...foto('arroz.jpg'), ...foto('arroz-2.jpg'), ...foto('arroz-3.jpg')],
       variantes: [{ sku: 'AS-ARROZ-100', nombre: '100 g', precioCop: 18000, precioUsd: 6.5, stock: 30, porDefecto: true }],
     },
-    {
-      ...comunes, nombre: 'Jabón de Rosas', slug: 'jabon-de-rosas',
-      categoriaId: cat('cuidado-del-cuerpo'), ingredienteIds: [ing('rosas')], ingredienteProtagonistaId: ing('rosas'),
-      descripcionCorta: 'Belleza natural para un cabello fuerte, brillante y lleno de vida.',
-      descripcion: '<p>Jabón artesanal de rosas, parte de nuestra línea de belleza natural. Ideal como parte de la rutina capilar y de cuidado de la piel.</p>',
-      beneficios: '<ul><li>Cabello fuerte y brillante</li><li>Aroma floral natural</li></ul>',
-      modoUso: '<p>Uso diario en cuerpo o como jabón capilar.</p>',
-      tipoPiel: ['todo tipo'], pesoGramos: 100, precioCop: 19000, precioUsd: 6.8,
-      imagenes: etiqueta('rosas'),
-      variantes: [{ sku: 'AS-ROSAS-100', nombre: '100 g', precioCop: 19000, precioUsd: 6.8, stock: 20, porDefecto: true }],
-    },
-
     // ---------- Cuidado Facial ----------
     {
       ...comunes, nombre: 'Jabón de Pepino', slug: 'jabon-de-pepino', destacado: true,
@@ -146,18 +158,6 @@ export function productos(ids) {
       imagenes: [...foto('pepino-2.png'), ...foto('pepino.jpg')],
       variantes: [{ sku: 'AS-PEPINO-100', nombre: '100 g', precioCop: 18000, precioUsd: 6.5, stock: 25, porDefecto: true }],
     },
-    {
-      ...comunes, nombre: 'Jabón de Carbón Activado con Canela', slug: 'jabon-carbon-activado',
-      categoriaId: cat('cuidado-facial'), ingredienteIds: [ing('carbon-activado')], ingredienteProtagonistaId: ing('carbon-activado'),
-      descripcionCorta: 'Jabón artesanal de carbón activado con canela para una limpieza profunda del rostro.',
-      descripcion: '<p>Jabón natural de carbón activado con canela. Limpia los poros, purifica y revitaliza la piel del rostro.</p>',
-      beneficios: '<ul><li>100% natural y artesanal</li><li>Limpia los poros</li><li>Purifica y revitaliza</li></ul>',
-      modoUso: '<p>Aplicar sobre el rostro húmedo, masajear y enjuagar.</p>',
-      tipoPiel: ['grasa', 'mixta', 'con poros abiertos'], pesoGramos: 100, precioCop: 18000, precioUsd: 6.5,
-      imagenes: foto('carbon-activado.jpg'),
-      variantes: [{ sku: 'AS-CARBON-100', nombre: '100 g', precioCop: 18000, precioUsd: 6.5, stock: 25, porDefecto: true }],
-    },
-
     // ---------- Corporal ----------
     {
       ...comunes, nombre: 'Crema Piel de Porcelana', slug: 'crema-piel-de-porcelana',
@@ -210,18 +210,6 @@ export function productos(ids) {
       imagenes: etiqueta('calendula'),
       variantes: [{ sku: 'AS-CALENDULA-30', nombre: '30 g', precioCop: 22000, precioUsd: 8, stock: 20, porDefecto: true }],
     },
-    {
-      ...comunes, nombre: 'Vaporub Artesanal', slug: 'vaporub-artesanal', destacado: true,
-      categoriaId: cat('lineas-especializadas'), ingredienteIds: [ing('hierbabuena'), ing('coco')], ingredienteProtagonistaId: ing('hierbabuena'),
-      descripcionCorta: 'Bálsamo artesanal de menta de hierbabuena y aceite de coco. Aroma fresco.',
-      descripcion: '<p>Bálsamo artesanal elaborado con menta de hierbabuena y aceite de coco. Textura untuosa y aroma fresco y mentolado.</p>',
-      beneficios: '<ul><li>Aroma fresco de hierbabuena</li><li>Con aceite de coco</li><li>Elaborado en pequeños lotes</li></ul>',
-      modoUso: '<p>Aplicar una pequeña cantidad sobre la piel con un suave masaje.</p>',
-      tipoPiel: [], pesoGramos: 50, precioCop: 16000, precioUsd: 5.8,
-      imagenes: foto('vaporub.jpg'),
-      variantes: [{ sku: 'AS-VAPORUB-50', nombre: 'Frasco 50 g', precioCop: 16000, precioUsd: 5.8, stock: 30, porDefecto: true }],
-    },
-
     // ---------- Aseo ----------
     {
       ...comunes, nombre: 'Desodorante Protección Mineral', slug: 'desodorante-proteccion-mineral',
@@ -234,18 +222,6 @@ export function productos(ids) {
       imagenes: [...foto('proteccion-mineral.jpg'), ...foto('proteccion-mineral-2.jpg')],
       variantes: [{ sku: 'AS-DESO-MINERAL-60', nombre: 'Spray 60 ml', precioCop: 20000, precioUsd: 7.2, stock: 25, porDefecto: true }],
     },
-    {
-      ...comunes, nombre: 'Jabón Líquido Artesanal', slug: 'jabon-liquido-artesanal',
-      categoriaId: cat('aseo'), ingredienteIds: [], ingredienteProtagonistaId: null,
-      descripcionCorta: 'Jabón líquido de manos y cuerpo, presentación de 300 ml.',
-      descripcion: '<p>Jabón líquido artesanal para manos y cuerpo, elaborado en pequeños lotes. Fórmula suave para uso diario en toda la familia.</p>',
-      beneficios: '<ul><li>Limpieza suave para uso diario</li><li>Presentación de 300 ml</li></ul>',
-      modoUso: '<p>Aplicar sobre la piel húmeda, frotar hasta generar espuma y enjuagar.</p>',
-      tipoPiel: ['todo tipo'], pesoGramos: 300, precioCop: 27500, precioUsd: 10,
-      imagenes: etiqueta('jabon-liquido'),
-      variantes: [{ sku: 'AS-JABLIQ-300', nombre: '300 ml', precioCop: 27500, precioUsd: 10, stock: 20, porDefecto: true }],
-    },
-
     // ---------- Otros ----------
     {
       ...comunes, nombre: 'Kit Rosas para Mamá', slug: 'kit-rosas-para-mama',
@@ -257,16 +233,6 @@ export function productos(ids) {
       imagenes: foto('kit-rosas.jpg'),
       variantes: [{ sku: 'AS-KIT-ROSAS', nombre: 'Kit completo', precioCop: 55000, precioUsd: 20, stock: 10, porDefecto: true }],
     },
-    {
-      ...comunes, nombre: 'Colada de Chopo', slug: 'colada-de-chopo',
-      categoriaId: cat('otros'), ingredienteIds: [ing('chopo')], ingredienteProtagonistaId: ing('chopo'),
-      descripcionCorta: 'Alimento tradicional Zenú preparado en colada. Sin gluten.',
-      descripcion: '<p>Alimento tradicional Zenú, sin gluten, preparado en colada. Parte de nuestra línea de bienestar heredada de la cultura Zenú.</p>',
-      beneficios: '<ul><li>Sin gluten</li><li>Alimento tradicional Zenú</li></ul>',
-      modoUso: '<p>Preparar como colada siguiendo las instrucciones del empaque.</p>',
-      tipoPiel: [], pesoGramos: 250, precioCop: 17000, precioUsd: 6,
-      imagenes: foto('colada-de-chopo.jpg'),
-      variantes: [{ sku: 'AS-CHOPO-250', nombre: '250 g', precioCop: 17000, precioUsd: 6, stock: 15, porDefecto: true }],
-    },
   ];
+  return lista.map(aplicarPrecioDefinitivo);
 }
