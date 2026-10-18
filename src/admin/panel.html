@@ -150,6 +150,7 @@
   .dropzone { border: 2px dashed var(--linea); border-radius: 12px; padding: 18px; text-align: center; color: var(--gris); font-size: 14px; cursor: pointer; }
   .dropzone.sobre { border-color: var(--verde); background: var(--verde-suave); }
   .aviso { background: var(--aviso-suave); border: 1px solid #EFD9A8; color: #7A5A12; padding: 11px 14px; border-radius: var(--radio-sm); font-size: 14px; margin-bottom: 12px; }
+  .aviso.ok { background: var(--ok-suave); border-color: #CFE3D3; color: var(--ok); }
   .error { color: var(--alerta); font-weight: 600; font-size: 13.5px; min-height: 18px; }
   .exito { color: var(--ok); font-weight: 600; font-size: 13.5px; }
   .img-lista { width: 46px; height: 46px; border-radius: 9px; object-fit: cover; background: var(--crema); border: 1px solid var(--linea); }
@@ -344,6 +345,7 @@ const NAV = [
   { v: 'programados', t: 'Pedidos programados', i: 'calendar' },
   { grupo: 'Catálogo' },
   { v: 'productos', t: 'Productos', i: 'package' },
+  { v: 'precios', t: 'Precios y stock', i: 'dollar' },
   { v: 'catalogo', t: 'Líneas · Ingredientes · Artesanos', i: 'layers' },
   { grupo: 'Arte-SanoBot' },
   { v: 'whatsapp', t: 'WhatsApp', i: 'chat', badge: 'badge-wa' },
@@ -353,7 +355,7 @@ const NAV = [
   { v: 'ajustes', t: 'Ajustes', i: 'sliders' },
   { v: 'diagnostico', t: 'Diagnóstico', i: 'wrench' },
 ];
-const vistas = { resumen, financiero, productos, pedidos, programados, catalogo, whatsapp, monitorConversaciones, monitorTokens, ajustes, diagnostico };
+const vistas = { resumen, financiero, productos, precios, pedidos, programados, catalogo, whatsapp, monitorConversaciones, monitorTokens, ajustes, diagnostico };
 $('#nav').innerHTML = NAV.map((n) => n.grupo ? `<div class="nav-grupo">${n.grupo}</div>` : `<button data-v="${n.v}">${ico(n.i)}<span>${n.t}</span>${n.badge ? `<span class="badge" id="${n.badge}" style="display:none"></span>` : ''}</button>`).join('');
 $('#nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) ir(b.dataset.v); });
 $('#btn-menu').addEventListener('click', () => $('#app').classList.toggle('nav-abierto'));
@@ -498,6 +500,108 @@ async function productos() {
       .join('') || '<tr><td colspan="8" class="sub">Sin productos.</td></tr>';
   };
   $('#buscar').addEventListener('input', pintar); $('#f-estado').addEventListener('change', pintar); pintar();
+}
+async function precios() {
+  const d = await api('/precios');
+  const filas = d.filas || [];
+  const original = new Map(filas.map((f) => [f.sku, { precioCop: f.precioCop, precioUsd: f.precioUsd ?? '', stock: f.stock }]));
+  const ejemplo = filas.filter((f) => f.deEjemplo);
+  const prodsEjemplo = new Set(ejemplo.map((f) => f.productoId)).size;
+  main.innerHTML = `
+    <h1>Precios y stock</h1>
+    <div class="sub">Precios en COP con IVA incluido. Edita los valores y pulsa Guardar: los productos guardados dejan de figurar como “precio de ejemplo”.</div>
+    ${prodsEjemplo ? `<div class="aviso">⚠️ ${prodsEjemplo} producto(s) todavía tienen precio y stock de ejemplo. Ajusta los valores reales antes de vender.</div>` : '<div class="aviso ok">Todos los precios están confirmados.</div>'}
+    <div class="barra">
+      <input id="pr-buscar" placeholder="Buscar producto o SKU…" style="min-width:240px" />
+      <label style="display:flex;gap:6px;align-items:center;font-size:13.5px"><input type="checkbox" id="pr-solo" /> Solo precios de ejemplo</label>
+      <span style="flex:1"></span>
+      <button class="btn" id="pr-pegar">Pegar desde Excel</button>
+      <button class="btn" id="pr-confirmar" title="Marca como confirmados los valores que ves, sin cambiarlos">Confirmar valores actuales</button>
+      <button class="btn primario" id="pr-guardar" disabled>Guardar cambios</button>
+    </div>
+    <div class="panel"><table>
+      <thead><tr><th>Producto</th><th>Estado</th><th style="width:150px">Precio COP</th><th style="width:130px">Precio USD</th><th style="width:110px">Stock</th><th>Precio</th></tr></thead>
+      <tbody id="pr-tabla"></tbody></table></div>`;
+
+  const entrada = (f, campo, valor, extra) => `<input type="number" min="0" ${extra} data-sku="${esc(f.sku)}" data-campo="${campo}" value="${esc(valor ?? '')}" style="width:100%" />`;
+  const pintar = () => {
+    const q = $('#pr-buscar').value.toLowerCase(), solo = $('#pr-solo').checked;
+    $('#pr-tabla').innerHTML = filas
+      .filter((f) => (!solo || f.deEjemplo) && (!q || (f.producto + ' ' + f.variante + ' ' + f.sku).toLowerCase().includes(q)))
+      .map((f) => `<tr data-sku="${esc(f.sku)}">
+        <td><b>${esc(f.producto)}</b><br><small>${esc(f.variante)} · ${esc(f.sku)}${f.categoria ? ' · ' + esc(f.categoria) : ''}</small></td>
+        <td><span class="chip ${f.estado}">${esc(f.estado)}</span></td>
+        <td>${entrada(f, 'precioCop', f.precioCop, 'step="100"')}</td>
+        <td>${entrada(f, 'precioUsd', f.precioUsd, 'step="0.1" placeholder="—"')}</td>
+        <td>${entrada(f, 'stock', f.stock, 'step="1"')}</td>
+        <td><span class="chip ${f.deEjemplo ? 'borrador' : 'ok'}">${f.deEjemplo ? 'De ejemplo' : 'Confirmado'}</span></td></tr>`)
+      .join('') || '<tr><td colspan="6" class="sub">Sin resultados.</td></tr>';
+    marcar();
+  };
+  const cambiados = () => {
+    const salida = [];
+    document.querySelectorAll('#pr-tabla tr[data-sku]').forEach((tr) => {
+      const sku = tr.dataset.sku, o = original.get(sku), c = { sku };
+      let hay = false;
+      tr.querySelectorAll('input[data-campo]').forEach((i) => {
+        const campo = i.dataset.campo, v = i.value.trim();
+        if (String(o[campo] ?? '') !== v) { c[campo] = v; hay = true; }
+      });
+      if (hay) salida.push(c);
+    });
+    return salida;
+  };
+  const marcar = () => {
+    const cs = cambiados(), set = new Set(cs.map((c) => c.sku));
+    document.querySelectorAll('#pr-tabla tr[data-sku]').forEach((tr) => { tr.style.background = set.has(tr.dataset.sku) ? 'var(--aviso-suave, #FBF0D9)' : ''; });
+    const b = $('#pr-guardar'); b.disabled = !cs.length; b.textContent = cs.length ? `Guardar cambios (${cs.length})` : 'Guardar cambios';
+  };
+  const enviar = async (cambios, textoOk) => {
+    const r = await post('/precios', { cambios, confirmar: true });
+    if (!r.ok) return toast(r.error || 'No se pudo guardar', 'error');
+    toast(textoOk || `Guardado: ${r.variantes} variante(s)`);
+    precios();
+  };
+  // Los cambios sin guardar se conservan al filtrar: se leen del DOM, asi que se pintan de nuevo solo al cambiar el filtro.
+  $('#pr-tabla').addEventListener('input', marcar);
+  $('#pr-buscar').addEventListener('input', () => { if (!cambiados().length || confirm('Hay cambios sin guardar; al filtrar se perderán. ¿Continuar?')) pintar(); });
+  $('#pr-solo').addEventListener('change', () => { if (!cambiados().length || confirm('Hay cambios sin guardar; al filtrar se perderán. ¿Continuar?')) pintar(); });
+  $('#pr-guardar').addEventListener('click', () => {
+    const cs = cambiados(); if (!cs.length) return;
+    // los campos vacios de USD significan "sin precio en USD"; COP y stock no pueden quedar vacios
+    enviar(cs.map((c) => ({ sku: c.sku, ...(c.precioCop !== undefined ? { precioCop: c.precioCop } : {}), ...(c.precioUsd !== undefined ? { precioUsd: c.precioUsd } : {}), ...(c.stock !== undefined ? { stock: c.stock } : {}) })));
+  });
+  $('#pr-confirmar').addEventListener('click', () => {
+    const visibles = [...document.querySelectorAll('#pr-tabla tr[data-sku]')].map((tr) => ({ sku: tr.dataset.sku }));
+    const pendientes = filas.filter((f) => f.deEjemplo && visibles.some((v) => v.sku === f.sku));
+    if (!pendientes.length) return toast('No hay precios de ejemplo en la lista');
+    if (!confirm(`Vas a confirmar como reales los precios y el stock de ${pendientes.length} variante(s) tal como están. ¿Continuar?`)) return;
+    enviar(pendientes.map((f) => ({ sku: f.sku, precioCop: f.precioCop, stock: f.stock })), 'Precios confirmados');
+  });
+  $('#pr-pegar').addEventListener('click', () => {
+    abrirModal(`<h2>Pegar desde Excel</h2>
+      <p class="sub">Copia las celdas en Excel con estas columnas, sin encabezado: <b>SKU</b> · <b>precio COP</b> · <b>stock</b> (el stock es opcional). También sirven líneas separadas por “;”.</p>
+      <textarea id="pr-texto" rows="9" style="width:100%;font-family:monospace" placeholder="AS-PEPINO-100&#9;18000&#9;25"></textarea>
+      <div class="barra" style="margin-top:12px"><button class="btn primario" id="pr-aplicar">Cargar en la tabla</button><button class="btn" onclick="cerrarModal()">Cancelar</button></div>
+      <div id="pr-resultado" class="sub"></div>`);
+    $('#pr-aplicar').addEventListener('click', () => {
+      const num = (s) => { s = String(s || '').replace(/[$\s]/g, ''); if (!s) return null; if (/^\d{1,3}([.,]\d{3})+$/.test(s)) return Number(s.replace(/[.,]/g, '')); const n = parseFloat(s.replace(',', '.')); return Number.isFinite(n) ? n : NaN; };
+      let ok = 0; const faltan = [];
+      $('#pr-texto').value.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).forEach((l) => {
+        const [sku, precio, stock] = l.split(/\t|;|\s{2,}/).map((x) => x.trim());
+        const fila = document.querySelector(`#pr-tabla tr[data-sku="${CSS.escape(sku || '')}"]`);
+        if (!fila) { faltan.push(sku || l); return; }
+        const p = num(precio), s = num(stock);
+        if (p !== null && !Number.isNaN(p)) fila.querySelector('[data-campo=precioCop]').value = Math.round(p);
+        if (s !== null && !Number.isNaN(s)) fila.querySelector('[data-campo=stock]').value = Math.round(s);
+        ok++;
+      });
+      marcar();
+      if (!faltan.length) { cerrarModal(); toast(`${ok} fila(s) cargadas. Revisa y pulsa Guardar.`); }
+      else $('#pr-resultado').innerHTML = `<span class="error">${ok} cargadas. SKU no encontrados (¿están ocultos por el filtro?): ${esc(faltan.slice(0, 8).join(', '))}</span>`;
+    });
+  });
+  pintar();
 }
 async function cambiarEstado(id, estado) {
   const r = await post(`/productos/${id}/estado`, { estado });

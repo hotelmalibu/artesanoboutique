@@ -7,6 +7,7 @@
 //   GET  /admin/api/resumen              -> tablero
 //   GET  /admin/api/catalogo             -> categorias, ingredientes, artesanos
 //   GET  /admin/api/productos[/:id]      -> productos
+//   GET/POST /admin/api/precios          -> precios y stock por SKU (edicion masiva)
 //   POST /admin/api/productos            -> crea/actualiza producto
 //   DELETE /admin/api/productos/:id      -> elimina producto
 //   POST /admin/api/productos/:id/estado -> borrador|publicado|archivado
@@ -168,6 +169,84 @@ for (const tabla of ['categorias', 'ingredientes', 'artesanos']) {
     res.json({ ok: eliminar(tabla, id) });
   });
 }
+
+// ---------- Precios y stock (edicion masiva) ----------
+
+adminRouter.get('/api/precios', (_req, res) => {
+  const filas = [];
+  for (const p of listar('productos')) {
+    if (p.estado === 'archivado') continue;
+    const categoria = p.categoriaId ? obtener('categorias', p.categoriaId)?.nombre || '' : '';
+    for (const v of p.variantes || []) {
+      filas.push({
+        productoId: p.id, producto: p.nombre, categoria, estado: p.estado, sku: v.sku, variante: v.nombre,
+        precioCop: v.precioCop, precioUsd: v.precioUsd ?? null, stock: v.stock, tipoIva: p.tipoIva,
+        deEjemplo: (p.etiquetas || []).includes('precio-de-ejemplo'),
+      });
+    }
+  }
+  res.json({ ok: true, filas });
+});
+
+/**
+ * Guarda precios y/o stock por SKU: { cambios: [{ sku, precioCop?, precioUsd?, stock? }], confirmar?: true }.
+ * Es todo o nada (si un valor es invalido no se guarda nada). Al guardar, el producto deja de
+ * estar marcado como "precio de ejemplo" (confirmar=false para conservar la marca).
+ */
+adminRouter.post('/api/precios', (req, res) => {
+  const cambios = Array.isArray(req.body?.cambios) ? req.body.cambios : [];
+  if (!cambios.length) return res.status(400).json({ ok: false, error: 'No hay cambios para guardar.' });
+  const confirmar = req.body?.confirmar !== false;
+
+  const porSku = new Map();
+  const errores = [];
+  for (const c of cambios) {
+    const sku = String(c?.sku || '').trim();
+    const dueño = listar('productos').find((p) => (p.variantes || []).some((v) => v.sku === sku));
+    if (!sku || !dueño) { errores.push(`SKU desconocido: "${sku}"`); continue; }
+    const nuevo = {};
+    if (c.precioCop !== undefined) {
+      const n = Number(c.precioCop);
+      if (!Number.isFinite(n) || n < 500 || n > 5000000) errores.push(`${sku}: el precio en COP debe estar entre 500 y 5.000.000.`);
+      else nuevo.precioCop = Math.round(n);
+    }
+    if (c.precioUsd !== undefined) {
+      if (c.precioUsd === '' || c.precioUsd === null) nuevo.precioUsd = null;
+      else {
+        const n = Number(c.precioUsd);
+        if (!Number.isFinite(n) || n <= 0 || n > 5000) errores.push(`${sku}: el precio en USD no es valido.`);
+        else nuevo.precioUsd = Math.round(n * 100) / 100;
+      }
+    }
+    if (c.stock !== undefined) {
+      const n = Number(c.stock);
+      if (!Number.isInteger(n) || n < 0 || n > 100000) errores.push(`${sku}: el stock debe ser un entero entre 0 y 100.000.`);
+      else nuevo.stock = n;
+    }
+    porSku.set(sku, nuevo);
+  }
+  if (errores.length) return res.status(400).json({ ok: false, error: errores.slice(0, 6).join(' ') });
+
+  try {
+    const productosTocados = new Map();
+    for (const sku of porSku.keys()) {
+      const p = listar('productos').find((x) => (x.variantes || []).some((v) => v.sku === sku));
+      productosTocados.set(p.id, p);
+    }
+    let guardados = 0;
+    for (const p of productosTocados.values()) {
+      const variantes = p.variantes.map((v) => (porSku.has(v.sku) ? { ...v, ...porSku.get(v.sku) } : v));
+      const porDefecto = variantes.find((v) => v.porDefecto) || variantes[0];
+      const etiquetas = confirmar ? (p.etiquetas || []).filter((t) => t !== 'precio-de-ejemplo') : p.etiquetas;
+      guardar('productos', { ...p, variantes, precioCop: porDefecto.precioCop, precioUsd: porDefecto.precioUsd ?? p.precioUsd ?? null, etiquetas });
+      guardados++;
+    }
+    console.log(`[precios] ${porSku.size} variante(s) actualizadas en ${guardados} producto(s) por ${sesionActual(req)?.usuario || 'admin'}.`);
+    res.json({ ok: true, variantes: porSku.size, productos: guardados });
+  } catch (err) {
+    res.status(400).json({ ok: false, error: err.message });
+  }
+});
 
 // ---------- Productos ----------
 
