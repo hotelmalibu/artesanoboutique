@@ -15,15 +15,15 @@ const DEST = join(__dirname, '..', 'src', 'tienda', 'publico', 'imagenes', 'etiq
 mkdirSync(DEST, { recursive: true });
 
 const PRODUCTOS = [
-  { slug: 'mataraton', nombre: 'Matarratón', ingrediente: 'Gliricidia sepium', leyenda: 'Jabón medicinal', tipo: 'jabon' },
+  { slug: 'mataraton', nombre: 'Matarratón', ingrediente: 'Gliricidia sepium', leyenda: 'Jabón artesanal', tipo: 'jabon' },
   { slug: 'coco', nombre: 'Coco', ingrediente: 'Cocos nucifera', leyenda: 'Jabón 100% natural', tipo: 'jabon' },
   { slug: 'aguacate', nombre: 'Aguacate', ingrediente: 'Persea americana', leyenda: 'Jabón 100% natural', tipo: 'jabon' },
   { slug: 'rosas', nombre: 'Rosas', ingrediente: 'Rosa damascena', leyenda: 'Jabón artesanal', tipo: 'jabon' },
-  { slug: 'calendula', nombre: 'Caléndula', ingrediente: 'Ungüento anti-inflamatorio', leyenda: 'Producto artesanal', tipo: 'frasco' },
+  { slug: 'calendula', nombre: 'Caléndula', ingrediente: 'Calendula officinalis', leyenda: 'Producto artesanal', tipo: 'frasco' },
   { slug: 'piel-de-porcelana', nombre: 'Piel de Porcelana', ingrediente: 'Técnica oriental', leyenda: 'Crema artesanal', tipo: 'frasco' },
-  { slug: 'gel-cannabis-coca-arnica', nombre: 'Cannabis, Coca y Árnica', ingrediente: 'Gel para golpes e inflamación', leyenda: 'Producto artesanal', tipo: 'frasco' },
+  { slug: 'gel-cannabis-coca-arnica', nombre: 'Cannabis, Coca y Árnica', ingrediente: 'Extractos de cannabis, coca y árnica', leyenda: 'Producto artesanal', tipo: 'frasco' },
   { slug: 'proteccion-mineral', nombre: 'Protección Mineral', ingrediente: 'Desodorante natural en spray', leyenda: 'Producto artesanal', tipo: 'frasco' },
-  { slug: 'colada-de-chopo', nombre: 'Colada de Chopo', ingrediente: 'Alimento tradicional Zenú', leyenda: 'Suplemento sin gluten', tipo: 'frasco' },
+  { slug: 'colada-de-chopo', nombre: 'Colada de Chopo', ingrediente: 'Alimento tradicional Zenú', leyenda: 'Sin gluten', tipo: 'frasco' },
   { slug: 'jabon-liquido', nombre: 'Jabón Líquido', ingrediente: 'Manos y cuerpo', leyenda: 'Presentación 300 ml', tipo: 'frasco' },
   { slug: 'limpiador-multiusos', nombre: 'Limpiador Multiusos', ingrediente: 'Línea Hogar', leyenda: 'Producto artesanal', tipo: 'frasco' },
   { slug: 'detergente-liquido-pisos', nombre: 'Detergente Líquido', ingrediente: 'Para limpieza de pisos', leyenda: 'Producto artesanal', tipo: 'frasco' },
