@@ -19,6 +19,7 @@ const IMAGENES_CON_PROMESAS = ['guasimo-shampoo-1.jpg', 'guasimo-info.jpg', 'mat
 
 // Productos sin foto que se retiran de la tienda (quedan archivados, no borrados).
 const RETIRAR = ['jabon-de-coco', 'jabon-de-aguacate'];
+const RETIRAR_2 = ['limpiador-multiusos-natural', 'detergente-liquido-para-pisos', 'gel-cannabis-coca-arnica', 'elixir-de-hierbabuena'];
 
 const CAMPOS_PRODUCTO = ['descripcionCorta', 'descripcion', 'beneficios', 'modoUso', 'advertencias', 'tipoPiel'];
 
@@ -65,19 +66,23 @@ function textosSinPromesasTerapeuticas() {
   return cambios;
 }
 
-/** Archiva los jabones de coco y aguacate (sin fotos): salen de la tienda pero se pueden restaurar desde el panel. */
-function retirarJabonesCocoAguacate() {
+/** Archiva productos por slug: salen de la tienda pero se pueden restaurar desde el panel. */
+function archivar(slugs) {
   let cambios = 0;
-  for (const slug of RETIRAR) {
+  for (const slug of slugs) {
     const p = obtenerPorSlug('productos', slug);
     if (p && p.estado !== 'archivado') { guardar('productos', { ...p, estado: 'archivado' }); cambios++; }
   }
   return cambios;
 }
 
+const retirarJabonesCocoAguacate = () => archivar(RETIRAR);
+const retirarLimpiadorDetergenteGelElixir = () => archivar(RETIRAR_2);
+
 const MIGRACIONES = [
   { nombre: '2026-10-textos-sin-promesas-terapeuticas', aplicar: textosSinPromesasTerapeuticas },
   { nombre: '2026-10-retirar-jabones-coco-aguacate', aplicar: retirarJabonesCocoAguacate },
+  { nombre: '2026-10-retirar-limpiador-detergente-gel-elixir', aplicar: retirarLimpiadorDetergenteGelElixir },
 ];
 
 /** Aplica las migraciones pendientes. Llamar despues de hidratar el catalogo y sembrar. */

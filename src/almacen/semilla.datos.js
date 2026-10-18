@@ -211,18 +211,6 @@ export function productos(ids) {
       variantes: [{ sku: 'AS-CALENDULA-30', nombre: '30 g', precioCop: 22000, precioUsd: 8, stock: 20, porDefecto: true }],
     },
     {
-      ...comunes, nombre: 'Gel de Cannabis, Coca y Árnica', slug: 'gel-cannabis-coca-arnica',
-      categoriaId: cat('lineas-especializadas'), ingredienteIds: [], ingredienteProtagonistaId: null,
-      descripcionCorta: 'Gel de uso tópico con extractos de cannabis, coca y árnica. Textura fresca.',
-      descripcion: '<p>Gel de uso tópico con extractos de cannabis, coca y árnica, plantas de tradición en Colombia. Textura fresca y aroma herbal.</p>',
-      beneficios: '<ul><li>Con extractos de cannabis, coca y árnica</li><li>Textura fresca</li><li>Uso externo</li></ul>',
-      modoUso: '<p>Aplicar sobre la piel limpia con un masaje suave.</p>',
-      advertencias: 'Uso externo únicamente. No aplicar sobre heridas abiertas. Consultar en caso de embarazo o lactancia.',
-      tipoPiel: [], pesoGramos: 60, precioCop: 25000, precioUsd: 9,
-      imagenes: [],
-      variantes: [{ sku: 'AS-GEL-CCA-60', nombre: '60 ml', precioCop: 25000, precioUsd: 9, stock: 15, porDefecto: true }],
-    },
-    {
       ...comunes, nombre: 'Vaporub Artesanal', slug: 'vaporub-artesanal', destacado: true,
       categoriaId: cat('lineas-especializadas'), ingredienteIds: [ing('hierbabuena'), ing('coco')], ingredienteProtagonistaId: ing('hierbabuena'),
       descripcionCorta: 'Bálsamo artesanal de menta de hierbabuena y aceite de coco. Aroma fresco.',
@@ -232,18 +220,6 @@ export function productos(ids) {
       tipoPiel: [], pesoGramos: 50, precioCop: 16000, precioUsd: 5.8,
       imagenes: foto('vaporub.jpg'),
       variantes: [{ sku: 'AS-VAPORUB-50', nombre: 'Frasco 50 g', precioCop: 16000, precioUsd: 5.8, stock: 30, porDefecto: true }],
-    },
-    {
-      ...comunes, nombre: 'Elixir de Hierbabuena', slug: 'elixir-de-hierbabuena',
-      categoriaId: cat('lineas-especializadas'), ingredienteIds: [ing('hierbabuena')], ingredienteProtagonistaId: ing('hierbabuena'),
-      descripcionCorta: 'Destilado de hierbabuena en gotero de 15 ml. Elaborado en Córdoba y Sucre, Colombia.',
-      descripcion: '<p>Destilado de hierbabuena en presentación de gotero. Producto de uso tópico externo, elaborado en pequeños lotes con plantas de Córdoba y Sucre.</p>',
-      beneficios: '<ul><li>Destilado de hierbabuena</li><li>Presentación en gotero de 15 ml</li><li>Aroma fresco</li></ul>',
-      modoUso: '<p>Uso tópico externo. Seguir las instrucciones de la etiqueta.</p>',
-      advertencias: 'Uso tópico externo. Evitar contacto con los ojos.',
-      tipoPiel: [], pesoGramos: 15, precioCop: 15000, precioUsd: 5.5,
-      imagenes: [],
-      variantes: [{ sku: 'AS-ELIXIR-15', nombre: 'Gotero 15 ml', precioCop: 15000, precioUsd: 5.5, stock: 25, porDefecto: true }],
     },
 
     // ---------- Aseo ----------
@@ -268,33 +244,6 @@ export function productos(ids) {
       tipoPiel: ['todo tipo'], pesoGramos: 300, precioCop: 27500, precioUsd: 10,
       imagenes: etiqueta('jabon-liquido'),
       variantes: [{ sku: 'AS-JABLIQ-300', nombre: '300 ml', precioCop: 27500, precioUsd: 10, stock: 20, porDefecto: true }],
-    },
-
-    // ---------- Hogar ----------
-    // ⚠️ Sin datos reales todavía (línea Hogar recién creada): productos de
-    // ejemplo con precio de referencia, mismo tratamiento que el resto de
-    // "precio-de-ejemplo" en este catálogo hasta que el negocio confirme.
-    {
-      ...comunes, nombre: 'Limpiador Multiusos Natural', slug: 'limpiador-multiusos-natural',
-      categoriaId: cat('hogar'), ingredienteIds: [], ingredienteProtagonistaId: null,
-      descripcionCorta: 'Limpiador natural multiusos para superficies del hogar.',
-      descripcion: '<p>Limpiador multiusos elaborado con ingredientes naturales, para el aseo diario de superficies del hogar.</p>',
-      beneficios: '<ul><li>Uso multiusos en superficies del hogar</li><li>Ingredientes naturales</li></ul>',
-      modoUso: '<p>Rociar sobre la superficie y limpiar con un paño húmedo.</p>',
-      tipoPiel: [], pesoGramos: 500, precioCop: 24000, precioUsd: 8.7,
-      imagenes: etiqueta('limpiador-multiusos'),
-      variantes: [{ sku: 'AS-LIMP-MULTI-500', nombre: '500 ml', precioCop: 24000, precioUsd: 8.7, stock: 15, porDefecto: true }],
-    },
-    {
-      ...comunes, nombre: 'Detergente Líquido para Pisos', slug: 'detergente-liquido-para-pisos',
-      categoriaId: cat('hogar'), ingredienteIds: [], ingredienteProtagonistaId: null,
-      descripcionCorta: 'Detergente líquido artesanal para la limpieza de pisos.',
-      descripcion: '<p>Detergente líquido artesanal para la limpieza de pisos, elaborado en pequeños lotes.</p>',
-      beneficios: '<ul><li>Para la limpieza diaria de pisos</li><li>Elaborado en pequeños lotes</li></ul>',
-      modoUso: '<p>Diluir en agua según la superficie a limpiar y trapear normalmente.</p>',
-      tipoPiel: [], pesoGramos: 1000, precioCop: 32000, precioUsd: 11.5,
-      imagenes: etiqueta('detergente-liquido-pisos'),
-      variantes: [{ sku: 'AS-DETER-LIQ-1L', nombre: '1 L', precioCop: 32000, precioUsd: 11.5, stock: 15, porDefecto: true }],
     },
 
     // ---------- Otros ----------

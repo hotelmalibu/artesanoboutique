@@ -180,7 +180,7 @@ function paginaTienda(req, res, categoria) {
   const orden = String(req.query.orden || '');
   const ingrediente = String(req.query.ingrediente || '');
   const productos = productosPublicados({ categoria: categoria?.slug, q, orden, ingrediente });
-  const lineas = listar('categorias').filter((c) => c.activo !== false);
+  const lineas = listar('categorias').filter((c) => c.activo !== false && productosPublicados({ categoria: c.slug }).length > 0);
   const ings = listar('ingredientes').filter((i) => i.activo !== false && productosPublicados({ ingrediente: i.slug }).length > 0);
   const titulo = categoria ? categoria.nombre : 'Tienda';
   const base = categoria ? `/tienda/${categoria.slug}` : '/tienda';

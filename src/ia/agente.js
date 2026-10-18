@@ -60,7 +60,7 @@ function fechaHoy() {
 
 function lineasTexto() {
   return listar('categorias')
-    .filter((c) => c.activo !== false)
+    .filter((c) => c.activo !== false && productosPublicados({ categoria: c.slug }).length > 0)
     .map((c) => `- ${c.nombre}: ${c.descripcion || ''}`)
     .join('\n');
 }
