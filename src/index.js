@@ -43,7 +43,7 @@ app.use(express.json({ limit: '2mb', verify: (req, _res, buf) => { req.rawBody =
 
 // ---------- Salud ----------
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, servicio: 'artesanoboutique', persistencia: dbActivo() ? 'postgresql' : 'memoria', wompi: wompiActivo(), whatsapp: whatsappActivo(), ia: !!config.ia.apiKey });
+  res.json({ ok: true, servicio: 'artesanoboutique', persistencia: dbActivo() ? 'postgresql' : 'memoria', wompi: wompiActivo(), wompiEntorno: wompiActivo() ? (config.wompi.produccion ? 'produccion' : 'pruebas') : null, whatsapp: whatsappActivo(), ia: !!config.ia.apiKey });
 });
 
 // ---------- Estaticos y legal ----------

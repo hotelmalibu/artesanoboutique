@@ -7,6 +7,11 @@ dotenv.config();
 
 const TIPOS_IVA = ['iva_19', 'iva_5', 'exento', 'excluido'];
 
+// Ambiente de Wompi: lo define la llave pública (pub_prod_… = producción, pub_test_… = pruebas),
+// así las llaves y la URL de la API nunca quedan en ambientes distintos. WOMPI_BASE_URL solo sirve
+// para forzarlo a mano.
+const wompiProduccion = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
+
 export const config = {
   puerto: process.env.PORT || 3000,
   publicUrl: (process.env.PUBLIC_URL || 'http://localhost:3000').replace(/\/+$/, ''),
@@ -52,7 +57,8 @@ export const config = {
     privateKey: process.env.WOMPI_PRIVATE_KEY || '',
     integritySecret: process.env.WOMPI_INTEGRITY_SECRET || '',
     eventsSecret: process.env.WOMPI_EVENTS_SECRET || '',
-    baseUrl: process.env.WOMPI_BASE_URL || 'https://sandbox.wompi.co',
+    produccion: wompiProduccion,
+    baseUrl: process.env.WOMPI_BASE_URL || (wompiProduccion ? 'https://production.wompi.co' : 'https://sandbox.wompi.co'),
     checkoutUrl: process.env.WOMPI_CHECKOUT_URL || 'https://checkout.wompi.co',
   },
 
@@ -89,6 +95,12 @@ export function revisarConfig() {
   if (!config.db.url) avisos.push('Sin DATABASE_URL: catálogo y pedidos viven en memoria (se borran al reiniciar).');
   if (!config.admin.password) avisos.push('Sin ADMIN_PASSWORD: el panel /admin estará cerrado.');
   if (!config.wompi.publicKey || !config.wompi.privateKey || !config.wompi.integritySecret) avisos.push('Sin llaves Wompi: el checkout no podrá cobrar (modo simulado).');
+  if (config.wompi.publicKey) {
+    const urlEsProduccion = !/sandbox/.test(config.wompi.baseUrl);
+    if (urlEsProduccion !== config.wompi.produccion) avisos.push('Wompi: la llave pública y WOMPI_BASE_URL son de ambientes distintos (pruebas vs producción). Los pagos fallarán.');
+    else if (config.wompi.produccion && !config.wompi.eventsSecret) avisos.push('Wompi en PRODUCCIÓN sin WOMPI_EVENTS_SECRET: los avisos de pago (webhook) serán rechazados.');
+    else console.log(`[config] Wompi en modo ${config.wompi.produccion ? 'PRODUCCIÓN (cobra dinero real)' : 'PRUEBAS (sandbox)'}.`);
+  }
   if (!config.correo.resendApiKey) avisos.push('Sin RESEND_API_KEY: no se enviarán correos.');
   if (!config.whatsapp.token || !config.whatsapp.phoneNumberId) avisos.push('Sin credenciales de WhatsApp: el bot no responderá.');
   if (!config.tienda.whatsapp) avisos.push('Sin TIENDA_WHATSAPP: los botones "Pedir por WhatsApp" no tendrán número.');
