@@ -115,6 +115,57 @@ export function verificarWebhook(evento) {
 
 export const wompiActivo = activo;
 
+// ---------- Metodos de pago habilitados (para no anunciar de mas) ----------
+
+const ETIQUETA_METODO = {
+  CARD: 'Tarjeta', PSE: 'PSE', NEQUI: 'Nequi', DAVIPLATA: 'Daviplata',
+  BANCOLOMBIA_TRANSFER: 'Bancolombia', BANCOLOMBIA: 'Bancolombia', BANCOLOMBIA_COLLECT: 'Bancolombia', BANCOLOMBIA_QR: 'Bancolombia',
+};
+let metodosHabilitados = null; // null = aun no se sabe (o Wompi no respondio)
+
+async function refrescarMetodos() {
+  if (!activo()) return;
+  try {
+    const r = await fetch(`${config.wompi.baseUrl}/v1/merchants/${encodeURIComponent(config.wompi.publicKey)}`);
+    const json = await r.json().catch(() => ({}));
+    const lista = json?.data?.accepted_payment_methods;
+    if (!r.ok || !Array.isArray(lista)) throw new Error(`HTTP ${r.status}`);
+    const etiquetas = [...new Set(lista.map((m) => ETIQUETA_METODO[String(m?.name || m)]).filter(Boolean))];
+    metodosHabilitados = etiquetas;
+    console.log(`[wompi] Métodos de pago habilitados: ${etiquetas.join(', ') || '(ninguno)'}.`);
+  } catch (err) {
+    console.warn('[wompi] No se pudieron consultar los métodos de pago habilitados:', err.message);
+  }
+}
+
+/** Consulta los metodos habilitados al arrancar y cada 30 minutos. */
+export function iniciarRefrescoMetodos() {
+  if (!activo()) return;
+  refrescarMetodos();
+  setInterval(refrescarMetodos, 30 * 60 * 1000).unref?.();
+}
+
+/** Metodos habilitados como etiquetas ('Tarjeta', 'PSE'…); [] si aun no se sabe. */
+export function metodosDePago() {
+  return metodosHabilitados || [];
+}
+
+function enumerar(l) {
+  return l.length > 1 ? `${l.slice(0, -1).join(', ')} y ${l[l.length - 1]}` : l[0] || '';
+}
+
+/** "Paga con PSE a través de Wompi" (o una frase generica si no se conocen los metodos). */
+export function frasePagoWompi() {
+  const l = metodosDePago();
+  return l.length ? `Paga con ${enumerar(l)} a través de Wompi` : 'Paga de forma segura a través de Wompi';
+}
+
+/** "(PSE)" / "(tarjeta, PSE y Nequi)" para insertar en una oracion; '' si no se conocen. */
+export function parentesisMetodos() {
+  const l = metodosDePago().map((m) => m.toLowerCase().replace(/^pse$/, 'PSE'));
+  return l.length ? ` (${enumerar(l)})` : '';
+}
+
 /** Datos del comercio (metodos de pago aceptados) para el diagnostico del panel. */
 export async function datosComercio() {
   if (!activo()) return { ok: false, error: 'Faltan WOMPI_PUBLIC_KEY / WOMPI_PRIVATE_KEY / WOMPI_INTEGRITY_SECRET.' };

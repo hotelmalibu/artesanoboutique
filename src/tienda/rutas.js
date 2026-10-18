@@ -20,7 +20,7 @@ import { ajuste } from '../almacen/ajustes.js';
 import { cotizarEnvio, PAISES } from '../envios/tarifas.js';
 import { calcularLinea, totalesPedido, NOMBRES_IVA } from '../util/iva.js';
 import { precioEn, monedaPorPais, formatear, formatearCOP } from '../util/moneda.js';
-import { crearCheckout, consultarTransaccion, wompiActivo, montoCoincide } from '../pagos/wompi.js';
+import { crearCheckout, consultarTransaccion, wompiActivo, montoCoincide, metodosDePago, frasePagoWompi, parentesisMetodos } from '../pagos/wompi.js';
 import { escapar } from '../util/texto.js';
 import { optimizar } from '../imagenes/cloudinary.js';
 import { layout, tarjetaProducto, fotoLimpia, imagenesOrdenadas, migas, seccionTitulo, urlWhatsapp, ICONO_WA, ICONO_FLECHA, ICONO_MAS, ICONO_HOJA } from './plantillas.js';
@@ -157,7 +157,7 @@ tiendaRouter.get('/', (_req, res) => {
   </section>
   ${nuevos.length ? `<section class="contenedor seccion" style="padding-top:0">${seccionTitulo('Catálogo', 'Recién hechos', '', ['/tienda?orden=nuevos', 'Ver novedades'])}<div class="rejilla carril">${nuevos.map(tarjetaProducto).join('')}</div></section>` : ''}
   <section class="contenedor confianza revelar">
-    <div><b>Pago seguro</b><span>Tarjetas, PSE, Nequi y más con Wompi. Precios en Colombia con IVA incluido.</span></div>
+    <div><b>Pago seguro</b><span>${frasePagoWompi()}. Precios en Colombia con IVA incluido.</span></div>
     <div><b>Envíos a todo el mundo</b><span>Colombia en 2 a 7 días hábiles. Internacional en 5 a 20 días.</span></div>
     <div><b>Programa tu entrega</b><span>Elige la fecha en que quieres recibir tu pedido.</span></div>
     <div><b>Atención por WhatsApp</b><span>Asesoría, pedidos y seguimiento.</span></div>
@@ -347,7 +347,7 @@ tiendaRouter.get('/politicas', (_req, res) => {
     <h2 id="devoluciones">Cambios, devoluciones y retracto</h2>
     <p>Por tratarse de productos de cuidado personal, solo aceptamos devoluciones de productos sellados y sin uso dentro de los 5 días hábiles siguientes a la entrega (derecho de retracto, Ley 1480 de 2011). Si tu producto llegó dañado, escríbenos por WhatsApp con una foto y lo reponemos sin costo.</p>
     <h2 id="pagos">Pagos e impuestos</h2>
-    <p>Los pagos se procesan de forma segura a través de Wompi (tarjetas, PSE, Nequi y Bancolombia). Los precios en Colombia incluyen IVA; las ventas internacionales no cuentan con pasarela de pago en línea por ahora — te contactamos por WhatsApp para completarlas.</p>
+    <p>Los pagos se procesan de forma segura a través de Wompi${parentesisMetodos()}. Los precios en Colombia incluyen IVA; las ventas internacionales no cuentan con pasarela de pago en línea por ahora — te contactamos por WhatsApp para completarlas.</p>
     <h2 id="terminos">Términos y condiciones</h2>
     <p>Al comprar en ${escapar(config.tienda.nombre)} aceptas estas políticas y nuestra <a href="/privacidad">política de tratamiento de datos personales</a> (Ley 1581 de 2012). Para cualquier consulta escríbenos a ${escapar(config.correo.contacto)} o por WhatsApp.</p></section>`;
   res.type('html').send(layout({ titulo: 'Políticas', descripcion: 'Envíos, devoluciones, pedidos programados, pagos y términos de Arte\'Sano.', contenido, ruta: '/politicas' }));
@@ -407,7 +407,7 @@ tiendaRouter.get('/checkout', (_req, res) => {
         <div class="error" id="checkout-error" role="alert"></div>
         <button class="btn grande" id="pagar" type="submit" data-texto="Pagar de forma segura">Pagar de forma segura</button>
         ${wompiActivo()
-    ? '<div class="metodos" id="metodos"><span>Serás redirigido a Wompi para pagar con:</span><em>Tarjeta</em><em>PSE</em><em>Nequi</em><em>Bancolombia</em></div>'
+    ? `<div class="metodos" id="metodos"><span>Serás redirigido a Wompi para pagar${metodosDePago().length ? ' con:' : ' de forma segura.'}</span>${metodosDePago().map((m) => `<em>${escapar(m)}</em>`).join('')}</div>`
     : '<p class="mini"><b>Pasarela en configuración:</b> tu pedido quedará registrado y te contactaremos por WhatsApp para completar el pago.</p>'}
       </form>
       <aside class="resumen" id="resumen">

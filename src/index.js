@@ -26,7 +26,7 @@ import { parsearMensajes } from './whatsapp/recibir.js';
 import { enviarTexto, marcarLeido, whatsappActivo } from './whatsapp/enviar.js';
 import { responderBot } from './whatsapp/bot.js';
 import { responderIA } from './ia/agente.js';
-import { verificarWebhook as verificarWebhookWompi, consultarTransaccion, wompiActivo, montoCoincide, montoEnCentavos } from './pagos/wompi.js';
+import { verificarWebhook as verificarWebhookWompi, consultarTransaccion, wompiActivo, montoCoincide, montoEnCentavos, iniciarRefrescoMetodos } from './pagos/wompi.js';
 import { confirmarPago, rechazarPago } from './pagos/confirmar.js';
 import { requiereSesion, cabecerasSeguridad } from './admin/sesion.js';
 import { loginRouter, adminRouter } from './admin/rutas.js';
@@ -178,6 +178,7 @@ async function arrancar() {
   sembrarSiVacio();
   aplicarMigraciones();
 
+  iniciarRefrescoMetodos();
   setInterval(() => revisarPagosPendientes().catch((e) => console.error('[pago] revisor:', e.message)), REVISION_PAGOS_MS);
   setInterval(() => { const n = expirarPendientes(); if (n) console.log(`[pedidos] ${n} reservas vencidas canceladas.`); }, 10 * 60 * 1000);
   setInterval(recordatoriosProgramados, 60 * 60 * 1000);
