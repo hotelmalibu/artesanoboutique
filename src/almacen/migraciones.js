@@ -96,11 +96,26 @@ function preciosDefinitivos() {
 const retirarJabonesCocoAguacate = () => archivar(RETIRAR);
 const retirarLimpiadorDetergenteGelElixir = () => archivar(RETIRAR_2);
 
+/** Unifica "Corporal" dentro de "Cuidado del Cuerpo" (las dos lineas se solapaban). */
+function unificarCorporal() {
+  const destino = obtenerPorSlug('categorias', 'cuidado-del-cuerpo');
+  const origen = obtenerPorSlug('categorias', 'corporal');
+  if (!destino || !origen) return 0;
+  let cambios = 0;
+  for (const p of listar('productos')) {
+    if (p.categoriaId === origen.id) { guardar('productos', { ...p, categoriaId: destino.id }); cambios++; }
+  }
+  guardar('categorias', { ...destino, descripcion: 'Jabones y cremas artesanales para la limpieza e hidratación diaria.' });
+  guardar('categorias', { ...origen, activo: false });
+  return cambios + 2;
+}
+
 const MIGRACIONES = [
   { nombre: '2026-10-textos-sin-promesas-terapeuticas', aplicar: textosSinPromesasTerapeuticas },
   { nombre: '2026-10-retirar-jabones-coco-aguacate', aplicar: retirarJabonesCocoAguacate },
   { nombre: '2026-10-retirar-limpiador-detergente-gel-elixir', aplicar: retirarLimpiadorDetergenteGelElixir },
   { nombre: '2026-10-precios-y-catalogo-definitivos', aplicar: () => archivar(RETIRAR_3) + preciosDefinitivos() },
+  { nombre: '2026-10-unificar-corporal-en-cuidado-del-cuerpo', aplicar: unificarCorporal },
 ];
 
 /** Aplica las migraciones pendientes. Llamar despues de hidratar el catalogo y sembrar. */

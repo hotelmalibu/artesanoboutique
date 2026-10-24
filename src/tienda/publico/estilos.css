@@ -484,3 +484,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--sage); outl
 .cuenta-pasos li.actual { color: var(--ink); font-weight: 700; }
 .cuenta-pasos li.actual span { background: var(--forest); border-color: var(--forest); color: var(--ivory); }
 .hero-texto h1.largo { font-size: clamp(38px, 5vw, 66px); line-height: 1.04; }
+
+/* Presentaciones, stock y enlace "Elegir presentación" */
+a.agregar-rapido { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.presentaciones { margin-top: 4px; font-size: 13px; color: var(--muted); }
+.stock-bajo, .disponibilidad.mini { margin-top: 4px; font-size: 13px; color: var(--forest); }

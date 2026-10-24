@@ -30,7 +30,6 @@ export const ICONO_WA = `<svg viewBox="0 0 24 24" width="22" height="22" fill="c
 export const ICONO_FLECHA = `<svg width="18" height="18" viewBox="0 0 24 24" ${S}><path d="M4 12h15M13 6l6 6-6 6"/></svg>`;
 const ICONO_BUSCAR = `<svg width="22" height="22" viewBox="0 0 24 24" ${S}><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>`;
 const ICONO_BOLSA = `<svg width="20" height="20" viewBox="0 0 24 24" ${S}><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>`;
-const ICONO_CANDADO = `<svg width="20" height="20" viewBox="0 0 24 24" ${S}><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 const ICONO_MENU = `<svg width="26" height="26" viewBox="0 0 24 24" ${S} stroke-width="1.8"><path d="M4 8h16M4 16h16"/></svg>`;
 const ICONO_CERRAR = `<svg width="24" height="24" viewBox="0 0 24 24" ${S} stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
 export const ICONO_MAS = `<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`;
@@ -94,7 +93,6 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
     <div class="acciones">
       <button class="btn-icono" type="button" data-abrir-buscador aria-label="Buscar productos">${ICONO_BUSCAR}</button>
       <a class="btn-icono solo-escritorio" href="${urlWhatsapp('Hola Arte\'Sano, quiero información sobre sus productos')}" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">${ICONO_WA}</a>
-      <a class="btn-icono solo-escritorio" href="/admin" aria-label="Acceso administrador" title="Acceso administrador">${ICONO_CANDADO}</a>
       <a class="btn-carrito" href="/carrito" data-abrir-carrito aria-label="Abrir carrito">${ICONO_BOLSA}<span class="texto-carrito">Carrito</span><span class="contador" id="carrito-contador">0</span></a>
       <button class="btn-icono hamburguesa" type="button" data-abrir-menu aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-movil">${ICONO_MENU}</button>
     </div>
@@ -210,11 +208,16 @@ export function tarjetaProducto(p) {
   const url = imgs[0]?.url || p.imagenPrincipal;
   const segunda = imgs[1]?.url;
   const foto = url
-    ? `<img src="${escapar(optimizar(url, 600))}" alt="${escapar(imgs[0]?.alt || p.nombre)}" loading="lazy" decoding="async" />${segunda ? `<img class="foto-alt" src="${escapar(optimizar(segunda, 600))}" alt="" loading="lazy" decoding="async" />` : ''}`
+    ? `<img src="${escapar(optimizar(url, 600))}" alt="${escapar(imgs[0]?.alt || p.nombre)}" loading="lazy" decoding="async" />${segunda ? `<img class="foto-alt" src="${escapar(optimizar(segunda, 600))}" alt="${escapar(p.nombre)} (vista 2)" loading="lazy" decoding="async" />` : ''}`
     : `<div class="sin-imagen">${ICONO_HOJA}<span>Foto próximamente</span></div>`;
   const precio = `${p.precioComparacionCop && p.precioComparacionCop > p.precioDesde ? `<s>${formatearCOP(p.precioComparacionCop)}</s>` : ''}${p.variantes.length > 1 ? '<small>Desde </small>' : ''}${formatearCOP(p.precioDesde)}`;
+  const activas = p.variantes.filter((x) => x.stock > 0);
+  const presentaciones = p.variantes.length > 1 ? `<div class="presentaciones">${p.variantes.map((x) => `${escapar(x.nombre)} ${formatearCOP(x.precioCop)}`).join(' · ')}</div>` : '';
+  const stockTxt = !p.agotado && activas.length && activas.every((x) => x.stock <= 5) ? `<div class="stock-bajo">Últimas ${activas.reduce((n, x) => n + x.stock, 0)} unidades</div>` : '';
   const boton = p.agotado
     ? '<button class="agregar-rapido" type="button" disabled>Agotado</button>'
+    : p.variantes.length > 1
+    ? `<a class="agregar-rapido" href="/producto/${escapar(p.slug)}">Elegir presentación</a>`
     : `<button class="agregar-rapido agregar" type="button" data-sku="${escapar(v.sku)}" data-nombre="${escapar(p.nombre)}" data-variante="${escapar(v.nombre)}" data-precio="${v.precioCop}" data-imagen="${escapar(url ? optimizar(url, 600) : '')}" data-slug="${escapar(p.slug)}">Agregar al carrito</button>`;
   return `<article class="tarjeta-producto revelar">
     <div class="tarjeta-img">
@@ -226,7 +229,7 @@ export function tarjetaProducto(p) {
       <div class="tarjeta-linea">${escapar(p.categoria?.nombre || '')}${p.protagonista ? ' · ' + escapar(p.protagonista.nombre) : ''}</div>
       <h3><a href="/producto/${escapar(p.slug)}">${escapar(p.nombre)}</a></h3>
       <p>${escapar(p.descripcionCorta)}</p>
-      <div class="precio">${precio}</div>
+      <div class="precio">${precio}</div>${presentaciones}${stockTxt}
     </div>
   </article>`;
 }

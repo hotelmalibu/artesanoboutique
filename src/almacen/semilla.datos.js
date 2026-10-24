@@ -18,9 +18,8 @@
 // ============================================================
 
 export const CATEGORIAS = [
-  { slug: 'cuidado-del-cuerpo', nombre: 'Cuidado del Cuerpo', descripcion: 'Jabones artesanales para la limpieza e hidratación diaria.', orden: 1 },
+  { slug: 'cuidado-del-cuerpo', nombre: 'Cuidado del Cuerpo', descripcion: 'Jabones y cremas artesanales para la limpieza e hidratación diaria.', orden: 1 },
   { slug: 'cuidado-facial', nombre: 'Cuidado Facial', descripcion: 'Jabones artesanales para la limpieza y frescura del rostro.', orden: 2 },
-  { slug: 'corporal', nombre: 'Corporal', descripcion: 'Cremas y lociones para el cuidado del cuerpo.', orden: 3 },
   { slug: 'lineas-especializadas', nombre: 'Líneas Especializadas', descripcion: 'Cuidado del cabello y productos de tradición Zenú.', orden: 4 },
   { slug: 'aseo', nombre: 'Aseo', descripcion: 'Higiene personal de uso diario.', orden: 5 },
   { slug: 'hogar', nombre: 'Hogar', descripcion: 'Para el cuidado del hogar.', orden: 6 },
@@ -161,7 +160,7 @@ export function productos(ids) {
     // ---------- Corporal ----------
     {
       ...comunes, nombre: 'Crema Piel de Porcelana', slug: 'crema-piel-de-porcelana',
-      categoriaId: cat('corporal'), ingredienteIds: [], ingredienteProtagonistaId: null,
+      categoriaId: cat('cuidado-del-cuerpo'), ingredienteIds: [], ingredienteProtagonistaId: null,
       descripcionCorta: 'Técnica oriental. Aclara la piel y conserva su tono natural.',
       descripcion: '<p>Crema corporal elaborada con técnica oriental. Nutre, humecta, limpia y purifica, con un aroma y textura agradables.</p>',
       beneficios: '<ul><li>Aclara la piel y conserva su tono natural</li><li>Nutre y humecta</li><li>Limpia y purifica</li></ul>',

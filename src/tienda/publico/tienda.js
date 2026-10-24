@@ -154,6 +154,8 @@
       const ag = $('#agregar');
       if (ag) { ag.dataset.sku = b.dataset.sku; ag.dataset.variante = b.dataset.nombre; ag.dataset.precio = b.dataset.precio; }
       $('#precio').textContent = cop(b.dataset.precio);
+      const disp = $('#disponibilidad'); const st = Number(b.dataset.stock);
+      if (disp) disp.textContent = st <= 0 ? 'Agotado' : st <= 5 ? `Últimas ${st} unidades` : 'Disponible';
     });
   }
   $$('.cantidad button[data-d]:not([data-idx])').forEach((b) => b.addEventListener('click', () => {

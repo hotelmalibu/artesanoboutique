@@ -81,7 +81,7 @@ tiendaRouter.get('/', (_req, res) => {
     : '<div class="hero-marca">Arte\'Sano</div>';
   const h0 = heroProds[0];
   const heroCard = h0
-    ? `<div class="hero-card" id="hero-card"><img id="hero-card-img" src="${escapar(optimizar(fotoLimpia(h0), 600))}" alt="" /><div><b id="hero-card-nombre">${escapar(h0.nombre)}</b><span id="hero-card-precio">${formatearCOP(h0.variantePorDefecto.precioCop)} · ${escapar(h0.variantePorDefecto.nombre)}</span></div><button class="mas agregar" id="hero-card-agregar" type="button" aria-label="Agregar al carrito" ${datosAgregar(h0, h0.variantePorDefecto)}>${ICONO_MAS}</button></div>`
+    ? `<div class="hero-card" id="hero-card"><img id="hero-card-img" src="${escapar(optimizar(fotoLimpia(h0), 600))}" alt="${escapar(h0.nombre)}" /><div><b id="hero-card-nombre">${escapar(h0.nombre)}</b><span id="hero-card-precio">${formatearCOP(h0.variantePorDefecto.precioCop)} · ${escapar(h0.variantePorDefecto.nombre)}</span></div><button class="mas agregar" id="hero-card-agregar" type="button" aria-label="Agregar al carrito" ${datosAgregar(h0, h0.variantePorDefecto)}>${ICONO_MAS}</button></div>`
     : '';
 
   // Lineas: las que tienen productos, primero las que tienen foto.
@@ -126,7 +126,7 @@ tiendaRouter.get('/', (_req, res) => {
   <div class="banda"><span>Hecho a mano</span><i>✦</i><span>Plantas del territorio Zenú</span><i>✦</i><span>Pequeños lotes</span><i>✦</i><span>Envíos al mundo</span></div>
   ${tiles.length ? `<section class="contenedor seccion revelar">
     ${seccionTitulo('Líneas', 'Encuentra lo que tu piel necesita', '', ['/tienda', 'Ver toda la tienda'])}
-    <div class="lineas">${tiles.map(({ c, foto }) => `<a class="linea-tile${foto ? '' : ' sin-foto'}" href="/tienda/${escapar(c.slug)}">${foto ? `<img src="${escapar(optimizar(foto, 600))}" alt="" loading="lazy" decoding="async" />` : `<div class="fondo-icono">${iconoLinea(c.slug) || ICONO_HOJA}</div>`}<div class="linea-info"><b>${escapar(c.nombre)}</b><span>${escapar(c.descripcion || '')}</span></div></a>`).join('')}</div>
+    <div class="lineas">${tiles.map(({ c, foto }) => `<a class="linea-tile${foto ? '' : ' sin-foto'}" href="/tienda/${escapar(c.slug)}">${foto ? `<img src="${escapar(optimizar(foto, 600))}" alt="Línea ${escapar(c.nombre)}" loading="lazy" decoding="async" />` : `<div class="fondo-icono">${iconoLinea(c.slug) || ICONO_HOJA}</div>`}<div class="linea-info"><b>${escapar(c.nombre)}</b><span>${escapar(c.descripcion || '')}</span></div></a>`).join('')}</div>
   </section>` : ''}
   ${favoritos.length ? `<section class="contenedor seccion" style="padding-top:0">${seccionTitulo('Favoritos', 'Los más queridos', '', ['/tienda', 'Ver todo'])}<div class="rejilla carril">${favoritos.map(tarjetaProducto).join('')}</div></section>` : ''}
   ${origen.length ? `<section class="origen seccion">
@@ -239,7 +239,7 @@ tiendaRouter.get('/producto/:slug', (req, res, next) => {
     ${migas([['/tienda', 'Tienda'], p.categoria ? [`/tienda/${p.categoria.slug}`, p.categoria.nombre] : null, [null, p.nombre]].filter(Boolean))}
     <div class="producto-int">
       <div class="galeria ${galeria.length > 1 ? '' : 'una'}">
-        ${galeria.length > 1 ? `<div class="galeria-mini">${galeria.map((im, i) => `<button type="button" class="${i === 0 ? 'activo' : ''}" data-grande="${escapar(optimizar(im.url, 1200))}" aria-label="Ver foto ${i + 1}"><img src="${escapar(optimizar(im.url, 600))}" alt="" loading="lazy" /></button>`).join('')}</div>` : ''}
+        ${galeria.length > 1 ? `<div class="galeria-mini">${galeria.map((im, i) => `<button type="button" class="${i === 0 ? 'activo' : ''}" data-grande="${escapar(optimizar(im.url, 1200))}" aria-label="Ver foto ${i + 1}"><img src="${escapar(optimizar(im.url, 600))}" alt="${escapar(p.nombre)} - foto ${i + 1}" loading="lazy" /></button>`).join('')}</div>` : ''}
         <div class="galeria-principal" id="galeria-principal">${galeria.length ? `<img id="galeria-img" src="${escapar(optimizar(galeria[0].url, 1200))}" alt="${escapar(galeria[0].alt || p.nombre)}" decoding="async" />` : `<div class="sin-imagen">${ICONO_HOJA}<span>Foto próximamente</span></div>`}<div class="etiquetas">${etiquetas.join('')}</div></div>
       </div>
       <div class="compra">
@@ -247,6 +247,7 @@ tiendaRouter.get('/producto/:slug', (req, res, next) => {
         <h1>${escapar(p.nombre)}</h1>
         <p class="ficha-corta">${escapar(p.descripcionCorta)}</p>
         <div class="precio grande" id="precio">${formatearCOP(v.precioCop)}</div>
+        <div class="mini disponibilidad" id="disponibilidad">${p.agotado ? 'Agotado' : (v.stock <= 5 ? `Últimas ${v.stock} unidades` : 'Disponible')}</div>
         <div class="mini iva">Precio con IVA incluido (${escapar(NOMBRES_IVA[p.tipoIva] || '')}). Clientes fuera de Colombia pagan en USD sin IVA colombiano.</div>
         ${p.variantes.length > 1 ? `<div class="rotulo">Presentación</div><div class="variantes" id="variantes">${p.variantes.map((x) => `<button type="button" class="${x.sku === v.sku ? 'activo' : ''}" data-sku="${escapar(x.sku)}" data-nombre="${escapar(x.nombre)}" data-precio="${x.precioCop}" data-stock="${x.stock}" ${x.stock <= 0 ? 'disabled' : ''}>${escapar(x.nombre)}${x.stock <= 0 ? ' (agotado)' : ''}</button>`).join('')}</div>` : ''}
         <div class="comprar">
@@ -431,7 +432,7 @@ function paginaPedido(res, p, mensaje = '') {
     <div class="pedido-int">
       <div>
         <h3>Productos</h3>
-        ${p.items.map((l) => `<div class="pedido-item">${l.imagenUrl ? `<img src="${escapar(optimizar(l.imagenUrl, 600))}" alt="" />` : `<div class="sin-imagen mini">${ICONO_HOJA}</div>`}<div><b>${escapar(l.productoNombre)}</b><br /><small>${escapar(l.varianteNombre)} · ${l.cantidad} × ${formatear(l.precioUnitario + l.ivaUnitario, m)}</small></div><b>${formatear(l.total, m)}</b></div>`).join('')}
+        ${p.items.map((l) => `<div class="pedido-item">${l.imagenUrl ? `<img src="${escapar(optimizar(l.imagenUrl, 600))}" alt="${escapar(l.productoNombre)}" />` : `<div class="sin-imagen mini">${ICONO_HOJA}</div>`}<div><b>${escapar(l.productoNombre)}</b><br /><small>${escapar(l.varianteNombre)} · ${l.cantidad} × ${formatear(l.precioUnitario + l.ivaUnitario, m)}</small></div><b>${formatear(l.total, m)}</b></div>`).join('')}
         <h3 style="margin-top:28px">Entrega</h3>
         <p>${escapar(p.direccion.linea1)}${p.direccion.linea2 ? ', ' + escapar(p.direccion.linea2) : ''}<br />${escapar(p.direccion.ciudad)}${p.direccion.departamento ? ', ' + escapar(p.direccion.departamento) : ''} · ${escapar(p.direccion.pais)}<br /><small>${escapar(p.envio.transportadora)} · ${escapar(p.envio.dias)}</small></p>
         ${p.programadoPara ? `<p><b>Entrega programada:</b> ${escapar(p.programadoPara)}</p>` : ''}
@@ -484,7 +485,7 @@ tiendaRouter.get('/pago/cancelado', (req, res) => {
 
 tiendaRouter.get('/sitemap.xml', (_req, res) => {
   const urls = ['/', '/tienda', '/ingredientes', '/artesanos', '/nosotros', '/politicas',
-    ...listar('categorias').map((c) => '/tienda/' + c.slug),
+    ...listar('categorias').filter((c) => c.activo !== false).map((c) => '/tienda/' + c.slug),
     ...productosPublicados().map((p) => '/producto/' + p.slug),
     ...listar('ingredientes').map((i) => '/ingredientes/' + i.slug),
     ...listar('artesanos').map((a) => '/artesanos/' + a.slug)];
