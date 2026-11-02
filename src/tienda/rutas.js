@@ -46,6 +46,21 @@ const TEXTO_ORIGEN = {
   coco: 'El aceite de coco es base tradicional de jabones y ungüentos en toda la costa Caribe.',
   'carbon-activado': 'Purificante natural de uso tradicional, combinado aquí con canela en un jabón artesanal.',
 };
+// Foto de una linea del inicio: la "limpia" de uno de sus productos; si no hay, una de estas fotos curadas
+// (con el encuadre que mejor se ve en el recuadro vertical) y, si tampoco, la principal de cualquier producto con foto.
+const FOTOS_LINEA = [{ archivo: 'arroz-3.jpg', pos: '38% 50%' }, { archivo: 'proteccion-mineral.jpg', pos: '50% 50%' }, { archivo: 'piel-de-porcelana.jpg', pos: '50% 35%' }];
+function fotoDeLinea(productos) {
+  const limpia = productos.find((p) => fotoLimpia(p));
+  if (limpia) return { url: fotoLimpia(limpia), pos: '50% 50%' };
+  for (const p of productos) {
+    for (const f of FOTOS_LINEA) {
+      const im = p.imagenes?.find((i) => i.url.endsWith('/' + f.archivo));
+      if (im) return { url: im.url, pos: f.pos };
+    }
+  }
+  const conFoto = productos.find((p) => tieneFotoReal(p));
+  return conFoto ? { url: imagenesOrdenadas(conFoto)[0].url, pos: '50% 50%' } : { url: '', pos: '' };
+}
 const origenRegion = (r) => (!r || /^Sucre, Colombia$/i.test(r) ? 'Córdoba y Sucre' : r);
 const iconoLinea = (slug) => ICONOS_LINEA[slug] || '';
 const enlaceWa = (t) => urlWhatsapp(t);
@@ -86,7 +101,7 @@ tiendaRouter.get('/', (_req, res) => {
 
   // Lineas: las que tienen productos, primero las que tienen foto.
   const tiles = lineas
-    .map((c) => { const ps = productosPublicados({ categoria: c.slug }); const pf = ps.find((p) => fotoLimpia(p)); return { c, n: ps.length, foto: pf ? fotoLimpia(pf) : '' }; })
+    .map((c) => { const ps = productosPublicados({ categoria: c.slug }); const f = fotoDeLinea(ps); return { c, n: ps.length, foto: f.url, pos: f.pos }; })
     .filter((x) => x.n > 0)
     .sort((a, b) => (b.foto ? 1 : 0) - (a.foto ? 1 : 0))
     .slice(0, 4);
@@ -126,7 +141,7 @@ tiendaRouter.get('/', (_req, res) => {
   <div class="banda"><span>Hecho a mano</span><i>✦</i><span>Plantas del territorio Zenú</span><i>✦</i><span>Pequeños lotes</span><i>✦</i><span>Envíos al mundo</span></div>
   ${tiles.length ? `<section class="contenedor seccion revelar">
     ${seccionTitulo('Líneas', 'Encuentra lo que tu piel necesita', '', ['/tienda', 'Ver toda la tienda'])}
-    <div class="lineas">${tiles.map(({ c, foto }) => `<a class="linea-tile${foto ? '' : ' sin-foto'}" href="/tienda/${escapar(c.slug)}">${foto ? `<img src="${escapar(optimizar(foto, 600))}" alt="Línea ${escapar(c.nombre)}" loading="lazy" decoding="async" />` : `<div class="fondo-icono">${iconoLinea(c.slug) || ICONO_HOJA}</div>`}<div class="linea-info"><b>${escapar(c.nombre)}</b><span>${escapar(c.descripcion || '')}</span></div></a>`).join('')}</div>
+    <div class="lineas">${tiles.map(({ c, foto, pos }) => `<a class="linea-tile${foto ? '' : ' sin-foto'}" href="/tienda/${escapar(c.slug)}">${foto ? `<img src="${escapar(optimizar(foto, 600))}" alt="Línea ${escapar(c.nombre)}" style="object-position:${pos}" loading="lazy" decoding="async" />` : `<div class="fondo-icono">${iconoLinea(c.slug) || ICONO_HOJA}</div>`}<div class="linea-info"><b>${escapar(c.nombre)}</b><span>${escapar(c.descripcion || '')}</span></div></a>`).join('')}</div>
   </section>` : ''}
   ${favoritos.length ? `<section class="contenedor seccion" style="padding-top:0">${seccionTitulo('Favoritos', 'Los más queridos', '', ['/tienda', 'Ver todo'])}<div class="rejilla carril">${favoritos.map(tarjetaProducto).join('')}</div></section>` : ''}
   ${origen.length ? `<section class="origen seccion">
